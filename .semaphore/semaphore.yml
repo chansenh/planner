@@ -16,3 +16,22 @@ blocks:
             - cache restore
             - pip install --cache-dir .pip_cache -r requirements.txt
             - cache store
+  - name: Tests
+    task:
+      prologue:
+        commands:
+          - sem-version python 3.7
+          - checkout
+          - cache restore
+          - pip install --cache-dir .pip_cache -r requirements.txt
+      jobs:
+        - name: Unit tests
+          commands:
+            - cd planner_app
+            - python manage.py makemigrations
+            - python manage.py migrate
+            - python manage.py test
+        - name: Checklist
+          commands:
+            - cd planner_app
+            - python manage.py check --deploy
