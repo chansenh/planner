@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+	  <title>Planner</title>
+    <meta name="description" content="a planner" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!--<link rel="stylesheet" type="text/css" href="../js/stylesheet.css">-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	
+    
+</head>
+
+<body>
+  <!--canvas container-->
+  <div class="fluid-container">
+
+    <div class="container">
+      <div class="card text-center">
+		  <div class="card-header">
+			Create an activity for 
+		  </div>
+		  <div class="card-body">
+			<form action="/create/" method="post" id='activity'>
+			{% csrf_token %}
+			<div class="form-group row">
+				
+					<div class="container float-right">
+						<label for="categoryselection">Select a category:</label>
+						<select class="form-control" id="categoryselection" name="categoryselection">
+							{%if categories%}
+							{%for category in categories%}
+							<option id="{{category.category}}" value="{{category.category}}">{{category.category}}</option>
+							{%endfor%}
+							{%else%}
+							<option value="" >no categories</option>
+							{%endif%}
+						</select>
+					</div>
+					
+				
+				
+		  </div>
+		  <div class="container">
+			<label for="category"></label>
+			<input type="text" id="category" name="category" placeholder="New Category">
+			<a class="btn btn-primary category-btn" href="#">Add to list</a>
+		  </div>
+			  <div class="form-group row">
+				<div class="col-lg">
+					<div class="container">
+						<label for="name">Activity Name</label>
+						<input type="text" class="form-control" name="name" placeholder="Enter name">
+						<div class="container p-0 m-0">
+							<div class="form-group row">
+								<div class="col-sm">
+									<div class="container p-0">
+										<label class="form-check-label" for="mon">Mon</label>
+									</div>
+									<div class="container p-0">
+										<input type="checkbox" class="form-check-input" name="mon">
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="container p-0">
+										<label class="form-check-label" for="tue">Tue</label>
+									</div>
+									<div class="container p-0">
+										<input type="checkbox" class="form-check-input" name="tue">
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="container p-0">
+										<label class="form-check-label" for="wed">Wed</label>
+									</div>
+									<div class="container p-0">
+										<input type="checkbox" class="form-check-input" name="wed">
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="container p-0">
+										<label class="form-check-label" for="thu">Thu</label>
+									</div>
+									<div class="container p-0">
+										<input type="checkbox" class="form-check-input" name="thu">
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="container p-0">
+										<label class="form-check-label" for="fri">Fri</label>
+									</div>
+									<div class="container p-0">
+										<input type="checkbox" class="form-check-input" name="fri">
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="container p-0">
+										<label class="form-check-label" for="sat">Sat</label>
+									</div>
+									<div class="container p-0">
+										<input type="checkbox" class="form-check-input" name="sat">
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="container p-0">
+										<label class="form-check-label" for="sun">Sun</label>
+									</div>
+									<div class="container p-0">
+										<input type="checkbox" class="form-check-input" name="sun">
+									</div>
+								</div>
+							</div>
+							<div class="form-group row">
+								<div class="col-lg">
+									<label for="sdate">Choose Start Date</label>
+									<input type="date" name="sdate" max="3000-12-31" min="1000-01-01" class="form-control" value='{{date}}'>
+								</div>
+								<div class="col-lg">
+									<label for="edate">Choose End Date</label>
+									<input type="date" name="edate" min="1000-01-01" max="3000-12-31" class="form-control" value='{{date}}'>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					
+				</div>
+				<div class="col-lg">
+					<div class="container">
+						<label for="start_time">Activity Start Time</label>
+						<input type="time"class="form-control" name="start_time">
+						<label for="end_time">Activity End Time</label>
+						<input type="time"class="form-control" name="end_time">
+
+					</div>
+					
+				</div>
+			  </div>
+			  <div class="form-group row">
+				  <div class="container">
+					<label for="activitycolor">Select activity color:</label>
+					<input type="color" id="activitycolor" name="activitycolor" value="#ff0000">
+				  </div>
+			  </div>
+			  
+			  <div class="form-group row">
+				
+			  </div>
+			  
+			
+
+			  <input type="submit" class="btn btn-primary" form='activity'>
+			</form>
+		  </div>
+		  <div class="card-footer text-muted">
+			they call me<a class="btn btn-primary" href="/"> back home</a>
+		  </div>
+		</div>
+    </div>
+  
+
+
+
+  </div>
+  <!--canvas container-->
+  {%load static%}
+  <script src="{% static 'planner/create.js' %}"></script>
+</body>      
+</html>
