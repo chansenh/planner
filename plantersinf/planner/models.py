@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class Activity(models.Model):
 	name=models.CharField(max_length=20)
-	start_date=models.ForeignKey('Date', related_name="start", on_delete=models.CASCADE)
+	start_date=models.ForeignKey('Date', related_name="start",on_delete=models.CASCADE)
 	end_date=models.ForeignKey('Date', related_name="end",on_delete=models.CASCADE)
 	start_time=models.CharField(max_length=10)
 	end_time=models.CharField(max_length=10)

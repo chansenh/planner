@@ -277,6 +277,18 @@ function showCategories(catlist){
     })
 }
 
+//function mouseOver(){
+//    console.log('mouseover')
+//    document.addEventListener('mouseover', event=>{
+//        let node = event.target;
+//        node.classList.forEach(classname =>{
+//            if(classname.includes("activity"){
+//
+//            }
+//        });
+//        if()
+//    })
+//}
 
 //pageLoad();
 buildCalendarList();
@@ -293,4 +305,5 @@ else{
 
 calendarNavigation(calendarList);
 enableFiltering();
+//mouseOver();
 

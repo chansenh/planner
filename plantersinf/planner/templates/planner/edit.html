@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+	  <title>Planner</title>
+    <meta name="description" content="a planner" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!--<link rel="stylesheet" type="text/css" href="../js/stylesheet.css">-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	
+    
+</head>
+
+<body>
+  <!--canvas container-->
+  <div class="fluid-container">
+
+    <div class="container">
+      <div class="card text-center">
+		  <div class="card-header">
+			Create an activity for 
+		  </div>
+		  <div class="card-body">
+			<form action="/edit/0" method="post" id='activity'>
+			{% csrf_token %}
+			<div class="form-group row">
+				
+					<div class="container float-right">
+						<label for="categoryselection">Select a category:</label>
+						<select class="form-control" id="categoryselection" name="categoryselection">
+                            {%if categories%}
+                            {{editcategory}}
+                            {%for category in categories%}
+                            {%if category.category == editcategory%}
+							<option id="{{category.category}}" value="{{category.category}}" selected>{{category.category}}</option>
+                            {%else%}
+                            <option id="{{category.category}}" value="{{category.category}}">{{category.category}}</option>
+                            {%endif%}
+                            {%endfor%}
+                            
+							{%else%}
+							<option value="" >no categories</option>
+							{%endif%}
+						</select>
+					</div>
+					
+				
+				
+		  </div>
+		  <div class="container">
+			<label for="category"></label>
+			<input type="text" id="category" name="category" placeholder="New Category">
+			<a class="btn btn-primary category-btn" href="#">Add to list</a>
+		  </div>
+			  <div class="form-group row">
+				<div class="col-lg">
+					<div class="container">
+						<label for="name">Activity Name</label>
+						<input type="text" class="form-control" name="name" value="{{editname}}">
+						<div class="container p-0 m-0">
+							<div class="form-group row">
+								<div class="btn-group btn-group-toggle dotw">
+									
+									<label class="btn btn-secondary days" for="hiddenmon" id="mon">
+										<input type="hidden" class="day" name="mon" id="hiddenmon" value="{{mon}}">Mo
+									</label>
+									
+
+									<label class="btn btn-secondary days" for="hiddentue"id="tue">
+										<input type="hidden" class="day" name="tue" id="hiddentue"value="{{tue}}">Tu
+									</label>
+									
+
+									
+									<label class="btn btn-secondary days" for="hiddenwed"id="wed">
+										<input type="hidden" class="day" name="wed" id="hiddenwed"value="{{wed}}">We
+									</label>
+									
+
+									
+									<label class="btn btn-secondary days" for="hiddenthu"id="thu">
+										<input type="hidden" class="day" name="thu" id="hiddenthu"value="{{thu}}">Th
+									</label>
+									
+
+									
+									<label class="btn btn-secondary days" for="hiddenfri"id="fri">
+										<input type="hidden" class="day" name="fri" id="hiddenfri"value="{{fri}}">Fr
+									</label>
+									
+
+									
+									<label class="btn btn-secondary days" id="sat"for="hiddensat">
+										<input type="hidden" class="day" id="hiddensat"name="sat" value="{{sat}}">Sa
+									</label>
+									
+									<label class="btn btn-secondary days" for="hiddensun"id="sun">
+										<input type="hidden" class="day" name="sun" id="hiddensun" value="{{sun}}">Su
+									</label>
+									
+								</div>
+								
+								
+								
+								
+							</div>
+							<div class="form-group row">
+								<div class="col-lg">
+									<label for="sdate">Edit Start Date</label>
+									<input type="date" name="sdate" max="3000-12-31" min="1000-01-01" class="form-control" value='{{editstart_date}}'>
+								</div>
+								<div class="col-lg">
+									<label for="edate">Edit End Date</label>
+									<input type="date" name="edate" min="1000-01-01" max="3000-12-31" class="form-control" value='{{editend_date}}'>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					
+				</div>
+				<div class="col-lg">
+					<div class="container">
+						<label for="start_time">Edit Activity Start Time</label>
+						<input type="time"class="form-control" name="start_time" value="{{editstart_time}}">
+						<label for="end_time">Edit Activity End Time</label>
+						<input type="time"class="form-control" name="end_time" value="{{editend_time}}">
+
+					</div>
+					
+				</div>
+			  </div>
+			  <div class="form-group row">
+				  <div class="container">
+					<label for="activitycolor">Edit activity color:</label>
+					<input type="color" id="activitycolor" name="activitycolor" value="{{editcolor}}">
+				  </div>
+			  </div>
+			  
+			  <div class="form-group row">
+				
+			  </div>
+			  
+			
+
+			  <input type="submit" class="btn btn-primary" form='activity' value="Apply">
+			</form>
+		  </div>
+		  <div class="card-footer text-muted">
+			they call me<a class="btn btn-primary" href="/"> back home</a>
+		  </div>
+		</div>
+    </div>
+  
+
+
+
+  </div>
+  <!--canvas container-->
+  {%load static%}
+  <script src="{% static 'planner/edit.js' %}"></script>
+</body>      
+</html>

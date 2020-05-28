@@ -10,6 +10,8 @@ urlpatterns = [
 	url(r'^control/(?P<dateid>\d+)$', views.control),
 	url(r'^activate/(?P<id>\d+)$', views.activate),
 	url(r'^add/(?P<category>[-\w]+)$', views.add),
+	url(r'^add/(?P<category>[-\w]+)/(?P<dateid>[-\w]+)$', views.add),
+	url(r'^edit/(?P<activityid>\d+)$', views.edit),
 	url(r'^back/(?P<month>[-\w]+)/(?P<year>\d+)$', views.back),
 	url(r'^remove/(?P<dateid>\d+)/(?P<activityid>\d+)$', views.remove),
 	#url(r'^books/(?P<id>\d+)/add$', views.reviewbook),

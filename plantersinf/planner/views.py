@@ -5,7 +5,12 @@ import datetime
 activecalandar={'month':'','year':''}
 def index(request):
 	months={}
+	listofactivities = Activity.objects.order_by('category').values_list('name','category','id').distinct()
+	#aprilactivities=Activity.objects.filter(name='sex')#.order_by('category').values_list('name','category').distinct()
+	distinctactivities={}
 	context = {
+		'aprilactivities': Activity.objects.filter(activity_date__month='may',activity_date__year=2020).order_by('category').values_list('name','category').distinct(),
+		'activitiesbyname': distinctactivities,
 		'activities':Activity.objects.all(),
 		'dates': Date.objects.all(),#where month == 1 = jan, month==2 = feb...
 		'yearrange': [],
@@ -14,7 +19,11 @@ def index(request):
 		'weeklength':range(1,7)
 	}
 	print('loading...')
-
+	
+	for name,catid,aid in listofactivities:
+		if name not in distinctactivities.keys():
+			#Activity.objects.get()
+			distinctactivities[name] = (aid,name,catid)
 	#rangeofyears = Date.objects.all().order_by('year').distinct()
 	#print(rangeofyears)
 	today = datetime.date.today()
@@ -28,12 +37,15 @@ def index(request):
 		if yearexists:
 			yearrange.append(year)
 			print(str(year),'exists')
+			
 			yearlydates={
 				'january':{
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-01-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-01-01')['daynum']),
-					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='january').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-01-01')['daynum']),findWeekday(str(year)+'-01-01')['daynum'],31)
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='january').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-01-01')['daynum']),findWeekday(str(year)+'-01-01')['daynum'],31),
+					#get unique activiteis by name for current month and year
+					#'editactivities': Activity.objects.filter(activity_date__month='january',activity_date__year=year).order_by('category').values_list('name','category').distinct()
 				},
 				'february':{
 					'length':range(1,29),
@@ -113,19 +125,22 @@ def index(request):
 	context['years']=years
 	context['activemonth'] = activecalandar['month']
 	context['activeyear'] =  activecalandar['year']
+	#context['aprilactivities'] = aprilactivities
 	#print(context['dates'])
 	#print(context['activities'])
 	#print(context[2021])
 	#print(years)
-	#for activity in context['activities']:
+	#for activity in context['year']:
 	#	print(activity)
 	#	print(context['year'][activity])
 		#print(activity)
 	#	activity.delete()
-	#for category in context['categories']:
-	#	category.delete()
+
 	#for date in context['dates']:
 	#	date.delete()
+
+	#for cat in context['categories']:
+	#	cat.delete()
 	
 	return render(request,"planner/datelist.html",context)
 
@@ -136,7 +151,7 @@ def back(request,month,year):
 	print(activecalandar)
 	return redirect('/')
 
-def add(request, category):
+def add(request, category, dateid=''):
 	#implement check to validate category syntax
 	print('existing categories')
 	for each in Category.objects.all():
@@ -147,13 +162,19 @@ def add(request, category):
 		Category.objects.create(category=category)
 	else:
 		print("Category already exists")
-	return redirect("/create/")
+	if dateid:
+		return redirect("/date/{}".format(dateid))
+	else:
+		return redirect("/create/")
 
 def remove(request,activityid,dateid):
 	activitytoremove = Activity.objects.get(id=activityid)
 	print(activitytoremove.name,activitytoremove.id)
 	activitytoremove.delete()
 	return redirect('/date/{}'.format(dateid))
+
+
+
 
 
 def date(request,id):
@@ -459,6 +480,7 @@ def create(request,date=''):
 		#print(request.POST['categoryselection'])
 		print(request.POST)
 		days=[]
+		## CREATE RANGE DATE DATA
 		week = ['sun','mon','tue','wed','thu','fri','sat']
 		postkeys = request.POST.keys() #[random, stuff, tue, wed, sat, more, rnaomd]
 		print(postkeys)
@@ -500,34 +522,33 @@ def create(request,date=''):
 		start_date=request.POST['sdate']
 		
 		end_date = request.POST['edate']
+		## CREATE RANGE DATE DATA
+
+		# no days are selected and the activity takes place on a single day
+		# automatically find teh appropriate weekday and assign it
 		if not days and start_date == end_date:
 			day = findWeekday(start_date)
 			singleday = day['weekday']+','
 			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,singleday,color,category)
+		# no days are selected and a range of days exist for the activity
+		# assume all days are desired and assign all days to the activity over the particular range
 		elif not days:
 			daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
 			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+		# at least a single day was selected, carry on as normal
 		else:
 			for each in days:
 				daysoftheweek+=each+','
 		
 			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
 		
-		#s = Date.objects.get(date=start_date)
-		#e = Date.objects.get(date=end_date)
-		#newactivity = Activity.objects.create(name=request.POST['name'],start_date=s ,end_date=e ,start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0)		
-		#createdactivity = Activity.objects.get(id=newactivity.id)
-		#newactivity.save()
-		#print(newactivity.duration)
-		#print(newactivity.start_date)
-		#print(newactivity.end_date)
-		#return HttpResponse('posted;')
 		if date:
 			print('POSTING ON ',date)
 			returndate = Date.objects.get(date=date)
 			return redirect("/date/{}".format(returndate.id))
 		else:
 			return redirect("/")
+
 	#/create is a get request
 	else:
 		context = {
@@ -541,6 +562,144 @@ def create(request,date=''):
 		#for each in Date.objects.all():
 		#	each.delete()
 		return render(request, "planner/create.html",context)
+
+def edit(request,activityid=-1):
+	if request.method=='POST':
+		print(request.POST)
+		#change/update activity with new time values
+		#delete activities of the same name and create new activities
+		activitygroup = Activity.objects.filter(name=request.POST['name'])
+		for activity in activitygroup:
+			activity.delete()
+		
+		days=[]
+		## CREATE RANGE DATE DATA
+		week = ['sun','mon','tue','wed','thu','fri','sat']
+		postkeys = request.POST.keys() #[random, stuff, tue, wed, sat, more, rnaomd]
+		print(postkeys)
+		for key,value in request.POST.items():
+			
+			if key in week and value=='1':
+				
+				# key = 'sun','mon','tue'...will return true from a dictionary containing those words
+				days.append(key)
+		
+		
+		#s=request.POST['jojo']
+		category = request.POST['categoryselection']
+		start = request.POST['start_time']
+		end = request.POST['end_time']
+		storestart = "{}{}".format(request.POST['start_time'].split(':')[0], request.POST['start_time'].split(':')[1])
+		storeend = "{}{}".format(request.POST['end_time'].split(':')[0], request.POST['end_time'].split(':')[1])
+		color = request.POST['activitycolor']
+		#print(storestart)
+		#recurring = request.POST['recurring']
+		startsplit = start.split(':')
+		endsplit = end.split(':')
+#		if int(endsplit[0])>int(startsplit[0]):
+#			hr = abs(int(startsplit[0])-int(endsplit[0]))
+		hr = abs(int(endsplit[0]) - int(startsplit[0]))
+		min = int(endsplit[1])-int(startsplit[1])
+		#const of 60 to represent 60 miutes in an hour
+		if min<0:
+			min = 60-abs(min)
+			hr = hr-1
+		if min<10:
+			min="0{}".format(min)
+		if hr<10:
+			hr="0{}".format(hr)
+		duration = "{}:{}:00".format(hr,min)
+		#print(duration)
+		daysoftheweek=''
+		for each in days:
+			daysoftheweek+=each+','
+		
+
+		start_date=request.POST['sdate']
+		
+		end_date = request.POST['edate']
+		## CREATE RANGE DATE DATA
+
+		# no days are selected and the activity takes place on a single day
+		# automatically find teh appropriate weekday and assign it
+		if not days and start_date == end_date:
+			day = findWeekday(start_date)
+			singleday = day['weekday']+','
+			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,singleday,color,category)
+		# no days are selected and a range of days exist for the activity
+		# assume all days are desired and assign all days to the activity over the particular range
+		elif not days:
+			daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
+			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+		# at least a single day was selected, carry on as normal
+		else:
+			for each in days:
+				daysoftheweek+=each+','
+		
+			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+		#for activity in activitygroup:
+			#sdate = Date.objects.get(date=activitystart_date)
+			#activity.name=activityname
+			#activity.start_date
+		# needs to be updated; duration,current_time,days?,active=0,	
+		#redirect back to calendar once changes are made
+		return redirect("/")
+	# the same activity shares the activity's name,start date,end date,start_time,end_time,color,category,days
+	elif not activityid == -1:
+		activitygroup = Activity.objects.get(id=activityid)
+		dotw = {
+			'mon':0,
+			'tue':0,
+			'wed':0,
+			'thu':0,
+			'fri':0,
+			'sat':0,
+			'sun':0
+			}
+		mon=0
+		tue=0
+		wed=0
+		thu=0
+		fri=0
+		sat=0
+		sun=0
+
+		for eachday in activitygroup.days.split(','):
+			if eachday=='mon':
+				mon=1
+			if eachday=='tue':
+				tue=1
+			if eachday=='wed':
+				wed=1
+			if eachday=='thu':
+				thu=1
+			if eachday=='fri':
+				fri=1
+			if eachday=='sat':
+				sat=1
+			if eachday=='sun':
+				sun=1
+
+		context={
+			'editname':activitygroup.name,
+			'editstart_date':activitygroup.start_date.date,
+			'editend_date':activitygroup.end_date.date,
+			'editstart_time':'{}:{}'.format(activitygroup.start_time[0:2],activitygroup.start_time[2:4]),
+			'editend_time':'{}:{}'.format(activitygroup.end_time[0:2],activitygroup.end_time[2:4]),
+			'editcolor':activitygroup.color,
+			'editcategory':activitygroup.category.category,
+			'editdotw':activitygroup.days,
+			'categories':Category.objects.all(),
+			'mon':mon,
+			'tue':tue,
+			'wed':wed,
+			'thu':thu,
+			'fri':fri,
+			'sat':sat,
+			'sun':sun
+		}	
+		return render(request,"planner/edit.html", context)
+	return redirect("/")
 
 
 #controls pause and clear options for activity times

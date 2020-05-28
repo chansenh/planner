@@ -1,16 +1,20 @@
 function newCategoryListener(){
     
     document.getElementById('category').addEventListener('keypress', event=>{
-        //event.preventDefault();
+        
         if (event){
             //console.log(event.target);
             if(checkCategory(document.getElementById('category').value)){//category is valid
                 //change href path to the valid category. check server sdie as well
                 document.querySelector('.category-btn').href=`/add/${document.getElementById('category').value}`;
+                
+                
             }
             else{
+                document.getElementById('category').value=null;
                 document.getElementById('category').placeholder = "alphabet letters only";
-                document.getElementById('category').value='';
+                console.log(document.getElementById('category'))
+                event.preventDefault();
                 //implementation needs work
             }
             //if (document.getElementById('category').value>='A' && document.getElementById('category').value<='z'){
@@ -28,8 +32,13 @@ function newCategoryListener(){
                 document.querySelector('.category-btn').href=`/add/${document.getElementById('category').value}`;
             }
             else{
+                document.getElementById('category').value=null;
                 document.getElementById('category').placeholder = "alphabet letters only";
-                document.getElementById('category').value='';
+                console.log('no numbers!')
+                event.preventDefault();
+                
+                //document.getElementById('category').placeholder = "alphabet letters only";
+                //document.getElementById('category').value='';
                 //implementation needs work
             }
             //if (document.getElementById('category').value>='A' && document.getElementById('category').value<='z'){
@@ -41,9 +50,9 @@ function newCategoryListener(){
     })
 
     
-    document.getElementById('categoryselection').addEventListener('click', event=>{
-        console.log(event.target)
-    })
+    //document.getElementById('categoryselection').addEventListener('click', event=>{
+    //    console.log(event.target)
+    //})
     //document.querySelector('.category_option').addEventListener('click',event=>{
     //    console.log(event.target)
     //})
