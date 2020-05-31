@@ -17,7 +17,7 @@
   <!--canvas container-->
   <div class="fluid-container">
     <div class="container text-center">
-      <p><h2>Activites for {{date.date}}</h2></p>
+      <p><h2>{{date.month|upper}} {{date.day}}</h2></p>
     </div>
     <div class="container">
 		<div class="row">
@@ -368,7 +368,9 @@
         <thead class="thead-dark">
           <tr>
             <th scope="col" style="width: 5%">Remove</th>
-            <th scope="col" style="width: 40%">Activity Name</th>
+			<th scope="col" style="width: 20%">Activity Name</th>
+			<th scope="col" style="width: 10%">Start Time</th>
+			<th scope="col" style="width: 10%">End Time</th>
             <th scope="col" style="width: 15%">Target Time (hr:min:sec)</th>
             <th scope="col" style="width: 15%">Current Time</th>
             <th scope="col" style="width: 25%">Control</th>
@@ -385,10 +387,12 @@
 				
 				
 			<tr class="date_row" id='{{activity.id}}'>
-				
+					
 					<th scope="row"><a class="text-danger remove" href='/remove/{{date.id}}/{{activity.id}}' id='remove_{{activity.id}}'>&times;</a></th>
-					<td><a href='#' id='go_{{activity.id}}'>{{activity.name}}</a></td>
-					<td><span id='endtime_{{activity.id}}'>{{activity.duration}}</span></td>
+					<td><a class="edit-activity" href='/edit/{{activity.id}}' id='go_{{activity.id}}'>{{activity.name}}</a></td>
+					<td><input class="form-control text-secondary" type="text" placeholder="{{activity.start_time}}" id='starttime_{{activity.id}}' name="starttime_{{activity.id}}" value="{{activity.start_time}}" readonly></td>
+					<td><input class="form-control text-secondary" type="text" placeholder="{{activity.end_time}}" id='endtime_{{activity.id}}' name="endtime_{{activity.id}}" value="{{activity.end_time}}" readonly></td>
+					<td><input class="form-control activity-duration" id='duration_{{activity.id}}' value="{{activity.duration}}" readonly></td>
 					<td><input class="form-control text-success stopwatch" type="text" placeholder="{{activity.current_time}}" id='time_{{activity.id}}' name="time_{{activity.id}}" value="{{activity.current_time}}" readonly>
 						</td>
 						<input type="hidden" class="activate" name="active_{{activity.id}}" id="active_{{activity.id}}" value="{{activity.active}}">
@@ -398,7 +402,23 @@
 				
 		  	{%endfor%}
 			</form>
-          
+			<tr class="total_row">
+				<th scope="row">
+					<td><p class="lead">Total:</p></td>
+					<td></td>
+					<td></td>
+					<td><span id='totalduration'>00:00:00</span></td>
+				</th>
+				
+			</tr>
+			<tr class="remaining_row">
+				<th scope="row">
+					<td><p class="lead">Remaining:</p></td>
+					<td></td>
+					<td></td>
+					<td><span id='remainingduration'>00:00:00</span></td>
+				</th>
+			</tr>
         </tbody>
       </table>
     </div>

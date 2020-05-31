@@ -17,14 +17,14 @@ class Day {//consists of a list of activties
 }
 
 class Stopwatch{
-    constructor(id,time){
+    constructor(id,time,duration){
         this.id = id;
         this.hour = 0;
         this.minute = 0;
         this.second = 0;
         this.time = time
         this.interval=undefined;
-        this.endtime = undefined;
+        this.duration = duration;
         this.active = 0;
         
     }
@@ -70,13 +70,20 @@ class Stopwatch{
             hrout=`${this.hr}`;
         }
         const out = `${hrout}:${minout}:${secout}`;
-        if (this.endtime==out){
+        console.log(`time is ${out} compared to ${this.duration}`)
+        const targethr = Number(this.duration.split(':')[0])
+        const targetmin = Number(this.duration.split(':')[1])
+        console.log('enditme---------->',this.duration)
+        console.log(targethr,this.hour,targethr>=this.hour)
+        console.log(targetmin,this.minute,targetmin>=this.minute)
+        if (this.hour==targethr && this.minute==targetmin){
             //alert(`Activity ${this.id}, Times up!`);
+            document.getElementById(`${this.id}`).classList.add('table-primary')
             document.getElementById('sound').play();
-            document.getElementById(`time_${this.id}`).classList.toggle('text-success');
-            document.getElementById(`time_${this.id}`).classList.toggle('text-danger');
+            document.getElementById(`time_${this.id}`).classList.remove('text-success');
+            document.getElementById(`time_${this.id}`).classList.add('text-danger');
         }
-
+        //document.getElementById('sound').play();
         return out;
         //console.log(id,`${this.hour}:${this.minute}:${this.second}`);
         
@@ -98,7 +105,7 @@ class Stopwatch{
             document.getElementById(`pause_${this.id}`).style = "display: flexbox";
             document.getElementById(`time_${this.id}`).classList.add('active');
             
-            this.endtime=document.getElementById(`endtime_${this.id}`).innerHTML;
+            
             this.interval = setInterval(()=>{
                 this.time = this.increment();
                 document.getElementById(`time_${this.id}`).value = this.time;
@@ -183,7 +190,7 @@ function dateTableListeners(){
     }
 }
 
-function individualDateListeners(){
+function stopwatchControl(){
     console.log(location.pathname);
     
         console.log(location.pathname);
@@ -209,9 +216,10 @@ function individualDateListeners(){
         //create stopwatches for every activity
 		document.querySelectorAll('.date_row').forEach(row =>{
             const time = document.getElementById(`time_${row.id}`).value
-            //console.log(time);
-            //console.log(row);
-			stopwatches[`stopwatch_${row.id}`]= new Stopwatch(row.id,time)
+            const duration=document.getElementById(`duration_${row.id}`).value;
+            console.log('duration',duration);
+            console.log(row);
+			stopwatches[`stopwatch_${row.id}`]= new Stopwatch(row.id,time,duration)
         });
         
         //activate any stopwatch that is supposed to be active
@@ -424,7 +432,84 @@ function checkCategory(charstring){
     return success
 }
 
+function greyOutFinishedRows(){
+    
+}
 
+function calculateTotalTime(){
+    let finalhr=0,finalmin=0,finalsec=0;
+    
+    document.querySelectorAll('.activity-duration').forEach(node =>{
+        let duration = node.value;
+        const time = duration.split(':');
+        let hr=Number(time[0]),min=Number(time[1]),sec=Number(time[2]);
+        finalhr+=hr;
+        finalmin+=min;
+        finalsec+=sec;
+
+    });
+    const totalduration = convertToReadableTime(finalhr,finalmin,finalsec);
+    finalhr=0,finalmin=0,finalsec=0;
+    document.querySelectorAll('.stopwatch').forEach(node =>{
+        let duration = node.value;
+        const time = duration.split(':');
+        let hr=Number(time[0]),min=Number(time[1]),sec=Number(time[2]);
+        finalhr+=hr;
+        finalmin+=min;
+        finalsec+=sec;
+
+    });
+    const remainingduration = convertToReadableTime(finalhr,finalmin,finalsec);
+    
+    document.getElementById('totalduration').innerHTML=totalduration;
+    document.getElementById('remainingduration').innerHTML=remainingduration;
+    
+}
+
+function convertToReadableTime(hrs,mins,secs){
+    if(secs>59){
+        //above 60 seconds.
+        let remainingseconds = secs % 60;
+        let minutesadded = secs / 60;
+        
+        mins+=Math.floor(minutesadded);
+        secs=remainingseconds;
+        
+    }
+    if(mins>59){
+        let remainingminutes = mins % 60;
+        let hrsadded = mins / 60;
+        hrs+=Math.floor(hrsadded);
+        mins=remainingminutes;
+    }
+    let timestring="";
+    if(hrs<10){
+        hrs = `0${hrs}`
+    }
+    if(mins<10){
+        mins = `0${mins}`
+    }
+    if(secs<10){
+        secs = `0${secs}`
+    }
+    return `${hrs}:${mins}:${secs}`
+}
+
+function greyOutCompletedActivities(){
+    document.querySelectorAll('.date_row').forEach(row =>{
+        const currenttime = document.getElementById(`time_${row.id}`).value.split(':');
+        const targettime = document.getElementById(`duration_${row.id}`).value.split(':');
+        const currenthr = Number(currenttime[0]);
+        const currentmin = Number(currenttime[1]);
+        const targethr = Number(targettime[0]);
+        const targetmin = Number(targettime[1]);
+        if(currenthr >= targethr && currentmin >= targetmin){
+            row.querySelector('.stopwatch').classList.remove('text-success')
+            row.querySelector('.stopwatch').classList.add('text-danger')
+            row.classList.add('table-primary')
+        }
+    })
+}
 //console.log(data);
 //let JSONdata=undefined;
 //fs.readFile(`${__dirname}/data/data.json`, 'utf-8', (err,data) => {
@@ -432,5 +517,8 @@ function checkCategory(charstring){
 //});
 //let swlist = new StopwatchList();
 //dateTableListeners()
-individualDateListeners()
+stopwatchControl();
 newCategoryListener();
+
+greyOutCompletedActivities();
+calculateTotalTime();

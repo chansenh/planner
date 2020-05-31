@@ -187,7 +187,7 @@ def date(request,id):
 	print(date.date)
 	
 	#activities = activities.filter(start_date__date__lte=date.date, end_date__date__gte=date.date)
-	activities = activities.filter(activity_date__date=date.date)
+	activities = activities.filter(activity_date__date=date.date).order_by('start_time')
 	context = {
 		'activities':activities,
 		'date': date,
@@ -567,15 +567,12 @@ def edit(request,activityid=-1):
 	if request.method=='POST':
 		print(request.POST)
 		#change/update activity with new time values
-		#delete activities of the same name and create new activities
-		activitygroup = Activity.objects.filter(name=request.POST['name'])
-		for activity in activitygroup:
-			activity.delete()
 		
 		days=[]
 		## CREATE RANGE DATE DATA
 		week = ['sun','mon','tue','wed','thu','fri','sat']
 		postkeys = request.POST.keys() #[random, stuff, tue, wed, sat, more, rnaomd]
+		updateall=1
 		print(postkeys)
 		for key,value in request.POST.items():
 			
@@ -583,6 +580,8 @@ def edit(request,activityid=-1):
 				
 				# key = 'sun','mon','tue'...will return true from a dictionary containing those words
 				days.append(key)
+			if key=='allevents':
+				updateall=int(value)
 		
 		
 		#s=request.POST['jojo']
@@ -618,35 +617,55 @@ def edit(request,activityid=-1):
 		start_date=request.POST['sdate']
 		
 		end_date = request.POST['edate']
-		## CREATE RANGE DATE DATA
 
-		# no days are selected and the activity takes place on a single day
-		# automatically find teh appropriate weekday and assign it
-		if not days and start_date == end_date:
-			day = findWeekday(start_date)
-			singleday = day['weekday']+','
-			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,singleday,color,category)
-		# no days are selected and a range of days exist for the activity
-		# assume all days are desired and assign all days to the activity over the particular range
-		elif not days:
-			daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
-			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
-		# at least a single day was selected, carry on as normal
+		if not updateall:
+			activitytoupdate = Activity.objects.get(id=activityid)
+			activitytoupdate.start_date=Date.objects.get(date=start_date)
+			activitytoupdate.end_date=Date.objects.get(date=end_date)
+			activitytoupdate.name=request.POST['name']
+			activitytoupdate.start_time=storestart
+			activitytoupdate.end_time=storeend
+			activitytoupdate.duration=duration
+			activitytoupdate.days=daysoftheweek
+			activitytoupdate.color=color
+			activitytoupdate.category=Category.objects.get(category=category)
+			activitytoupdate.save()
+			return redirect("/")
 		else:
-			for each in days:
-				daysoftheweek+=each+','
-		
-			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
-		#for activity in activitygroup:
-			#sdate = Date.objects.get(date=activitystart_date)
-			#activity.name=activityname
-			#activity.start_date
-		# needs to be updated; duration,current_time,days?,active=0,	
-		#redirect back to calendar once changes are made
-		return redirect("/")
+			#delete activities of the same name and create new activities
+			activitygroup = Activity.objects.filter(name=request.POST['name'])
+			for activity in activitygroup:
+				activity.delete()
+
+			## CREATE RANGE DATE DATA
+
+			# no days are selected and the activity takes place on a single day
+			# automatically find teh appropriate weekday and assign it
+			if not days and start_date == end_date:
+				day = findWeekday(start_date)
+				singleday = day['weekday']+','
+				createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,singleday,color,category)
+			# no days are selected and a range of days exist for the activity
+			# assume all days are desired and assign all days to the activity over the particular range
+			elif not days:
+				daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
+				createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+			# at least a single day was selected, carry on as normal
+			else:
+				for each in days:
+					daysoftheweek+=each+','
+			
+				createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+			#for activity in activitygroup:
+				#sdate = Date.objects.get(date=activitystart_date)
+				#activity.name=activityname
+				#activity.start_date
+			# needs to be updated; duration,current_time,days?,active=0,	
+			#redirect back to calendar once changes are made
+			return redirect("/")
 	# the same activity shares the activity's name,start date,end date,start_time,end_time,color,category,days
 	elif not activityid == -1:
-		activitygroup = Activity.objects.get(id=activityid)
+		activity = Activity.objects.get(id=activityid)
 		dotw = {
 			'mon':0,
 			'tue':0,
@@ -664,7 +683,7 @@ def edit(request,activityid=-1):
 		sat=0
 		sun=0
 
-		for eachday in activitygroup.days.split(','):
+		for eachday in activity.days.split(','):
 			if eachday=='mon':
 				mon=1
 			if eachday=='tue':
@@ -681,14 +700,15 @@ def edit(request,activityid=-1):
 				sun=1
 
 		context={
-			'editname':activitygroup.name,
-			'editstart_date':activitygroup.start_date.date,
-			'editend_date':activitygroup.end_date.date,
-			'editstart_time':'{}:{}'.format(activitygroup.start_time[0:2],activitygroup.start_time[2:4]),
-			'editend_time':'{}:{}'.format(activitygroup.end_time[0:2],activitygroup.end_time[2:4]),
-			'editcolor':activitygroup.color,
-			'editcategory':activitygroup.category.category,
-			'editdotw':activitygroup.days,
+			'editid':activity.id,
+			'editname':activity.name,
+			'editstart_date':activity.start_date.date,
+			'editend_date':activity.end_date.date,
+			'editstart_time':'{}:{}'.format(activity.start_time[0:2],activity.start_time[2:4]),
+			'editend_time':'{}:{}'.format(activity.end_time[0:2],activity.end_time[2:4]),
+			'editcolor':activity.color,
+			'editcategory':activity.category.category,
+			'editdotw':activity.days,
 			'categories':Category.objects.all(),
 			'mon':mon,
 			'tue':tue,

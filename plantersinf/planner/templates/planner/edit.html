@@ -24,7 +24,7 @@
 			Create an activity for 
 		  </div>
 		  <div class="card-body">
-			<form action="/edit/0" method="post" id='activity'>
+			<form action="/edit/{{editid}}" method="post" id='activity'>
 			{% csrf_token %}
 			<div class="form-group row">
 				
@@ -134,9 +134,19 @@
 				</div>
 			  </div>
 			  <div class="form-group row">
-				  <div class="container">
-					<label for="activitycolor">Edit activity color:</label>
-					<input type="color" id="activitycolor" name="activitycolor" value="{{editcolor}}">
+				  <div class="col">
+					<div class="container">
+						<label for="activitycolor">Edit activity color:</label>
+						<input type="color" id="activitycolor" name="activitycolor" value="{{editcolor}}">
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="container">
+						<label for="allevents">Apply to all events?</label>
+						<input type="hidden" name="allevents" id="alleventsvalue" value="0">
+						<a type="button" class="btn btn-secondary text-white" id="alleventsbtn">No</a>
+						
+					</div>
 				  </div>
 			  </div>
 			  

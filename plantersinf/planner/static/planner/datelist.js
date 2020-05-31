@@ -303,7 +303,17 @@ else{
     makeMonthActive(active.month,active.year);
 }
 
+function hightlightCurrentDay(){
+    let d = new Date();
+    let day = d.getDate();
+    months=['january','february','march','april','may','june','july','august','september','october','november','december'];
+    let month = months[d.getMonth()];
+    document.getElementById(`${month}${day}`).parentNode.classList.add('border-dark','border');
+    
+}
+
 calendarNavigation(calendarList);
 enableFiltering();
+hightlightCurrentDay();
 //mouseOver();
 
