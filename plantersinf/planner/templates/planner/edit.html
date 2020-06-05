@@ -21,10 +21,10 @@
     <div class="container">
       <div class="card text-center">
 		  <div class="card-header">
-			Create an activity for 
+			Edit activity
 		  </div>
 		  <div class="card-body">
-			<form action="/edit/{{editid}}" method="post" id='activity'>
+			<form action="/edit/{{editid}}/{{dateid}}" method="post" id='activity'>
 			{% csrf_token %}
 			<div class="form-group row">
 				
@@ -32,7 +32,6 @@
 						<label for="categoryselection">Select a category:</label>
 						<select class="form-control" id="categoryselection" name="categoryselection">
                             {%if categories%}
-                            {{editcategory}}
                             {%for category in categories%}
                             {%if category.category == editcategory%}
 							<option id="{{category.category}}" value="{{category.category}}" selected>{{category.category}}</option>
@@ -125,9 +124,9 @@
 				<div class="col-lg">
 					<div class="container">
 						<label for="start_time">Edit Activity Start Time</label>
-						<input type="time"class="form-control" name="start_time" value="{{editstart_time}}">
+						<input type="time"class="form-control" name="start_time" id="start_time" value="{{editstart_time}}">
 						<label for="end_time">Edit Activity End Time</label>
-						<input type="time"class="form-control" name="end_time" value="{{editend_time}}">
+						<input type="time"class="form-control" name="end_time" id="end_time" value="{{editend_time}}">
 
 					</div>
 					
@@ -156,7 +155,7 @@
 			  
 			
 
-			  <input type="submit" class="btn btn-primary" form='activity' value="Apply">
+			  <input type="submit" class="btn btn-primary submitbtn" form='activity' id='submitbtn' value="Apply">
 			</form>
 		  </div>
 		  <div class="card-footer text-muted">

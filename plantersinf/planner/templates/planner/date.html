@@ -27,7 +27,7 @@
 				<a class="btn btn-primary" href="/back/{{date.month}}/{{date.year}}">Back to calandar</a>
 				
 				<!-- Trigger the modal with a button -->
-				<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">Create Activity</button>
+				<button type="button" class="btn btn-info modalbtn" id='createmodal-{{toggle}}' data-toggle="modal" data-target="#myModal">Create Activity</button>
 
 				<!-- Modal -->
 				<div id="myModal" class="modal fade" role="dialog">
@@ -43,7 +43,10 @@
 						<form action="/create/{{date.date}}" method="post" id='activity'>
 							{% csrf_token %}
 							<div class="form-group row">
-								
+								<div class="col-sm-1">
+									<a class="text-danger removecat" href='#' id='removecat-{{date.id}}'>&times;</a>
+								</div>
+								<div class="col-sm">
 									<div class="container float-right">
 										<label for="categoryselection">Select a category:</label>
 										<select class="form-control" id="categoryselection" name="categoryselection">
@@ -56,7 +59,7 @@
 											{%endif%}
 										</select>
 									</div>
-									
+								</div>
 								
 								
 						  </div>
@@ -389,7 +392,10 @@
 			<tr class="date_row" id='{{activity.id}}'>
 					
 					<th scope="row"><a class="text-danger remove" href='/remove/{{date.id}}/{{activity.id}}' id='remove_{{activity.id}}'>&times;</a></th>
-					<td><a class="edit-activity" href='/edit/{{activity.id}}' id='go_{{activity.id}}'>{{activity.name}}</a></td>
+					<td>
+					<a class="edit-activity" href='/edit/{{activity.id}}/{{date.id}}' id='go_{{activity.id}}'>{{activity.name}}</a>
+					 
+					</td>
 					<td><input class="form-control text-secondary" type="text" placeholder="{{activity.start_time}}" id='starttime_{{activity.id}}' name="starttime_{{activity.id}}" value="{{activity.start_time}}" readonly></td>
 					<td><input class="form-control text-secondary" type="text" placeholder="{{activity.end_time}}" id='endtime_{{activity.id}}' name="endtime_{{activity.id}}" value="{{activity.end_time}}" readonly></td>
 					<td><input class="form-control activity-duration" id='duration_{{activity.id}}' value="{{activity.duration}}" readonly></td>

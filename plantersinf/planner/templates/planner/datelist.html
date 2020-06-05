@@ -76,29 +76,31 @@
         <div class="row week_{{weeknumber}} p-0 border-top border-bottom"><!--hard coded. should loop from first week to last week aka 4 weeks-->
           {%if weekdates%}
           <!--eachday==7 is sunday; 1,2,3,4,5,6,7-->
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left sun">
             <div class="container sun">
               {%for date in weekdates%}    
               {%if date.weekday == "sun"%}
-              <a href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              
               {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.name}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
+              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
 
               </div>
               
               {%endfor%}
+              
               {%endif%}
               {%endfor%}
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left mon">
             <div class="container mon">
               {%for date in weekdates%}    
               {%if date.weekday == "mon"%}
-              <a href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
               {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.name}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
+              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
 
               </div>
               
@@ -108,13 +110,13 @@
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left tue">
             <div class="container tue">
               {%for date in weekdates%}    
               {%if date.weekday == "tue"%}
-              <a href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
               {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.name}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
+              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
 
               </div>
               
@@ -124,13 +126,13 @@
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left wed">
             <div class="container wed">
               {%for date in weekdates%}    
               {%if date.weekday == "wed"%}
-              <a href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
               {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.name}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
+              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
 
               </div>
               
@@ -140,13 +142,13 @@
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left thu">
             <div class="container thu">
               {%for date in weekdates%}    
               {%if date.weekday == "thu"%}
-              <a href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
               {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.name}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
+              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
 
               </div>
               
@@ -156,13 +158,13 @@
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left fri">
             <div class="container fri">
               {%for date in weekdates%}    
               {%if date.weekday == "fri"%}
-              <a href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
               {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.name}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
+              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
 
               </div>
               
@@ -172,13 +174,13 @@
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left sat">
             <div class="container sat">
               {%for date in weekdates%}    
               {%if date.weekday == "sat"%}
-              <a href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
               {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.name}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
+              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
 
               </div>
               
@@ -189,37 +191,37 @@
             </div>
           </div>
           {%else%}
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left sun">
             <div class="container sun">
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left mon">
             <div class="container mon">
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left tue">
             <div class="container tue">
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left wed">
             <div class="container wed">
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left thu">
             <div class="container thu">
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left fri">
             <div class="container fri">
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left">
+          <div class="col p-0 border-right border-left sat">
             <div class="container sat">
               <br>
             </div>

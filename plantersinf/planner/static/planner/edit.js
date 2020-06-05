@@ -114,9 +114,28 @@ function editListener(){
     })
 }
 
+function checkForTime(){
+
+}
+
+function submitListener(){
+    document.querySelector('.submitbtn').addEventListener('click',event=>{
+        
+        const start = document.getElementById('start_time').value;
+        const end = document.getElementById('end_time').value;
+        if(!start || !end){
+            event.preventDefault()
+            console.log('no time')
+        }
+        else{
+            document.getElementById('.submitbtn').click();
+        }
+    });
+}
 
 
 pageListeners();
 editListener();
-console.log('end')
+submitListener();
+
 

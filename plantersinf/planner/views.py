@@ -151,7 +151,7 @@ def back(request,month,year):
 	print(activecalandar)
 	return redirect('/')
 
-def add(request, category, dateid=''):
+def add(request, category, dateid='',toggle=0):
 	#implement check to validate category syntax
 	print('existing categories')
 	for each in Category.objects.all():
@@ -163,21 +163,34 @@ def add(request, category, dateid=''):
 	else:
 		print("Category already exists")
 	if dateid:
-		return redirect("/date/{}".format(dateid))
+		return redirect("/date/{}/{}".format(dateid,toggle))
 	else:
 		return redirect("/create/")
 
-def remove(request,activityid,dateid):
-	activitytoremove = Activity.objects.get(id=activityid)
-	print(activitytoremove.name,activitytoremove.id)
-	activitytoremove.delete()
-	return redirect('/date/{}'.format(dateid))
+def remove(request,activityid='',dateid='',cat=''):
+	if cat:
+		#removes category from existance muahahaha
+		category = Category.objects.get(category=cat)
+		category.delete()
+	else:
+		#removes activity. only other removal is activity
+		activitytoremove = Activity.objects.get(id=activityid)
+		print(activitytoremove.name,activitytoremove.id)
+		activitytoremove.delete()
+	if dateid:
+		#dateid present indicates origin date page
+		# in that case redirect back to the date origin
+		# 1 toggles the create activity modal
+		return redirect('/date/{}/1'.format(dateid))
+	else:
+		#remove call came from the create html page
+		# redirect to create html
+		return redirect("/create/")
 
 
 
 
-
-def date(request,id):
+def date(request,id,toggle=0):
 	
 	date = Date.objects.get(id=id)
 	#grab all activities where start_date.date<=activity_date and end_date.date>=activity_date
@@ -191,7 +204,8 @@ def date(request,id):
 	context = {
 		'activities':activities,
 		'date': date,
-		'categories':Category.objects.all()
+		'categories':Category.objects.all(),
+		'toggle':toggle
 	}
 	#for date in context['dates']:
 	#	print(date.date,date.start_count,date.end_count)
@@ -529,18 +543,18 @@ def create(request,date=''):
 		if not days and start_date == end_date:
 			day = findWeekday(start_date)
 			singleday = day['weekday']+','
-			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,singleday,color,category)
+			createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,singleday,color,category)
 		# no days are selected and a range of days exist for the activity
 		# assume all days are desired and assign all days to the activity over the particular range
 		elif not days:
 			daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
-			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+			createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
 		# at least a single day was selected, carry on as normal
 		else:
 			for each in days:
 				daysoftheweek+=each+','
 		
-			createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+			createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
 		
 		if date:
 			print('POSTING ON ',date)
@@ -563,7 +577,7 @@ def create(request,date=''):
 		#	each.delete()
 		return render(request, "planner/create.html",context)
 
-def edit(request,activityid=-1):
+def edit(request,activityid=-1,dateid=-1):
 	if request.method=='POST':
 		print(request.POST)
 		#change/update activity with new time values
@@ -618,20 +632,22 @@ def edit(request,activityid=-1):
 		
 		end_date = request.POST['edate']
 
+		#update all indicates whether or not all activities of the same name will be updated
 		if not updateall:
 			activitytoupdate = Activity.objects.get(id=activityid)
 			activitytoupdate.start_date=Date.objects.get(date=start_date)
 			activitytoupdate.end_date=Date.objects.get(date=end_date)
 			activitytoupdate.name=request.POST['name']
-			activitytoupdate.start_time=storestart
-			activitytoupdate.end_time=storeend
+			activitytoupdate.start_time=request.POST['start_time']
+			activitytoupdate.end_time=request.POST['end_time']
 			activitytoupdate.duration=duration
 			activitytoupdate.days=daysoftheweek
 			activitytoupdate.color=color
 			activitytoupdate.category=Category.objects.get(category=category)
 			activitytoupdate.save()
-			return redirect("/")
+			
 		else:
+			#updateall is set to 1
 			#delete activities of the same name and create new activities
 			activitygroup = Activity.objects.filter(name=request.POST['name'])
 			for activity in activitygroup:
@@ -644,27 +660,33 @@ def edit(request,activityid=-1):
 			if not days and start_date == end_date:
 				day = findWeekday(start_date)
 				singleday = day['weekday']+','
-				createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,singleday,color,category)
+				createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,singleday,color,category)
 			# no days are selected and a range of days exist for the activity
 			# assume all days are desired and assign all days to the activity over the particular range
 			elif not days:
 				daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
-				createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+				createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
 			# at least a single day was selected, carry on as normal
 			else:
 				for each in days:
 					daysoftheweek+=each+','
 			
-				createRangeOfDates(start_date,end_date,request.POST['name'],storestart,storeend,duration,daysoftheweek,color,category)
+				createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
 			#for activity in activitygroup:
 				#sdate = Date.objects.get(date=activitystart_date)
 				#activity.name=activityname
 				#activity.start_date
 			# needs to be updated; duration,current_time,days?,active=0,	
 			#redirect back to calendar once changes are made
+		print(dateid)
+		if dateid == '-1':
 			return redirect("/")
+		else:
+			return redirect("/date/{}".format(dateid))
+			
 	# the same activity shares the activity's name,start date,end date,start_time,end_time,color,category,days
 	elif not activityid == -1:
+		print(dateid)
 		activity = Activity.objects.get(id=activityid)
 		dotw = {
 			'mon':0,
@@ -704,12 +726,13 @@ def edit(request,activityid=-1):
 			'editname':activity.name,
 			'editstart_date':activity.start_date.date,
 			'editend_date':activity.end_date.date,
-			'editstart_time':'{}:{}'.format(activity.start_time[0:2],activity.start_time[2:4]),
-			'editend_time':'{}:{}'.format(activity.end_time[0:2],activity.end_time[2:4]),
+			'editstart_time':activity.start_time,
+			'editend_time':activity.end_time,
 			'editcolor':activity.color,
 			'editcategory':activity.category.category,
 			'editdotw':activity.days,
 			'categories':Category.objects.all(),
+			'dateid':dateid,
 			'mon':mon,
 			'tue':tue,
 			'wed':wed,

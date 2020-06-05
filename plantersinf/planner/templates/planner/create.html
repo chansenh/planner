@@ -27,7 +27,10 @@
 			<form action="/create/" method="post" id='activity'>
 			{% csrf_token %}
 			<div class="form-group row">
-				
+				<div class="col-sm-1">
+					<a class="text-danger removecat" href='#' id='removecat'>&times;</a>
+				</div>
+				<div class="col-sm">
 					<div class="container float-right">
 						<label for="categoryselection">Select a category:</label>
 						<select class="form-control" id="categoryselection" name="categoryselection">
@@ -40,6 +43,7 @@
 							{%endif%}
 						</select>
 					</div>
+				</div>
 					
 				
 				
