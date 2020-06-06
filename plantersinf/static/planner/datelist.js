@@ -308,12 +308,40 @@ function hightlightCurrentDay(){
     let day = d.getDate();
     months=['january','february','march','april','may','june','july','august','september','october','november','december'];
     let month = months[d.getMonth()];
-    document.getElementById(`${month}${day}`).parentNode.classList.add('border-dark','border');
+    document.getElementById(`${month}${day}`).parentNode.classList.add('border-danger','border','shadow-sm');
     
+}
+
+function dayListener(){
+    document.querySelectorAll(`.calendar`).forEach(calendarmonth => {
+        calendarmonth.addEventListener('click',event=>{
+            console.log(event.target);
+            const node = event.target;
+            //if clicked node has a link within it, execute the link
+            if(node.getElementsByTagName('A').length != 0){
+                const daylink = node.getElementsByTagName('A')[0]; //only one link exists for any single day. manually select the first one
+                daylink.click()
+            }
+            
+            const week = ['mon','tue','wed','thu','fri','sat','sun'];
+            let day="";
+            node.classList.forEach(clas =>{
+                if(clas=="activity"){
+                    let editactivity = document.createElement('a');
+                    editactivity.href = `/edit/${node.id}`
+                    editactivity.click()
+                }
+            })
+            console.log(day)
+        });
+    });
+    
+        
 }
 
 calendarNavigation(calendarList);
 enableFiltering();
 hightlightCurrentDay();
+dayListener();
 //mouseOver();
 

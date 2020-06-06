@@ -287,9 +287,9 @@ function populateVisualActivities(){
         let start = row.id.split('_')[2] // 4 char string eg '1234','0000','2030'
         let end = row.id.split('_')[3]
         let shr = `${start.charAt(0)}${start.charAt(1)}`;
-        let smin = `${start.charAt(2)}${start.charAt(3)}`;
+        let smin = `${start.charAt(3)}${start.charAt(4)}`;
         let ehr = `${end.charAt(0)}${end.charAt(1)}`;
-        let emin = `${end.charAt(2)}${end.charAt(3)}`;
+        let emin = `${end.charAt(3)}${end.charAt(4)}`;
         console.log(id,start,end)
         if(Number(smin)<15){
             idminute = "00"
@@ -394,7 +394,8 @@ function newCategoryListener(){
             if(checkCategory(document.getElementById('category').value)){//category is valid
                 //change href path to the valid category. check server sdie as well
                 let currentdateid = document.querySelector('.category-btn').id;
-                document.querySelector('.category-btn').href=`/add/${document.getElementById('category').value}/${currentdateid}`;
+                //1 toggles createmodal
+                document.querySelector('.category-btn').href=`/add/${document.getElementById('category').value}/${currentdateid}/1`;
             }
             else{
                 document.getElementById('category').placeholder = "alphabet letters only";
@@ -510,6 +511,27 @@ function greyOutCompletedActivities(){
         }
     })
 }
+
+function removeCategoryListener(){
+    //       /remove/category/#fun
+    document.querySelector('.removecat').addEventListener('click', event=>{
+        let nodeid = document.querySelector('.removecat').id
+        //nodeid is removecat-'dateid'
+        let dateid = nodeid.split('-')[1]
+        let selectedcategory = document.getElementById('categoryselection').value
+        
+        //alters its own href to appropriate values based on whats selected
+        document.getElementById(nodeid).href=`/remove/category/${dateid}/${selectedcategory}`
+    });
+}
+
+function toggleModal(){
+    const modalbtnid = document.querySelector('.modalbtn').id;
+    const toggle = modalbtnid.split('-')[1]
+    if(toggle=='1'){
+        document.getElementById(`createmodal-${toggle}`).click()
+    }
+}
 //console.log(data);
 //let JSONdata=undefined;
 //fs.readFile(`${__dirname}/data/data.json`, 'utf-8', (err,data) => {
@@ -518,7 +540,8 @@ function greyOutCompletedActivities(){
 //let swlist = new StopwatchList();
 //dateTableListeners()
 stopwatchControl();
+toggleModal();
 newCategoryListener();
-
+removeCategoryListener();
 greyOutCompletedActivities();
 calculateTotalTime();

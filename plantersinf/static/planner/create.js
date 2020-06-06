@@ -1,5 +1,5 @@
 function newCategoryListener(){
-    
+    //checks category text box for valid information
     document.getElementById('category').addEventListener('keypress', event=>{
         
         if (event){
@@ -55,7 +55,7 @@ function newCategoryListener(){
     //})
     //document.querySelector('.category_option').addEventListener('click',event=>{
     //    console.log(event.target)
-    //})
+    
 
 }
 
@@ -72,4 +72,16 @@ function checkCategory(charstring){
     return success
 }
 
+function removeCategoryListener(){
+    //       /remove/category/#fun
+    document.getElementById('removecat').addEventListener('click', event=>{
+        
+        
+        selectedcategory = document.getElementById('categoryselection').value
+        //alters its own href to appropriate values based on whats selected
+        document.getElementById('removecat').href=`/remove/category/${selectedcategory}`
+    });
+}
+
 newCategoryListener();
+removeCategoryListener();
