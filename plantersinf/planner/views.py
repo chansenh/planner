@@ -125,6 +125,8 @@ def index(request):
 	context['years']=years
 	context['activemonth'] = activecalandar['month']
 	context['activeyear'] =  activecalandar['year']
+	activecalandar['year']=""
+	activecalandar['month']=""
 	#context['aprilactivities'] = aprilactivities
 	#print(context['dates'])
 	#print(context['activities'])
@@ -177,11 +179,15 @@ def remove(request,activityid='',dateid='',cat=''):
 		activitytoremove = Activity.objects.get(id=activityid)
 		print(activitytoremove.name,activitytoremove.id)
 		activitytoremove.delete()
-	if dateid:
+	if dateid and cat:
 		#dateid present indicates origin date page
+		# cat present indicates category was deleted 
 		# in that case redirect back to the date origin
-		# 1 toggles the create activity modal
+		# 1 toggles the create activity modal for user to be back where they started when category was removed
 		return redirect('/date/{}/1'.format(dateid))
+	elif dateid and not cat:
+		#activity was dleted. go back to the origin date page
+		return redirect('/date/{}'.format(dateid))
 	else:
 		#remove call came from the create html page
 		# redirect to create html

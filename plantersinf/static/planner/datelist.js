@@ -290,25 +290,22 @@ function showCategories(catlist){
 //    })
 //}
 
-//pageLoad();
-buildCalendarList();
-//console.log(calendarList);
-let month = calendarList[0]['id'].split('-')[0];
-let year = calendarList[0]['id'].split('-')[1];
-if (!checkActive()){//if there is no active month then server did not render active
-    makeMonthActive(month,year); //makes first month active
-}
-else{
-    let active = getActive()
-    makeMonthActive(active.month,active.year);
-}
 
-function hightlightCurrentDay(){
-    let d = new Date();
-    let day = d.getDate();
+function getCurrentDateObject(){
+    const dateobj = new Date()
+    let day = dateobj.getDate();
     months=['january','february','march','april','may','june','july','august','september','october','november','december'];
-    let month = months[d.getMonth()];
-    document.getElementById(`${month}${day}`).parentNode.classList.add('border-danger','border','shadow-sm');
+    let month = months[dateobj.getMonth()];
+    return {
+        month:month,
+        day:day,
+        year:dateobj.getFullYear()
+    }
+}
+function hightlightCurrentDay(){
+    let d = getCurrentDateObject()
+    
+    document.getElementById(`${d.month}${d.day}`).parentNode.classList.add('border-danger','border','shadow-sm');
     
 }
 
@@ -338,6 +335,27 @@ function dayListener(){
     
         
 }
+
+
+
+
+
+
+
+//start
+buildCalendarList();
+let month = calendarList[0]['id'].split('-')[0];
+let year = calendarList[0]['id'].split('-')[1];
+if (!checkActive()){//if there is no active month then server did not render active
+    const today = getCurrentDateObject();
+    makeMonthActive(today.month,today.year); //makes first month active
+}
+else{
+    let active = getActive()
+    makeMonthActive(active.month,active.year);
+}
+
+
 
 calendarNavigation(calendarList);
 enableFiltering();
