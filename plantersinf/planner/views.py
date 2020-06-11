@@ -794,6 +794,47 @@ def control(request,dateid):
 		print(gobacktodate)
 		return redirect(gobacktodate)
 
+def updateTime(request, dateid):
+	if request.method=='POST':
+		start={}
+		end={}
+		activityid=""
+		for key in request.POST.keys():
+			print(key,request.POST[key])
+			if (not key=='csrfmiddlewaretoken') and (key.find('_') >=0):
+				activityid = key.split('_')[1]
+				
+				if key.split('_')[0]=="starttime":
+					start[activityid] = request.POST[key]
+					
+				if key.split('_')[0]=="endtime":
+					end[activityid] = request.POST[key]
+				
+
+		startsplit = start[activityid].split(':')
+		endsplit = end[activityid].split(':')
+#		if int(endsplit[0])>int(startsplit[0]):
+#			hr = abs(int(startsplit[0])-int(endsplit[0]))
+		hr = abs(int(endsplit[0]) - int(startsplit[0]))
+		min = int(endsplit[1])-int(startsplit[1])
+		#const of 60 to represent 60 miutes in an hour
+		if min<0:
+			min = 60-abs(min)
+			hr = hr-1
+		if min<10:
+			min="0{}".format(min)
+		if hr<10:
+			hr="0{}".format(hr)
+		duration = "{}:{}:00".format(hr,min)
+
+		activity = Activity.objects.get(id=activityid)
+		activity.start_time = start[activityid]
+		activity.end_time = end[activityid]
+		activity.duration = duration
+		activity.save()
+		return redirect("/date/{}".format(dateid))
+
+
 def activate(request,id):
 	activate = Activity.objects.get(id=id)
 	
