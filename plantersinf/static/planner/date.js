@@ -1,20 +1,5 @@
 //import * as dateView from './dateView'
 
-class Activity {
-    constructor(name,target,current,description){
-        this.name = name;
-        this.target =target;
-        this.current = current;
-        this.description = description;
-    }
-}
-
-class Day {//consists of a list of activties
-    constructor(date,actlist){
-        this.id = date;
-        this.activitylist= actlist;
-    }
-}
 
 class Stopwatch{
     constructor(id,time,duration){
@@ -76,8 +61,10 @@ class Stopwatch{
         console.log('enditme---------->',this.duration)
         console.log(targethr,this.hour,targethr>=this.hour)
         console.log(targetmin,this.minute,targetmin>=this.minute)
-        if (this.hour==targethr && this.minute==targetmin){
+        if (this.hour==targethr && this.minute==targetmin && this.second==0){
             //alert(`Activity ${this.id}, Times up!`);
+            let activityname = findActivity(this.id)
+            alertMessage(`Activty ${activityname} is complete!`)
             document.getElementById(`${this.id}`).classList.add('table-primary')
             document.getElementById('sound').play();
             document.getElementById(`time_${this.id}`).classList.remove('text-success');
@@ -159,25 +146,9 @@ class Stopwatch{
         document.getElementById(`time_${this.id}`).innerHTML = `${this.hour}:${this.minute}:${this.second}`;
     }
     
-}
+}//class Stopwatch
 
-class StopwatchList{
-    constructor(){
-        this.list=[]
-    }
-    add(stopwatch){
-        this.list.push(stopwatch)
-    }
-    get(id){
-        this.list.forEach((stopwatch,idx)=>{
-            if (stopwatch.id==id){
-                console.log(stopwatch)
-                return stopwatch;
-            }
-        });
-        
-    }
-}
+
 function dateTableListeners(){
     if (location.pathname=='/index.html'){
         console.log('hi')
@@ -291,79 +262,73 @@ function populateVisualActivities(){
         let ehr = `${end.charAt(0)}${end.charAt(1)}`;
         let emin = `${end.charAt(3)}${end.charAt(4)}`;
         console.log(id,start,end)
-        if(Number(smin)<15){
-            idminute = "00"
-            document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).style.width ='100%'
-            //document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).innerHTML = `${shr}${smin}`;
-            document.getElementById(`${id}_${shr}30`).querySelector(`.row_color`).style.width ='100%'
-            //document.getElementById(`${id}_${shr}30`).querySelector(`.row_color`).innerHTML = `_`;
-        }else if(Number(smin)<30){//start on the 15 min mark; make container 50% width maybe inline right class
-            idminute = "00"
-            document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).style.width = '50%';
-            document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).classList.add('float-right');
-            //document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).innerHTML =`${shr}${smin}`;
-            document.getElementById(`${id}_${shr}30`).querySelector(`.row_color`).style.width = '100%';
-            //document.getElementById(`${id}_${shr}30`).querySelector(`.row_color`).innerHTML =`_`;
-        }else if (Number(smin)<45){
-            idminute = "30"
-            document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).style.width = '100%'
-            //document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).innerHTML =`${shr}${smin}`
-        }
-        else{//start on 45 min mark
+        //activity starts and ends within same hr time block within html.
+        if(Math.abs(Number(shr)-Number(ehr))==0){
+            let startpercent = smin/60*100
+            let endpercent = 100-(emin/60*100)
+            let blockpercent = 100-startpercent-endpercent
+            document.getElementById(`${id}_${shr}00`).style.width =`${blockpercent}%`
+            row.querySelector(`.startpercent${shr}`).style.width =`${startpercent}%`
+            row.querySelector(`.endpercent${shr}`).style.width =`${endpercent}%`
+            document.getElementById(`${id}_${shr}00`).parentNode.classList.add('justify-content-end');
+            document.getElementById(`${id}_${shr}00`).parentNode.classList.remove('justify-content-between');
+        }else{
+            //activity 
             
-            
-            idminute = "30"
-            document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).style.width = '50%'
-            //document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).innerHTML =`${shr}${smin}`
-            document.getElementById(`${id}_${shr}${idminute}`).querySelector(`.row_color`).classList.add('float-right');
-        }
-
-        if(Number(emin)<=15){//finish at 5:07 == 5:15 finish time
-            idminute = "00"
-            document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).style.width = '50%'
-            document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).classList.add('float-left');
-            //document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).innerHTML =`${ehr}${emin}`
-            
-        }else if(Number(emin)<=30){//5:25 ==5:30 finish time
-            idminute = "00"
-            document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).style.width = '100%'
-            //document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).innerHTML =`${ehr}${emin}`
-        }else if (Number(emin)<=45){//5:40 == 5:45 finish time
-            idminute = "30"
-            document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).style.width = '50%'
-            document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).classList.add('float-left')
-            //document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).innerHTML =`${ehr}${emin}`
-            document.getElementById(`${id}_${ehr}00`).querySelector(`.row_color`).style.width = '100%'
-            //document.getElementById(`${id}_${ehr}00`).querySelector(`.row_color`).innerHTML =`_`
-        }
-        else{//fill in entire 1 hr mark
-            idminute = "30"
-            document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).style.width = '100%'
-            //document.getElementById(`${id}_${ehr}${idminute}`).querySelector(`.row_color`).innerHTML =`${ehr}${emin}`
-            document.getElementById(`${id}_${ehr}00`).querySelector(`.row_color`).style.width = '100%'
-            //document.getElementById(`${id}_${ehr}00`).querySelector(`.row_color`).innerHTML =`_`
-        }
-
-        let tophour=23;
-        let bothminutes = ["00","30"]
-        let h="";
-        for (let hour = 0; hour <= tophour; hour++) {
-            if(Number(shr)<hour && hour<Number(ehr)){
-                console.log(hour);
-                if(hour<10){
-                    h=`0${hour}`
-                }else{
-                    h=`${hour}`
+            let percent = Math.round(smin/60*100)
+            let startpercent = 100-percent
+                if(startpercent>0){
+                    document.getElementById(`${id}_${shr}00`).style.width =`${startpercent}%`
+                    document.getElementById(`${id}_${shr}00`).parentNode.classList.add('justify-content-end');
+                    document.getElementById(`${id}_${shr}00`).parentNode.classList.remove('justify-content-between');
                 }
-                bothminutes.forEach(minute =>{
-                    document.getElementById(`${id}_${h}${minute}`).querySelector(`.row_color`).style.width = '100%';
-                    //document.getElementById(`${id}_${h}${minute}`).querySelector(`.row_color`).innerHTML =`_`
-                });
-                
+
+            let endpercent = Math.round(emin/60*100)
+            
+                if(endpercent>0){
+                    document.getElementById(`${id}_${ehr}00`).style.width =`${endpercent}%`
+                    //needed for the case of start and end hour being the same. use justify-content-between to 50 percent it.
+                    //could move this function check further up and assume its true here following the startpercent logic
+                    document.getElementById(`${id}_${ehr}00`).parentNode.classList.add('justify-content-start');
+                    document.getElementById(`${id}_${ehr}00`).parentNode.classList.remove('justify-content-between');
+                }
+    
+    
+            let tophour=23;
+            let h="";
+            for (let hour = 0; hour <= tophour; hour++) {
+                if(Number(shr)<hour && hour<Number(ehr)){
+                    console.log(hour);
+                    if(hour<10){
+                        h=`0${hour}`
+                    }else{
+                        h=`${hour}`
+                    }
+                    
+                    document.getElementById(`${id}_${h}00`).style.width = '100%';
+                        
+                    
+                    
+                    
+                }
             }
         }
         
+        
     });
+}
+
+//returnrs true if 2 hour time block has already been altered
+function nodeUnaltered(node){
+    //assume node has not been changed
+    let result=true;
+    node.classList.forEach(nodeclass =>{
+        //node has been changed
+        if(nodeclass=='justify-content-end'){
+            result = false;
+        }
+    })
+    return result
 }
 
 function newCategoryListener(){
@@ -440,30 +405,36 @@ function greyOutFinishedRows(){
 function calculateTotalTime(){
     let finalhr=0,finalmin=0,finalsec=0;
     
-    document.querySelectorAll('.activity-duration').forEach(node =>{
-        let duration = node.value;
-        const time = duration.split(':');
-        let hr=Number(time[0]),min=Number(time[1]),sec=Number(time[2]);
-        finalhr+=hr;
-        finalmin+=min;
-        finalsec+=sec;
-
-    });
-    const totalduration = convertToReadableTime(finalhr,finalmin,finalsec);
-    finalhr=0,finalmin=0,finalsec=0;
-    document.querySelectorAll('.stopwatch').forEach(node =>{
-        let duration = node.value;
-        const time = duration.split(':');
-        let hr=Number(time[0]),min=Number(time[1]),sec=Number(time[2]);
-        finalhr+=hr;
-        finalmin+=min;
-        finalsec+=sec;
-
-    });
-    const remainingduration = convertToReadableTime(finalhr,finalmin,finalsec);
+    let totalhour=0,totalminute=0,totalsecond=0;
+    let currenthour=0,currentminute=0,currentsecond=0;
+    //for each activity scheudled for the day, add the target time and current time separatly 
+    document.querySelectorAll('.date_row').forEach(row =>{
+        let total = document.getElementById(`duration_${row.id}`).value;
+        let current = document.getElementById(`time_${row.id}`).value;
+        const totaltime = total.split(':');
+        const currenttime = current.split(':');
+        let totalhr=Number(totaltime[0]),totalmin=Number(totaltime[1]),totalsec=Number(totaltime[2]);
+        let currenthr=Number(currenttime[0]),currentmin=Number(currenttime[1]),currentsec=Number(currenttime[2]);
+        if(currenthr>totalhr || (currenthr>=totalhr && currentmin>=totalmin && currentsec>=totalsec)){
+            currenthour+=totalhr;
+            currentminute+=totalmin;
+            currentsecond+=totalsec;
+        }
+        else{
+            currenthour+=currenthr;
+            currentminute+=currentmin;
+            currentsecond+=currentsec;
+        }
+        totalhour+=totalhr;
+        totalminute+=totalmin;
+        totalsecond+=totalsec;
+    })
+    const totalduration = convertToReadableTime(totalhour,totalminute,totalsecond);
+    const currentduration = convertToReadableTime(currenthour,currentminute,currentsecond);
+   
     
     document.getElementById('totalduration').innerHTML=totalduration;
-    document.getElementById('remainingduration').innerHTML=remainingduration;
+    document.getElementById('remainingduration').innerHTML=currentduration;
     
 }
 
@@ -531,6 +502,29 @@ function toggleModal(){
     if(toggle=='1'){
         document.getElementById(`createmodal-${toggle}`).click()
     }
+}
+
+function activityAlert(){
+
+}
+
+//lookup element id. within element, class edit-activity innerhtml holds activity name
+function findActivity(id){
+    let name = document.getElementById(`go_${id}`).innerHTML;
+    return name
+}
+//applys the string to the alert message in DOM
+function alertMessage(string){
+    let alertdiv = document.createElement('div')
+    alertdiv.classList.add('alert')
+    alertdiv.classList.add('alert-success')
+    alertdiv.classList.add('alert-dismissable')
+    alertdiv.innerHTML = `
+    <button class="close" type="button" data-dismiss="alert">
+        <span>&times;</span>
+    </button>
+    <div id="alertmessage">${string}</div>`;
+    document.body.appendChild(alertdiv);
 }
 //console.log(data);
 //let JSONdata=undefined;

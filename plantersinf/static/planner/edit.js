@@ -133,7 +133,7 @@ function submitListener(){
     });
 }
 
-
+//must add listener that adds categories to list
 pageListeners();
 editListener();
 submitListener();

@@ -30,9 +30,9 @@
     
     {%if monthobj.eachweek.exists%}
       {%if month == activemonth and year == activeyear%}
-    <div class="container month pb-3 pt-3 border active" id="{{month}}-{{year}}"style="display: none;">
+    <div class="container month pb-3 pt-3 border active" id="{{month}}-{{year}}"style="display: none; min-width: 768px;">
       {%else%}
-      <div class="container month pb-3 pt-3 border" id="{{month}}-{{year}}"style="display: none;">
+      <div class="container month pb-3 pt-3 border" id="{{month}}-{{year}}"style="display: none; min-width: 768px;">
       {%endif%}
       <div class="container navigation">
         <div class="row">
@@ -115,12 +115,14 @@
               {%for date in weekdates%}    
               {%if date.weekday == "tue"%}
               <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
               {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
+              <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
 
-              </div>
+              </li>
               
               {%endfor%}
+              </ul>
               {%endif%}
               {%endfor%}
               <br>
