@@ -19,6 +19,7 @@ urlpatterns = [
 	url(r'^remove/category/(?P<cat>[-\w]+)$', views.remove),
 	url(r'^remove/(?P<dateid>\d+)/(?P<activityid>\d+)$', views.remove),
 	url(r'^time/(?P<dateid>\d+)$', views.updateTime),
+	url(r'^dashboard$', views.dashboard)
 	#url(r'^books/(?P<id>\d+)/add$', views.reviewbook),
 	#url(r'^books/add$', views.addbook),
 	#url(r'^books/delete/(?P<id>\d+)$', views.deletereview),

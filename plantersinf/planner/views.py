@@ -32,11 +32,11 @@ def index(request):
 	#grabyear = Date.objects.filter(year='')
 	yearrange = []
 	years=[]
-	for year in range(currentyear,currentyear+5): #range of 5 years to populate dates
+	for year in range(currentyear-5,currentyear+5): #range of 5 years to populate dates
 		yearexists = Date.objects.filter(year=year)
 		if yearexists:
 			yearrange.append(year)
-			print(str(year),'exists')
+			
 			
 			yearlydates={
 				'january':{
@@ -121,7 +121,7 @@ def index(request):
 	monthlist=['january','february','march','april','may','june','july','august','september','october','november','december']
 	#need something for leap year
 			
-	print(yearrange)
+	#print(yearrange)
 	context['years']=years
 	context['activemonth'] = activecalandar['month']
 	context['activeyear'] =  activecalandar['year']
@@ -147,7 +147,7 @@ def index(request):
 	return render(request,"planner/datelist.html",context)
 
 def back(request,month,year):
-	print('{},{}'.format(month,year))
+	#print('{},{}'.format(month,year))
 	activecalandar['month'] = month
 	activecalandar['year'] = year
 	print(activecalandar)
@@ -155,9 +155,9 @@ def back(request,month,year):
 
 def add(request, category, dateid='',toggle=0):
 	#implement check to validate category syntax
-	print('existing categories')
-	for each in Category.objects.all():
-		print(each.category)
+	#print('existing categories')
+	#for each in Category.objects.all():
+		#print(each.category)
 	cat = Category.objects.filter(category=category)
 	if not cat:
 		#create category
@@ -177,7 +177,7 @@ def remove(request,activityid='',dateid='',cat=''):
 	else:
 		#removes activity. only other removal is activity
 		activitytoremove = Activity.objects.get(id=activityid)
-		print(activitytoremove.name,activitytoremove.id)
+		#print(activitytoremove.name,activitytoremove.id)
 		activitytoremove.delete()
 	if dateid and cat:
 		#dateid present indicates origin date page
@@ -203,7 +203,7 @@ def date(request,id,toggle=0):
 	#grab all activities where date object to be loaded falls between activity start and end date
 	activities = Activity.objects.all()
 	#day of the week restrictions need to be added here when implemented
-	print(date.date)
+	#print(date.date)
 	
 	#activities = activities.filter(start_date__date__lte=date.date, end_date__date__gte=date.date)
 	activities = activities.filter(activity_date__date=date.date).order_by('start_time')
@@ -215,8 +215,8 @@ def date(request,id,toggle=0):
 	}
 	#for date in context['dates']:
 	#	print(date.date,date.start_count,date.end_count)
-	for act in context['activities']:
-		print(act.current_time,act.active,act.start_time,act.end_time)
+	#for act in context['activities']:
+		#print(act.current_time,act.active,act.start_time,act.end_time)
 	return render(request, "planner/date.html",context)
 
 def createRangeOfDates(start_date,end_date,name,storestart,storeend,duration,daysoftheweek,color,category):
@@ -232,8 +232,8 @@ def createRangeOfDates(start_date,end_date,name,storestart,storeend,duration,day
 	endmonth = int(end_date.split('-')[1])
 	endyear = int(end_date.split('-')[0])
 	alldates = Date.objects.all()
-	print(alldates)
-	print('creating activity with cat =',category)
+	#print(alldates)
+	#print('creating activity with cat =',category)
 	foundstart=0
 	foundend=0
 	week = daysoftheweek.split(',')
@@ -498,14 +498,14 @@ def createRangeOfDates(start_date,end_date,name,storestart,storeend,duration,day
 def create(request,date=''):
 	if request.method=="POST":
 		#print(request.POST['categoryselection'])
-		print(request.POST)
+		#print(request.POST)
 		days=[]
 		## CREATE RANGE DATE DATA
 		week = ['sun','mon','tue','wed','thu','fri','sat']
 		postkeys = request.POST.keys() #[random, stuff, tue, wed, sat, more, rnaomd]
-		print(postkeys)
+		#print(postkeys)
 		for key,value in request.POST.items():
-			if key in week:
+			if key in week and value=="1":
 				# key = 'sun','mon','tue'...will return true from a dictionary containing those words
 				days.append(key)
 		
@@ -585,7 +585,7 @@ def create(request,date=''):
 
 def edit(request,activityid=-1,dateid=-1):
 	if request.method=='POST':
-		print(request.POST)
+		#print(request.POST)
 		#change/update activity with new time values
 		
 		days=[]
@@ -593,7 +593,7 @@ def edit(request,activityid=-1,dateid=-1):
 		week = ['sun','mon','tue','wed','thu','fri','sat']
 		postkeys = request.POST.keys() #[random, stuff, tue, wed, sat, more, rnaomd]
 		updateall=1
-		print(postkeys)
+		#print(postkeys)
 		for key,value in request.POST.items():
 			
 			if key in week and value=='1':
@@ -692,7 +692,7 @@ def edit(request,activityid=-1,dateid=-1):
 			
 	# the same activity shares the activity's name,start date,end date,start_time,end_time,color,category,days
 	elif not activityid == -1:
-		print(dateid)
+		#print(dateid)
 		activity = Activity.objects.get(id=activityid)
 		dotw = {
 			'mon':0,
@@ -755,7 +755,7 @@ def edit(request,activityid=-1,dateid=-1):
 def control(request,dateid):
 	if request.method == 'POST':
 		print("PAUSED")
-		print(request.POST)
+		#print(request.POST)
 
 		time = {}
 		active={}
@@ -791,7 +791,7 @@ def control(request,dateid):
 				activity.active=1
 			activity.save()
 		gobacktodate = "/date/{}".format(dateid)
-		print(gobacktodate)
+		#print(gobacktodate)
 		return redirect(gobacktodate)
 
 def updateTime(request, dateid):
@@ -800,7 +800,7 @@ def updateTime(request, dateid):
 		end={}
 		activityid=""
 		for key in request.POST.keys():
-			print(key,request.POST[key])
+			#print(key,request.POST[key])
 			if (not key=='csrfmiddlewaretoken') and (key.find('_') >=0):
 				activityid = key.split('_')[1]
 				
@@ -841,11 +841,214 @@ def activate(request,id):
 	
 	if int(activate.active)==0:
 		activate.active = 1
-		print("im active")
-		print(activate.id,activate.name, activate.active)
+		#print("im active")
+		#print(activate.id,activate.name, activate.active)
 		activate.save()
 	return redirect("/date")
+
+def dashboard(request):
+	today = datetime.date.today()
+	timestring = today.strftime("%d/%m/%Y")
+	currentyear = int(timestring.split('/')[2]) #2020
+	#grabyear = Date.objects.filter(year='')
+	yearrange = []
+	years=[]
+	for year in range(currentyear-5,currentyear+1): #range of 5 years to populate dates
+		yearexists = Date.objects.filter(year=year)
+		if yearexists:
+			yearrange.append(year)
+			#print(str(year),'exists')
+			
+			yearlydates={
+				'january':{
+					'length':range(1,32),
+					'completed':percentageCompleteActivities('january',year,range(1,32)),
+					'categorygrouped':activitiesGroupedByCategory('january',year,range(1,32)),
+					'startday': findWeekday(str(year)+'-01-01')['weekday'],
+					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-01-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='january').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-01-01')['daynum']),findWeekday(str(year)+'-01-01')['daynum'],31),
+					#get unique activiteis by name for current month and year
+					#'editactivities': Activity.objects.filter(activity_date__month='january',activity_date__year=year).order_by('category').values_list('name','category').distinct()
+				},
+				'february':{
+					'length':range(1,29),
+					'completed':percentageCompleteActivities('february',year,range(1,29)),
+					'categorygrouped':activitiesGroupedByCategory('february',year,range(1,29)),
+					'startday': findWeekday(str(year)+'-02-01')['weekday'],
+					'numberofweeks':numberOfWeeks(28,findWeekday(str(year)+'-02-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='february').order_by('day'),numberOfWeeks(28,findWeekday(str(year)+'-02-01')['daynum']),findWeekday(str(year)+'-02-01')['daynum'],28)
+				},
+				'march':{
+					'length':range(1,32),
+					'completed':percentageCompleteActivities('march',year,range(1,32)),
+					'categorygrouped':activitiesGroupedByCategory('march',year,range(1,32)),
+					'startday': findWeekday(str(year)+'-03-01')['weekday'],
+					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-03-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='march').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-03-01')['daynum']),findWeekday(str(year)+'-03-01')['daynum'],31)
+				},
+				'april':{
+					'length':range(1,32),
+					'completed':percentageCompleteActivities('april',year,range(1,32)),
+					'categorygrouped':activitiesGroupedByCategory('april',year,range(1,32)),
+					'startday': findWeekday(str(year)+'-04-01')['weekday'],
+					'numberofweeks':range(numberOfWeeks(31,findWeekday(str(year)+'-04-01')['daynum'])),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='april').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-04-01')['daynum']),findWeekday(str(year)+'-04-01')['daynum'],31)
+				},
+				'may':{
+					'length':range(1,32),
+					'completed':percentageCompleteActivities('may',year,range(1,32)),
+					'categorygrouped':activitiesGroupedByCategory('may',year,range(1,32)),
+					'startday': findWeekday(str(year)+'-05-01')['weekday'],
+					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-05-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='may').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-05-01')['daynum']),findWeekday(str(year)+'-05-01')['daynum'],31)
+				},
+				'june':{
+					'length':range(1,31),
+					'completed':percentageCompleteActivities('june',year,range(1,31)),
+					'categorygrouped':activitiesGroupedByCategory('june',year,range(1,31)),
+					'startday': findWeekday(str(year)+'-06-01')['weekday'],
+					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-06-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='june').order_by('day'),numberOfWeeks(30,findWeekday(str(year)+'-06-01')['daynum']),findWeekday(str(year)+'-06-01')['daynum'],30)
+				},
+				'july':{
+					'length':range(1,32),
+					'completed':percentageCompleteActivities('july',year,range(1,32)),
+					'categorygrouped':activitiesGroupedByCategory('july',year,range(1,32)),
+					'startday': findWeekday(str(year)+'-07-01')['weekday'],
+					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-07-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='july').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-07-01')['daynum']),findWeekday(str(year)+'-07-01')['daynum'],31)
+				},
+				'august':{
+					'length':range(1,32),
+					'completed':percentageCompleteActivities('august',year,range(1,32)),
+					'categorygrouped':activitiesGroupedByCategory('august',year,range(1,32)),
+					'startday': findWeekday(str(year)+'-08-01')['weekday'],
+					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-08-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='august').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-08-01')['daynum']),findWeekday(str(year)+'-08-01')['daynum'],31)
+				},
+				'september':{
+					'length':range(1,31),
+					'completed':percentageCompleteActivities('september',year,range(1,31)),
+					'categorygrouped':activitiesGroupedByCategory('september',year,range(1,31)),
+					'startday': findWeekday(str(year)+'-09-01')['weekday'],
+					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-09-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='september').order_by('day'),numberOfWeeks(30,findWeekday(str(year)+'-09-01')['daynum']),findWeekday(str(year)+'-09-01')['daynum'],30)
+				},
+				'october':{
+					'length':range(1,32),
+					'completed':percentageCompleteActivities('october',year,range(1,32)),
+					'categorygrouped':activitiesGroupedByCategory('october',year,range(1,32)),
+					'startday': findWeekday(str(year)+'-10-01')['weekday'],
+					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-10-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='october').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-10-01')['daynum']),findWeekday(str(year)+'-10-01')['daynum'],31)
+				},
+				'november':{
+					'length':range(1,31),
+					'completed':percentageCompleteActivities('november',year,range(1,31)),
+					'categorygrouped':activitiesGroupedByCategory('november',year,range(1,31)),
+					'startday': findWeekday(str(year)+'-11-01')['weekday'],
+					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-11-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='november').order_by('day'),numberOfWeeks(30,findWeekday(str(year)+'-11-01')['daynum']),findWeekday(str(year)+'-11-01')['daynum'],30)
+				},
+				'december':{
+					'length':range(1,32),
+					'completed':percentageCompleteActivities('december',year,range(1,32)),
+					'categorygrouped':activitiesGroupedByCategory('december',year,range(1,32)),
+					'startday': findWeekday(str(year)+'-12-01')['weekday'],
+					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-12-01')['daynum']),
+					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='december').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-12-01')['daynum']),findWeekday(str(year)+'-12-01')['daynum'],31)
+				}
+			}
+			yearobj = {str(year): yearlydates}
+			years.append(yearobj)
 	
+	#year=[january,february,march,april,may,june,july,august,september,october,november,december]
+	monthlist=['january','february','march','april','may','june','july','august','september','october','november','december']
+	#need something for leap year
+
+	#grab all activities within a month
+	monthact = Activity.objects.filter(activity_date__month='june',activity_date__year=2020).order_by('activity_date__day')
+	#for each in monthact:
+		
+	
+	context={}
+	context['years']=years
+	
+	return render(request,"planner/dashboard.html",context)
+	
+
+def activitiesGroupedByCategory(month,year,length):
+	#grab all activities during a month
+	activitybymonth = Activity.objects.filter(activity_date__month=month,activity_date__year=year).order_by('activity_date__day')
+	days={}
+	
+	
+	for i in length:
+		dailyacts = Activity.objects.filter(activity_date__month=month,activity_date__day=i,activity_date__year=year).order_by('category')
+		category={}
+	#for each day in the month, sort activities by category and count number of activites belonging to that category.
+		for activity in dailyacts:
+			if activity.category.category not in category.keys():
+				category[activity.category.category]=0
+
+			category[activity.category.category]+=1
+		days[i]=category
+	#days[1]=['fun':5,'misc':3,'homework':2]..etc
+
+	return days
+
+
+#takes in all activities in a month, outputs a list of day objects with first object == first day of month and last object == last day of month:
+#[{},{},{},{},{},{},{},]
+# {
+# 
+# completed activities
+# incomplete activities
+# }
+def percentageCompleteActivities(month,year,length):
+	focus=None
+	
+	day={}
+	monthact = Activity.objects.filter(activity_date__month=month,activity_date__year=year).order_by('activity_date__day')
+	#grab all activities with the same month and day
+	
+	for i in length:
+		
+		#orderby is just alphabetical order for names. no real purpose i guess
+		dailyacts = Activity.objects.filter(activity_date__month=month,activity_date__day=i,activity_date__year=year).order_by('name')
+		#turn daily activity list and determine complete and incomplete activites
+		#month[activityname]={
+		# 						duration
+		# 						current_time
+		# 						count
+		# 				}
+		day[i]={}
+		for activity in dailyacts:
+			dur = activity.duration.split(':')
+			durationhr,durationmin,durationsec = int(dur[0]), int(dur[1]), int(dur[2])
+			cur = activity.current_time.split(':')
+			currenthr,currentmin,currentsec = int(cur[0]), int(cur[1]), int(cur[2])
+			totaldurationsec = (durationhr*60*60) + (durationmin*60) + (durationsec)
+			totalcurrentsec = (currenthr*60*60) + (currentmin*60) + (currentsec)
+			percentagecomplete = (totalcurrentsec/totaldurationsec)*100
+			day[i][activity.name]=percentagecomplete
+	
+	return day
+			
+	
+	#for current in daysortedlist:
+		#start of iterations
+	#	if focus is None:
+	#		focus=current
+		#grab information about the same activity
+	#	if current.name is focus.name:
+	#		return None
+		#moved onto a new activity name,chance focus and reset used variables
+	#	else:
+	#		return None
+
+		
+
 	#
 def findWeekday(date):
 	#day of the week implementation#

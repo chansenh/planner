@@ -83,5 +83,26 @@ function removeCategoryListener(){
     });
 }
 
+function dotwListener(){
+    document.querySelector(`.dotw`).addEventListener('click', event=>{
+        console.log(event.target);
+        let targetnode = event.target;
+        if(targetnode.id){
+            let currentval = document.getElementById(`hidden${targetnode.id}`).value
+            if(currentval=="0"){
+                targetnode.classList.add('active')
+                document.getElementById(`hidden${targetnode.id}`).value = "1";
+            }
+            else if(currentval=="1"){
+                targetnode.classList.remove('active')
+                document.getElementById(`hidden${targetnode.id}`).value = "0";
+            }
+
+        }
+
+    })
+}
+
 newCategoryListener();
 removeCategoryListener();
+dotwListener();
