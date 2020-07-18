@@ -27,13 +27,14 @@ function makePercentageChart(id,labellist,datalist,colorlist){
 
 }
 
-function makeCategoryChart(id,datavalues,datalabels){
+function makeCategoryChart(id,datavalues,datalabels,colorlist){
     let chartnode = document.getElementById(id).getContext('2d');//year-month-daynum-complete
     let options=""
 
     let data = {
         datasets: [{
-            data: datavalues
+            data: datavalues,
+            backgroundColor: colorlist
         }],
     
         // These labels appear in the legend and in the tooltips when hovering different arcs
@@ -62,7 +63,7 @@ function renderEventCharts(eventvariablenode,month,year){
     let datalist=[];
     let colorlist=[];
     allactivedaynodes.forEach(currentdaynode =>{
-        
+        let color = currentdaynode.dataset.color;
         let completed = Number(currentdaynode.dataset.completed);
         let daynum = currentdaynode.id.split('-')[1];
         let activityname = currentdaynode.id.split('-')[0];
@@ -73,7 +74,7 @@ function renderEventCharts(eventvariablenode,month,year){
         if(currentday==Number(daynum)){//same day, continue gathering name and percentage data
             labellist.push(activityname);
             datalist.push(completed)
-            colorlist.push('rgba(75, 192, 192, 0.2)')
+            colorlist.push(color)
         }else{//daynum as moved onto the next day. take new lists and feed them to generate chart
             makePercentageChart(`${month}-${year}-${currentday}-event`,labellist,datalist,colorlist)
             console.log(datalist)
@@ -86,7 +87,7 @@ function renderEventCharts(eventvariablenode,month,year){
             //add currentdaynodes information to the newly reset list variables
             labellist.push(activityname);
             datalist.push(completed)
-            colorlist.push('rgba(192, 192, 192, 0.2)')
+            colorlist.push(color)
         }
     });
 }
@@ -97,7 +98,7 @@ function renderCategoryCharts(categoryvariablenode,month,year){
     let datalist=[];
     let colorlist=[];
     allactivedaynodes.forEach(currentdaynode =>{
-        
+        let color = currentdaynode.dataset.color;
         let categorycount = Number(currentdaynode.dataset.occuring);
         let name = currentdaynode.dataset.name;
         let daynum = currentdaynode.id.split('-')[1]; //daynum marks day position of main loop
@@ -106,7 +107,7 @@ function renderCategoryCharts(categoryvariablenode,month,year){
         }                              //current day will follow when daynum's value differs from previous same values
         
         if(currentday!=Number(daynum)){//the current particular day is done, daynum has moved forward in count. feed all variables to categorychart function
-            makeCategoryChart(`${month}-${year}-${currentday}-category`,datalist,labellist)
+            makeCategoryChart(`${month}-${year}-${currentday}-category`,datalist,labellist,colorlist)
             //reset list variables
             labellist=[]
             datalist=[]
@@ -116,11 +117,11 @@ function renderCategoryCharts(categoryvariablenode,month,year){
             //add currentdaynodes information to the newly reset list variables
             labellist.push(name);
             datalist.push(categorycount)
-            colorlist.push('rgba(192, 192, 192, 0.2)')
+            colorlist.push(color)
         }else{//day is same, gather current values and add it to the pile of data that camebefore it
             labellist.push(name);
             datalist.push(categorycount)
-            colorlist.push('rgba(75, 192, 192, 0.2)')
+            colorlist.push(color)
             
             
         }

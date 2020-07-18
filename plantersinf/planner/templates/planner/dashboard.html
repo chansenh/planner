@@ -197,9 +197,9 @@
 						
 							{%for daynum,dayobj in monthobj.completed.items%}
 							{%if dayobj%}
-								{%for activityname,percentagecomplete in dayobj.items%}
+								{%for activityname,activityobj in dayobj.items%}
 						
-								<div class="{{month}}-{{year}}" id='{{activityname}}-{{daynum}}' data-completed="{{percentagecomplete}}" data-name="{{activityname}}"></div>
+								<div class="{{month}}-{{year}}" id='{{activityname}}-{{daynum}}' data-completed="{{activityobj.percentagecomplete}}" data-name="{{activityname}}" data-color="{{activityobj.color}}"></div>
 						
 								{%endfor%}
 							{%endif%}
@@ -210,9 +210,9 @@
 						
 							{%for daynum,dayobj in monthobj.categorygrouped.items%}
 							{%if dayobj%}
-								{%for categoryname,occuring in dayobj.items%}
+								{%for categoryname,categoryobj in dayobj.items%}
 						
-								<div class="{{month}}-{{year}}" id='{{categoryname}}-{{daynum}}' data-occuring="{{occuring}}" data-name="{{categoryname}}"></div>
+								<div class="{{month}}-{{year}}" id='{{categoryname}}-{{daynum}}' data-occuring="{{categoryobj.count}}" data-name="{{categoryname}}" data-color="{{categoryobj.color}}"></div>
 						
 								{%endfor%}
 							{%endif%}

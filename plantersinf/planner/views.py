@@ -989,9 +989,10 @@ def activitiesGroupedByCategory(month,year,length):
 	#for each day in the month, sort activities by category and count number of activites belonging to that category.
 		for activity in dailyacts:
 			if activity.category.category not in category.keys():
-				category[activity.category.category]=0
+				category[activity.category.category]={'count':0, 'color':activity.color}
 
-			category[activity.category.category]+=1
+			category[activity.category.category]['count']+=1
+			
 		days[i]=category
 	#days[1]=['fun':5,'misc':3,'homework':2]..etc
 
@@ -1031,7 +1032,7 @@ def percentageCompleteActivities(month,year,length):
 			totaldurationsec = (durationhr*60*60) + (durationmin*60) + (durationsec)
 			totalcurrentsec = (currenthr*60*60) + (currentmin*60) + (currentsec)
 			percentagecomplete = (totalcurrentsec/totaldurationsec)*100
-			day[i][activity.name]=percentagecomplete
+			day[i][activity.name]={'percentagecomplete':percentagecomplete,'color':activity.color}
 	
 	return day
 			
