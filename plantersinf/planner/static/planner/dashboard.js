@@ -1,12 +1,21 @@
 function makePercentageChart(id,labellist,datalist,colorlist){
     //console.log(colorlist)
+    labellist = labellist.map(label =>{
+        if(label.length>8){
+            let shorterstring=label.slice(0,5)+'...';
+            return shorterstring
+        }else{
+            return label
+        }
+        
+    });
     let chartnode = document.getElementById(id).getContext('2d');//year-month-daynum-complete
     let chart = new Chart(chartnode, {
         type:'bar',
         data: {
             labels: labellist,//['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
             datasets: [{
-                label: 'Percentage Completed',
+                label: 'Minutes',
                 data: datalist,//[12, 19, 3, 5, 2, 3],
                 backgroundColor: colorlist,
                 borderColor: colorlist,
@@ -16,6 +25,9 @@ function makePercentageChart(id,labellist,datalist,colorlist){
         options: {
             scales: {
                 yAxes: [{
+                    gridLines:{
+                        offsetGridLines: true
+                    },
                     ticks: {
                         beginAtZero: true
                     }
@@ -28,6 +40,17 @@ function makePercentageChart(id,labellist,datalist,colorlist){
 }
 
 function makeCategoryChart(id,datavalues,datalabels,colorlist){
+
+    datalabels = datalabels.map(label =>{
+        if(label.length>4){
+            let shorterstring=label.slice(0,4)+'...';
+            return shorterstring
+        }else{
+            return label
+        }
+        
+    });
+
     let chartnode = document.getElementById(id).getContext('2d');//year-month-daynum-complete
     let options=""
 
@@ -55,7 +78,7 @@ function hideAllCharts(){
         chartnode.style.display='none';
     });
 }
-
+//use data attributes completed and name put them in two separte lists in the same order
 function renderEventCharts(eventvariablenode,month,year){
     let allactivedaynodes = eventvariablenode.querySelectorAll(`.${month}-${year}`);
     currentday=undefined;
@@ -77,7 +100,7 @@ function renderEventCharts(eventvariablenode,month,year){
             colorlist.push(color)
         }else{//daynum as moved onto the next day. take new lists and feed them to generate chart
             makePercentageChart(`${month}-${year}-${currentday}-event`,labellist,datalist,colorlist)
-            console.log(datalist)
+            //console.log(datalist)
             //reset list variables
             labellist=[]
             datalist=[]
@@ -127,9 +150,43 @@ function renderCategoryCharts(categoryvariablenode,month,year){
         }
     });
 }
+
+function renderWeekCharts(){
+    //grab active week selection and make it so based on selected id
+    const activeid = Number(document.getElementById('week').querySelector('.active').id);
+    if(activeid==0){
+        [1,2,3,4,5].forEach(weeknumber=>{
+            typeChoice().forEach(choice =>{
+                if(choice=='event'){
+                    showWeeklyEvents(weeknumber);
+                }
+                if(choice=='category'){
+                    showWeeklyCategories(weeknumber);
+                }
+            });
+        });
+    }
+    if(activeid>0){
+        typeChoice().forEach(choice =>{
+            if(choice=='event'){
+                showWeeklyEvents(activeid);
+            }
+            if(choice=='category'){
+                showWeeklyCategories(activeid);
+            }
+        });
+    }
+    
+
+}
+
+
+
+//retreive data associated with active month; id=year-month-chartvars, display none
 function populateCharts(){
     //find active month in sidebar
     let activemonthnodes = document.getElementById('calendar').querySelectorAll('.active')
+    //make charts for each day in the month and show it 
     activemonthnodes.forEach(activemonth =>{
         let month = activemonth.id.split('_')[0];
         let year = activemonth.id.split('_')[1];
@@ -139,10 +196,10 @@ function populateCharts(){
         renderCategoryCharts(categoryvariablenode,month,year)
         document.getElementById(`${month}-${year}`).style.display = 'block';
     });
-    //retreive data associated with active month; id=year-month-chartvars, display none
+    renderWeekCharts();
     
-    //use data attributes completed and name put them in two separte lists in the same order
-    //make charts for each day in the month and show it 
+    
+    
 
 }
 
@@ -228,29 +285,134 @@ function showDayCategories(daynumber){
     });
 }
 
+//condense week from individual activities from each day in the week
 function showWeeklyEvents(weeknumber){
-    document.querySelectorAll(`.eventchart`).forEach(daynode =>{
-        let daynodenumber = Number(daynode.id.split('-')[2])
+    //for each active month, for each day within the given week number, for each activity within a day
+    // add up completed mintues and add to activity's total
+    
+    document.getElementById(`calendar`).querySelectorAll(`.active`).forEach(activebutton =>{
+        let year = Number(activebutton.id.split('_')[1]);
+        let month = activebutton.id.split('_')[0];
+        let nodedata={}
+        document.getElementById(`${month}-${year}-eventvars`).querySelectorAll(`.${month}-${year}`).forEach(activitynode =>{
+            //let name = activitynode.id.split('-')[0]
+            let daynumber = Number(activitynode.id.split('-')[1])
+            if(7*(weeknumber-1)+1<=daynumber && daynumber<=7*weeknumber){
+                //add name,completed,color to dataset object
+                const activityname = activitynode.dataset.name;
+                let completed = Number(activitynode.dataset.completed);
+                const color = activitynode.dataset.color;
+                // create name entry object with completed and color initialized
+                if(!(activityname in nodedata)){
+                    nodedata[activityname]={'completed':completed,'color':color}    
+                }else{
+                    // name exists in nodedata, add completed to existing completed key    
+                    
+                    nodedata[activityname]['completed']+=completed
+                }
+                //console.log(nodedata)
+                
+            }
+        });
+        
+        let labellist=[]
+        let datalist=[]
+        let colorlist=[]
+        Object.entries(nodedata).forEach((entry) =>{       
+            
+            
+            labellist.push(entry[0])
+            datalist.push(entry[1].completed)
+            colorlist.push(entry[1].color)
+            
+        });
+        
+        if(labellist[0]){
+            //create html chart element to hold week chart
+            const id = `${month}-${year}-week${weeknumber}`;
+            const htmlstring = `<div class="weekeventchart mb-5 border border-right-0 pl-3 ml-1 shadow-sm" id="${id}-event" style="display: none;">
+                                    <div style="height: 250px; width: 200px;">
+                                        
+                                        <p>Week ${weeknumber}</p>
+                                        <canvas class="canvas" id="${id}-eventweek" style="width: 200px; height: 200px;"></canvas>		
 
-        if(7*(weeknumber-1)+1<=daynodenumber && daynodenumber<=7*weeknumber){
-            daynode.style.display='block';
-        }else{
-            //hide it
-            //daynode.style.display='none';
+                                    </div>
+                                </div>`
+            document.getElementById(`${month}-${year}-charts`).querySelector('.weekeventbox').insertAdjacentHTML('beforeend',htmlstring)
+            //produce graphs for current month with nodedata holding variables
+            
+            
+            //console.log(id)
+            //console.log(labellist)
+            //console.log(datalist)
+            //console.log(colorlist)
+            makePercentageChart(`${id}-eventweek`,labellist,datalist,colorlist);
+            document.getElementById(`${id}-event`).style.display='block';
         }
+        
+        
     });
 }
 
 function showWeeklyCategories(weeknumber){
-    document.querySelectorAll(`.categorychart`).forEach(daynode =>{
-        let daynodenumber = Number(daynode.id.split('-')[2])
-
-        if(7*(weeknumber-1)+1<=daynodenumber && daynodenumber<=7*weeknumber){
-            daynode.style.display='block';
-        }else{
-            //hide it
-            //daynode.style.display='none';
+    document.getElementById(`calendar`).querySelectorAll(`.active`).forEach(activebutton =>{
+        let year = Number(activebutton.id.split('_')[1]);
+        let month = activebutton.id.split('_')[0];
+        let nodedata={}
+        document.getElementById(`${month}-${year}-categoryvars`).querySelectorAll(`.${month}-${year}`).forEach(categorynode =>{
+            //let name = activitynode.id.split('-')[0]
+            let daynumber = Number(categorynode.id.split('-')[1])
+            if(7*(weeknumber-1)+1<=daynumber && daynumber<=7*weeknumber){
+                //add name,completed,color to dataset object
+                const categoryname = categorynode.dataset.name;
+                let occuring = Number(categorynode.dataset.occuring);
+                const color = categorynode.dataset.color;
+                // create name entry object with completed and color initialized
+                if(!(categoryname in nodedata)){
+                    nodedata[categoryname]={'occuring':occuring,'color':color}    
+                }else{
+                    // name exists in nodedata, add completed to existing completed key    
+                    
+                    nodedata[categoryname]['occuring']+=occuring
+                }
+                //console.log(nodedata)
+                
+            }
+        });
+        
+        let labellist=[]
+        let datalist=[]
+        let colorlist=[]
+        Object.entries(nodedata).forEach((entry) =>{        
+            labellist.push(entry[0])
+            datalist.push(entry[1].occuring)
+            colorlist.push(entry[1].color)
+            
+        });
+        
+        if(labellist[0]){
+            //create html chart element to hold week chart
+            const id = `${month}-${year}-week${weeknumber}`;
+            const htmlstring = `<div class="weekcategorychart mb-5 border border-left-0 pr-3 mr-1 shadow-sm" id="${id}-category" style="display: none;">
+                                    <div style="height: 250px; width: 200px;">
+                                        
+                                        <p class="pl-4">Week ${weeknumber}</p>
+                                        <canvas class="canvas" id="${id}-categoryweek" style="width: 200px; height: 200px;"></canvas>		
+                                    
+                                    </div>
+                                </div>`
+            document.getElementById(`${month}-${year}-charts`).querySelector('.weekcategorybox').insertAdjacentHTML('beforeend',htmlstring)
+            //produce graphs for current month with nodedata holding variables
+            
+            
+            //console.log(id)
+            //console.log(labellist)
+            //console.log(datalist)
+            //console.log(colorlist)
+            makeCategoryChart(`${id}-categoryweek`,datalist,labellist,colorlist);
+            document.getElementById(`${id}-category`).style.display='block';
         }
+        
     });
 }
 
@@ -261,6 +423,16 @@ function hideEverything(){
 
     document.querySelectorAll('.eventchart').forEach(chart =>{
         chart.style.display = 'none'
+    });
+    document.querySelectorAll('.weekeventchart').forEach(chart =>{
+        //chart.style.display = 'none'
+        let element = document.getElementById(chart.id);
+        element.parentNode.removeChild(element);
+    });
+    document.querySelectorAll('.weekcategorychart').forEach(chart =>{
+        //chart.style.display = 'none'
+        let element = document.getElementById(chart.id);
+        element.parentNode.removeChild(element);
     });
 }
 
@@ -274,9 +446,30 @@ function optionControl(){
         //parent is div section of dropdown-menu
         const parentnode = targetnode.parentNode;
         if(parentnode.id=='day' || parentnode.id=='week' || parentnode.id=='type'){
-            //activate/deactivate active class
-            document.getElementById(parentnode.id).querySelector('.active').classList.remove('active');
-            targetnode.classList.add('active');
+            
+            //page inits with none (-1) active. active daynode id is not either -1 nor 0
+            let init = []
+            if(parentnode.id=='day'){
+                
+                document.getElementById(parentnode.id).querySelectorAll('.active').forEach(currentnode =>{
+                    init.push(Number(currentnode.id));
+                });
+            }
+            //                                                  indicates either none or all days are selected
+           
+            if(parentnode.id=='day' && Number(targetnode.id)>0 && !init.includes(-1) && !init.includes(0)){
+                //multiple specific days can be viewed at any time 
+                targetnode.classList.toggle('active');
+            }else{
+                //week and type choices are limited to one
+                // in the case of having multiple days selected, remove active classes from 1 or more nodes
+                document.getElementById(parentnode.id).querySelectorAll('.active').forEach(currentnode =>{
+                    currentnode.classList.remove('active');
+                });
+                targetnode.classList.add('active');
+            }
+            
+            //document.getElementById(parentnode.id).querySelector('.active').classList.remove('active');
 
             //make user choice visible
             if(targetnode.innerHTML=='none'){
@@ -285,47 +478,102 @@ function optionControl(){
                 document.getElementById(`navbar${parentnode.id}`).innerHTML = targetnode.innerHTML
             }
         }
+        let activedays=[]
         let activeweek = Number(document.getElementById(`week`).querySelector('.active').id);
-        let activeday = Number(document.getElementById(`day`).querySelector('.active').id);
+        document.getElementById(`day`).querySelectorAll('.active').forEach(daynode =>{
+            activedays.push(Number(daynode.id));
+        });
 
-        //either choice specifics that all should be shown
-        if(activeweek==0 || activeday==0){
+        //all days selected
+        if(activedays.includes(0)){
             typeChoice().forEach(choice =>{
                 alterChart(`${choice}chart`,'block');
             });
+        }
+        //const id = `${month}-${year}-week${weeknumber}`;
+        //all weeks sleceted
+        if(activeweek==0){
+            [1,2,3,4,5].forEach(weeknumber=>{
+                typeChoice().forEach(choice =>{
+                    if(choice=='event'){
+                        showWeeklyEvents(weeknumber);
+                    }
+                    if(choice=='category'){
+                        showWeeklyCategories(weeknumber);
+                    }
+                });
+            });
+        }
         //only show day choice, week choice is none
-        }else if(activeweek==-1){
+        if(activeweek==-1){
             typeChoice().forEach(choice =>{
-                if(choice=='event'){
-                    showDayEvents(activeday);
+                if(choice=='event' && document.querySelectorAll('.weekeventchart')){
+                    //showDayEvents(activeday);
+                    document.querySelectorAll('.weekeventchart').forEach(chart =>{
+                        //chart.style.display = 'none'
+                        let element = document.getElementById(chart.id);
+                        element.parentNode.removeChild(element);
+                    });
+                    
                 }
-                if(choice=='category'){
-                    showDayCategories(activeday);
+                if(choice=='category' && document.querySelectorAll('.weekcategorychart')){
+                    //showDayCategories(activeday);
+                    document.querySelectorAll('.weekcategorychart').forEach(chart =>{
+                        //chart.style.display = 'none'
+                        let element = document.getElementById(chart.id);
+                        element.parentNode.removeChild(element);
+                    });
                 }
             });
         //only show week choice, day choice is none
-        }else if(activeday==-1){
+        }
+        if(activedays.includes(-1)){
+
             typeChoice().forEach(choice =>{
                 if(choice=='event'){
-                    showWeeklyEvents(activeweek)
+                    //showWeeklyEvents(activeweek)
+                    document.querySelectorAll('.eventchart').forEach(chart =>{
+                        chart.style.display = 'none'
+                    });
                 }
                 if(choice=='category'){
-                    showWeeklyCategories(activeweek)
+                    document.querySelectorAll('.categorychart').forEach(chart =>{
+                        chart.style.display = 'none'
+                    });
+                    //showWeeklyCategories(activeweek)
                 }
             });
         }
         //specific week and day are selected
-        else{
+        if(!activedays.includes(0) && !activedays.includes(-1)){
             //and individual day number/week number selected
             //check for what type is selected 
             typeChoice().forEach(choice =>{
                 if(choice=='event'){
-                    showDayEvents(activeday);
-                    showWeeklyEvents(activeweek)        
+                    activedays.forEach(activeday =>{
+                        showDayEvents(activeday);    
+                    });
+                    
+                    
                 }
                 if(choice=='category'){
-                    showDayCategories(activeday);
-                    showWeeklyCategories(activeweek)        
+                    activedays.forEach(activeday =>{
+                        showDayCategories(activeday);    
+                    });
+                    
+                }
+            });
+            
+        }
+        if(activeweek>0){
+            //and individual day number/week number selected
+            //check for what type is selected 
+            typeChoice().forEach(choice =>{
+                if(choice=='event'){
+                    showWeeklyEvents(activeweek);
+                }
+                if(choice=='category'){
+                    showWeeklyCategories(activeweek);        
                 }
             });
             

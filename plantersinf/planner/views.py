@@ -862,7 +862,7 @@ def dashboard(request):
 			yearlydates={
 				'january':{
 					'length':range(1,32),
-					'completed':percentageCompleteActivities('january',year,range(1,32)),
+					'completed':minutesCompleteActivities('january',year,range(1,32)),
 					'categorygrouped':activitiesGroupedByCategory('january',year,range(1,32)),
 					'startday': findWeekday(str(year)+'-01-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-01-01')['daynum']),
@@ -872,7 +872,7 @@ def dashboard(request):
 				},
 				'february':{
 					'length':range(1,29),
-					'completed':percentageCompleteActivities('february',year,range(1,29)),
+					'completed':minutesCompleteActivities('february',year,range(1,29)),
 					'categorygrouped':activitiesGroupedByCategory('february',year,range(1,29)),
 					'startday': findWeekday(str(year)+'-02-01')['weekday'],
 					'numberofweeks':numberOfWeeks(28,findWeekday(str(year)+'-02-01')['daynum']),
@@ -880,7 +880,7 @@ def dashboard(request):
 				},
 				'march':{
 					'length':range(1,32),
-					'completed':percentageCompleteActivities('march',year,range(1,32)),
+					'completed':minutesCompleteActivities('march',year,range(1,32)),
 					'categorygrouped':activitiesGroupedByCategory('march',year,range(1,32)),
 					'startday': findWeekday(str(year)+'-03-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-03-01')['daynum']),
@@ -888,7 +888,7 @@ def dashboard(request):
 				},
 				'april':{
 					'length':range(1,32),
-					'completed':percentageCompleteActivities('april',year,range(1,32)),
+					'completed':minutesCompleteActivities('april',year,range(1,32)),
 					'categorygrouped':activitiesGroupedByCategory('april',year,range(1,32)),
 					'startday': findWeekday(str(year)+'-04-01')['weekday'],
 					'numberofweeks':range(numberOfWeeks(31,findWeekday(str(year)+'-04-01')['daynum'])),
@@ -896,7 +896,7 @@ def dashboard(request):
 				},
 				'may':{
 					'length':range(1,32),
-					'completed':percentageCompleteActivities('may',year,range(1,32)),
+					'completed':minutesCompleteActivities('may',year,range(1,32)),
 					'categorygrouped':activitiesGroupedByCategory('may',year,range(1,32)),
 					'startday': findWeekday(str(year)+'-05-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-05-01')['daynum']),
@@ -904,7 +904,7 @@ def dashboard(request):
 				},
 				'june':{
 					'length':range(1,31),
-					'completed':percentageCompleteActivities('june',year,range(1,31)),
+					'completed':minutesCompleteActivities('june',year,range(1,31)),
 					'categorygrouped':activitiesGroupedByCategory('june',year,range(1,31)),
 					'startday': findWeekday(str(year)+'-06-01')['weekday'],
 					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-06-01')['daynum']),
@@ -912,7 +912,7 @@ def dashboard(request):
 				},
 				'july':{
 					'length':range(1,32),
-					'completed':percentageCompleteActivities('july',year,range(1,32)),
+					'completed':minutesCompleteActivities('july',year,range(1,32)),
 					'categorygrouped':activitiesGroupedByCategory('july',year,range(1,32)),
 					'startday': findWeekday(str(year)+'-07-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-07-01')['daynum']),
@@ -920,7 +920,7 @@ def dashboard(request):
 				},
 				'august':{
 					'length':range(1,32),
-					'completed':percentageCompleteActivities('august',year,range(1,32)),
+					'completed':minutesCompleteActivities('august',year,range(1,32)),
 					'categorygrouped':activitiesGroupedByCategory('august',year,range(1,32)),
 					'startday': findWeekday(str(year)+'-08-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-08-01')['daynum']),
@@ -928,7 +928,7 @@ def dashboard(request):
 				},
 				'september':{
 					'length':range(1,31),
-					'completed':percentageCompleteActivities('september',year,range(1,31)),
+					'completed':minutesCompleteActivities('september',year,range(1,31)),
 					'categorygrouped':activitiesGroupedByCategory('september',year,range(1,31)),
 					'startday': findWeekday(str(year)+'-09-01')['weekday'],
 					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-09-01')['daynum']),
@@ -936,7 +936,7 @@ def dashboard(request):
 				},
 				'october':{
 					'length':range(1,32),
-					'completed':percentageCompleteActivities('october',year,range(1,32)),
+					'completed':minutesCompleteActivities('october',year,range(1,32)),
 					'categorygrouped':activitiesGroupedByCategory('october',year,range(1,32)),
 					'startday': findWeekday(str(year)+'-10-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-10-01')['daynum']),
@@ -944,7 +944,7 @@ def dashboard(request):
 				},
 				'november':{
 					'length':range(1,31),
-					'completed':percentageCompleteActivities('november',year,range(1,31)),
+					'completed':minutesCompleteActivities('november',year,range(1,31)),
 					'categorygrouped':activitiesGroupedByCategory('november',year,range(1,31)),
 					'startday': findWeekday(str(year)+'-11-01')['weekday'],
 					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-11-01')['daynum']),
@@ -952,7 +952,7 @@ def dashboard(request):
 				},
 				'december':{
 					'length':range(1,32),
-					'completed':percentageCompleteActivities('december',year,range(1,32)),
+					'completed':minutesCompleteActivities('december',year,range(1,32)),
 					'categorygrouped':activitiesGroupedByCategory('december',year,range(1,32)),
 					'startday': findWeekday(str(year)+'-12-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-12-01')['daynum']),
@@ -1006,7 +1006,7 @@ def activitiesGroupedByCategory(month,year,length):
 # completed activities
 # incomplete activities
 # }
-def percentageCompleteActivities(month,year,length):
+def minutesCompleteActivities(month,year,length):
 	focus=None
 	
 	day={}
@@ -1031,8 +1031,8 @@ def percentageCompleteActivities(month,year,length):
 			currenthr,currentmin,currentsec = int(cur[0]), int(cur[1]), int(cur[2])
 			totaldurationsec = (durationhr*60*60) + (durationmin*60) + (durationsec)
 			totalcurrentsec = (currenthr*60*60) + (currentmin*60) + (currentsec)
-			percentagecomplete = (totalcurrentsec/totaldurationsec)*100
-			day[i][activity.name]={'percentagecomplete':percentagecomplete,'color':activity.color}
+			minutescomplete = totalcurrentsec/60
+			day[i][activity.name]={'minutescomplete':minutescomplete,'color':activity.color}
 	
 	return day
 			
