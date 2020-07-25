@@ -88,8 +88,8 @@ function renderEventCharts(eventvariablenode,month,year){
     allactivedaynodes.forEach(currentdaynode =>{
         let color = currentdaynode.dataset.color;
         let completed = Number(currentdaynode.dataset.completed);
-        let daynum = currentdaynode.id.split('-')[1];
-        let activityname = currentdaynode.id.split('-')[0];
+        let daynum = currentdaynode.dataset.daynumber;
+        let activityname = currentdaynode.dataset.name;
         if(currentday==undefined){
             currentday=Number(daynum);
         }
@@ -124,7 +124,7 @@ function renderCategoryCharts(categoryvariablenode,month,year){
         let color = currentdaynode.dataset.color;
         let categorycount = Number(currentdaynode.dataset.occuring);
         let name = currentdaynode.dataset.name;
-        let daynum = currentdaynode.id.split('-')[1]; //daynum marks day position of main loop
+        let daynum = currentdaynode.dataset.daynumber; //daynum marks day position of main loop
         if(currentday==undefined){
             currentday=Number(daynum); //current day is used to mark all subsequent same days within main loop
         }                              //current day will follow when daynum's value differs from previous same values
@@ -296,7 +296,7 @@ function showWeeklyEvents(weeknumber){
         let nodedata={}
         document.getElementById(`${month}-${year}-eventvars`).querySelectorAll(`.${month}-${year}`).forEach(activitynode =>{
             //let name = activitynode.id.split('-')[0]
-            let daynumber = Number(activitynode.id.split('-')[1])
+            let daynumber = Number(activitynode.dataset.daynumber)
             if(7*(weeknumber-1)+1<=daynumber && daynumber<=7*weeknumber){
                 //add name,completed,color to dataset object
                 const activityname = activitynode.dataset.name;
@@ -361,7 +361,7 @@ function showWeeklyCategories(weeknumber){
         let nodedata={}
         document.getElementById(`${month}-${year}-categoryvars`).querySelectorAll(`.${month}-${year}`).forEach(categorynode =>{
             //let name = activitynode.id.split('-')[0]
-            let daynumber = Number(categorynode.id.split('-')[1])
+            let daynumber = Number(categorynode.dataset.daynumber)
             if(7*(weeknumber-1)+1<=daynumber && daynumber<=7*weeknumber){
                 //add name,completed,color to dataset object
                 const categoryname = categorynode.dataset.name;

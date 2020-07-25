@@ -207,12 +207,12 @@
 							{%if dayobj%}
 								{%for activityname,activityobj in dayobj.items%}
 						
-								<div class="{{month}}-{{year}}" id='{{activityname}}-{{daynum}}' data-completed="{{activityobj.minutescomplete}}" data-name="{{activityname}}" data-color="{{activityobj.color}}"></div>
+								<div class="{{month}}-{{year}}" id='{{activityname}}_{{daynum}}' data-completed="{{activityobj.minutescomplete}}" data-name="{{activityname}}" data-color="{{activityobj.color}}" data-daynumber="{{daynum}}"></div>
 						
 								{%endfor%}
 							{%endif%}
 							{%endfor%}
-							<div class="{{month}}-{{year}}" id='tempfix-100' data-completed="0" data-name="tempfix"></div>
+							<div class="{{month}}-{{year}}" id='tempfix_100' data-completed="0" data-name="tempfix"></div>
 						</div>
 						<div id='{{month}}-{{year}}-categoryvars' style="display:none;">
 						
@@ -220,12 +220,12 @@
 							{%if dayobj%}
 								{%for categoryname,categoryobj in dayobj.items%}
 						
-								<div class="{{month}}-{{year}}" id='{{categoryname}}-{{daynum}}' data-occuring="{{categoryobj.count}}" data-name="{{categoryname}}" data-color="{{categoryobj.color}}"></div>
+								<div class="{{month}}-{{year}}" id='{{categoryname}}_{{daynum}}' data-occuring="{{categoryobj.count}}" data-name="{{categoryname}}" data-color="{{categoryobj.color}}" data-daynumber="{{daynum}}"></div>
 						
 								{%endfor%}
 							{%endif%}
 							{%endfor%}
-							<div class="{{month}}-{{year}}" id='tempfix-100' data-completed="0" data-name="tempfix"></div>
+							<div class="{{month}}-{{year}}" id='tempfix_100' data-completed="0" data-name="tempfix"></div>
 						</div>
 
 
