@@ -755,12 +755,13 @@ def edit(request,activityid=-1,dateid=-1):
 def control(request,dateid):
 	if request.method == 'POST':
 		print("PAUSED")
-		#print(request.POST)
+		print(request.POST)
 
 		time = {}
 		active={}
 		action={}
-		aid=""
+		finish={}
+		
 		for key in request.POST.keys():
 			if not key=='csrfmiddlewaretoken':
 				id = key.split('_')[1]
@@ -769,27 +770,44 @@ def control(request,dateid):
 				if key.split('_')[0]=="active":
 					active[id]=request.POST[key]
 				if key.split('_')[0]=="pause":
-					aid=key.split('_')[1]
+					
 					action[id]="pause"
 				if key.split('_')[0]=="stop":
-					aid=key.split('_')[1]
+					
 					action[id]="stop"
+
+				#piggy backing on control function to mark whether or not user marked activity as finished. value inits at 0. user sets to 1
+				if key.split('_')[0]=="finish":
+					
+					finish[id]=int(request.POST[key])
 		
-		for id in active:
-			activity = Activity.objects.get(id=id)
-			activity.current_time = time[id]
-			if int(active[id])==0 and id in action and action[id]=="stop":#clear it
-				activity.active=0
-				activity.current_time="00:00:00"
-			elif int(active[id])==0:#pause it
-				activity.active=0
-			
-			if int(active[id])==1 and id in action and action[id]=="stop":#clear it
-				activity.active=0
-				activity.current_time="00:00:00"
-			elif int(active[id])==1 :#keep it goin
-				activity.active=1
-			activity.save()
+		
+		#finish value == 1 when user wants to color in row entry, 0 when user wants to see activity row activated
+		if finish:
+			for id in finish:			
+				activity = Activity.objects.get(id=id)
+				if finish[id] != activity.finish:
+					activity.finish = finish[id]
+					activity.save()
+				print(activity)
+		if active:
+			for id in active:
+				activity = Activity.objects.get(id=id)
+				activity.current_time = time[id]
+				if int(active[id])==0 and id in action and action[id]=="stop":#clear it
+					activity.active=0
+					activity.current_time="00:00:00"
+				elif int(active[id])==0:#pause it
+					activity.active=0
+				
+				if int(active[id])==1 and id in action and action[id]=="stop":#clear it
+					activity.active=0
+					activity.current_time="00:00:00"
+				elif int(active[id])==1 :#keep it goin
+					activity.active=1
+				
+				
+				activity.save()
 		gobacktodate = "/date/{}".format(dateid)
 		#print(gobacktodate)
 		return redirect(gobacktodate)

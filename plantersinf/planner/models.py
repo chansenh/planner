@@ -11,6 +11,7 @@ class Activity(models.Model):
 	current_time=models.CharField(max_length=8)
 	days=models.CharField(max_length=255)
 	active=models.PositiveIntegerField()
+	finish=models.PositiveIntegerField()
 	activity_date = models.ForeignKey('Date', related_name="recurring",on_delete=models.CASCADE)
 	color = models.CharField(max_length=10)
 	category= models.ForeignKey('Category', related_name="activities",on_delete=models.CASCADE)

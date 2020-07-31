@@ -55,18 +55,20 @@ class Stopwatch{
             hrout=`${this.hr}`;
         }
         const out = `${hrout}:${minout}:${secout}`;
-        console.log(`time is ${out} compared to ${this.duration}`)
+        //console.log(`time is ${out} compared to ${this.duration}`)
         const targethr = Number(this.duration.split(':')[0])
         const targetmin = Number(this.duration.split(':')[1])
-        console.log('enditme---------->',this.duration)
-        console.log(targethr,this.hour,targethr>=this.hour)
-        console.log(targetmin,this.minute,targetmin>=this.minute)
+        //console.log('enditme---------->',this.duration)
+        //console.log(targethr,this.hour,targethr>=this.hour)
+        //console.log(targetmin,this.minute,targetmin>=this.minute)
         if (this.hour==targethr && this.minute==targetmin && this.second==0){
             //alert(`Activity ${this.id}, Times up!`);
             let activityname = findActivity(this.id)
             alertMessage(`Activty ${activityname} is complete!`)
             document.getElementById(`${this.id}`).classList.add('table-primary')
             document.getElementById('sound').play();
+            document.getElementById(`finish_${this.id}`).value='1'
+            document.getElementById(`finishbutton_${this.id}`).classList.add('active');
             document.getElementById(`time_${this.id}`).classList.remove('text-success');
             document.getElementById(`time_${this.id}`).classList.add('text-danger');
         }
@@ -131,12 +133,7 @@ class Stopwatch{
         this.second = 0;
         this.active=0;
         this.time='00:00:00';
-        document.getElementById(`time_${this.id}`).value = `00:00:00`;
-        document.getElementById(`time_${this.id}`).classList.remove('active');
-        document.getElementById(`time_${this.id}`).classList.add('text-success');
-        document.getElementById(`time_${this.id}`).classList.remove('text-danger');
-        document.getElementById(`pause_${this.id}`).style = "display: none";//hide pause
-        document.getElementById(`start_${this.id}`).style = "display: flexbox";//show start
+        
         this.interval=null;
     }
     
@@ -174,7 +171,7 @@ function stopwatchControl(){
         //initialize stopwatch for every activity
         
         populateVisualActivities();
-            
+        
         
         //populate activity list
         //dateView.populateActivities(data.activities);
@@ -222,6 +219,14 @@ function stopwatchControl(){
                 let stopwatch= stopwatches[`stopwatch_${event.target.id.split('_')[1]}`];
                 console.log(stopwatch);
                 console.log('stopping')
+                document.getElementById(`time_${stopwatch.id}`).value = `00:00:00`;
+                document.getElementById(`time_${stopwatch.id}`).classList.remove('active');
+                document.getElementById(`time_${stopwatch.id}`).classList.add('text-success');
+                document.getElementById(`time_${stopwatch.id}`).classList.remove('text-danger');
+                document.getElementById(`pause_${stopwatch.id}`).style = "display: none";//hide pause
+                document.getElementById(`start_${stopwatch.id}`).style = "display: flexbox";//show start
+                document.getElementById(`finish_${stopwatch.id}`).value = "0";//mark as ongoing
+                document.getElementById(`finishbutton_${stopwatch.id}`).classList.remove('active');//mark as ongoing
                 stopwatch.stop();//clearInterval(stopwatch.interval);
                 
             }
@@ -467,7 +472,7 @@ function convertToReadableTime(hrs,mins,secs){
     return `${hrs}:${mins}:${secs}`
 }
 
-function greyOutCompletedActivities(){
+function markFinishedActivities(){
     document.querySelectorAll('.date_row').forEach(row =>{
         const currenttime = document.getElementById(`time_${row.id}`).value.split(':');
         const targettime = document.getElementById(`duration_${row.id}`).value.split(':');
@@ -478,7 +483,15 @@ function greyOutCompletedActivities(){
         if(currenthr >= targethr && currentmin >= targetmin){
             row.querySelector('.stopwatch').classList.remove('text-success')
             row.querySelector('.stopwatch').classList.add('text-danger')
-            row.classList.add('table-primary')
+        //    row.classList.add('table-primary')
+        }
+        if(row.querySelector('.finish').value=='1'){
+            row.querySelector('.finishbutton').classList.add('active');
+            row.classList.add('table-primary');
+        }
+        if(row.querySelector('.finish').value=='0'){
+            row.querySelector('.finishbutton').classList.remove('active')
+            row.classList.remove('table-primary');
         }
     })
 }
@@ -508,6 +521,21 @@ function activityAlert(){
 
 }
 
+//given the id of a node, does a class name exist within a nodes classlist?
+function validateNodeWithID(id,classname){
+    let valid=false;
+    console.log(document.getElementById(id).classList.length)
+    if(document.getElementById(id).classList.length>0){
+        document.getElementById(id).classList.forEach(currentclass =>{
+            if(classname == currentclass){
+                valid=true
+            }
+        })
+    }
+    
+    return valid    
+}
+
 //lookup element id. within element, class edit-activity innerhtml holds activity name
 function findActivity(id){
     let name = document.getElementById(`go_${id}`).innerHTML;
@@ -526,6 +554,33 @@ function alertMessage(string){
     <div id="alertmessage">${string}</div>`;
     document.body.appendChild(alertdiv);
 }
+
+function activateFinishButton(){
+    document.getElementById('tablebody').addEventListener('click', event=>{
+        //event.preventDefault();
+        let targetnode = event.target;
+        
+        //target node is a finish button
+        if(targetnode.classList.length>0 && validateNodeWithID(targetnode.id,'finishbutton')){
+            let id = targetnode.id.split('_')[1];
+            let finishnode = document.getElementById(`finish_${id}`);
+            if(finishnode.value=='0'){
+                finishnode.value='1';
+                targetnode.classList.add('active');
+                document.getElementById(id).classList.add('table-primary')
+            }
+            else if(finishnode.value=='1'){
+                finishnode.value='0';
+                targetnode.classList.remove('active');
+                document.getElementById(id).classList.remove('table-primary')
+            }
+            
+            
+        }
+        
+    })
+}
+
 //console.log(data);
 //let JSONdata=undefined;
 //fs.readFile(`${__dirname}/data/data.json`, 'utf-8', (err,data) => {
@@ -533,9 +588,10 @@ function alertMessage(string){
 //});
 //let swlist = new StopwatchList();
 //dateTableListeners()
+activateFinishButton();
 stopwatchControl();
 toggleModal();
 newCategoryListener();
 removeCategoryListener();
-greyOutCompletedActivities();
+markFinishedActivities();
 calculateTotalTime();
