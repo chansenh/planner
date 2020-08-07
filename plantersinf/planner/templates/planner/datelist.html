@@ -22,13 +22,25 @@
         Dashboard
       </a>
       <a href="/" class="btn btn-primary btn-sm">Home</a>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle shadow" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Filter
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {%for category in categories%}
+          <a class="dropdown-item" href="#" id="{{category.category}}">{{category.category}}</a>
+          {%endfor%}
+          
+        </div>
+      </div>
     </div>
+   
+
+
+    <div id="years">
 
     {%for eachyear in years%}
-    
-  
     {%for year,yearobj in eachyear.items%}
-    <!--<div class="container pt-5 year {{year}}" style="min-height: 550px;" id="{{year}}">-->
     {%for month,monthobj in yearobj.items%}
     
     {%if monthobj.eachweek.exists%}
@@ -76,54 +88,47 @@
       
         {%for weeknumber,weekdates in monthobj.eachweek.items%}
         {%if weeknumber != "exists"%}
-        <div class="row week_{{weeknumber}} p-0 border-top border-bottom"><!--hard coded. should loop from first week to last week aka 4 weeks-->
+        <div class="row week_{{weeknumber}} p-0 border-top border-bottom">
           {%if weekdates%}
           <!--eachday==7 is sunday; 1,2,3,4,5,6,7-->
-          <div class="col p-0 border-right border-left sun">
-            <div class="container sun">
+          <div class="col p-0 border-right border-left sun" id='day'>
+            <div class="container sun" id='day'>
               {%for date in weekdates%}    
               {%if date.weekday == "sun"%}
-              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
-              
-              {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
-
-              </div>
-              
-              {%endfor%}
-              
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}" data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
               {%endif%}
               {%endfor%}
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left mon">
-            <div class="container mon">
+          <div class="col p-0 border-right border-left mon" id='day'>
+            <div class="container mon" id='day'>
               {%for date in weekdates%}    
               {%if date.weekday == "mon"%}
-              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
-              {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
-
-              </div>
-              
-              {%endfor%}
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}" data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
               {%endif%}
               {%endfor%}
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left tue">
-            <div class="container tue">
+          <div class="col p-0 border-right border-left tue" id='day'>
+            <div class="container tue" id='day'>
               {%for date in weekdates%}    
               {%if date.weekday == "tue"%}
-              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}" data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
               <ul class="list-group">
               {%for act in date.recurring.all%}
-              <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
-
-              </li>
-              
+              <li class="list-group-item p-0 m-0 rounded shadow activity mb-1" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
               {%endfor%}
               </ul>
               {%endif%}
@@ -131,65 +136,61 @@
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left wed">
-            <div class="container wed">
+          <div class="col p-0 border-right border-left wed" id='day'>
+            <div class="container wed" id='day'>
               {%for date in weekdates%}    
               {%if date.weekday == "wed"%}
-              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
-              {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
-
-              </div>
-              
-              {%endfor%}
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}" data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
               {%endif%}
               {%endfor%}
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left thu">
-            <div class="container thu">
+          <div class="col p-0 border-right border-left thu" id='day'>
+            <div class="container thu" id='day'>
               {%for date in weekdates%}    
               {%if date.weekday == "thu"%}
-              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
-              {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
-
-              </div>
-              
-              {%endfor%}
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}" data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
               {%endif%}
               {%endfor%}
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left fri">
-            <div class="container fri">
+          <div class="col p-0 border-right border-left fri" id='day'>
+            <div class="container fri" id='day'>
               {%for date in weekdates%}    
               {%if date.weekday == "fri"%}
-              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
-              {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
-
-              </div>
-              
-              {%endfor%}
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}" data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
               {%endif%}
               {%endfor%}
               <br>
             </div>
           </div>
-          <div class="col p-0 border-right border-left sat">
-            <div class="container sat">
+          <div class="col p-0 border-right border-left sat" id='day'>
+            <div class="container sat" id='day'>
               {%for date in weekdates%}    
               {%if date.weekday == "sat"%}
-              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}">{{date.day}}</a>
-              {%for act in date.recurring.all%}
-              <div class="container p-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}
-
-              </div>
-              
-              {%endfor%}
+              <a class="btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}" data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}};" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
               {%endif%}
               {%endfor%}
               <br>
@@ -238,23 +239,7 @@
         
       </div>
 
-    <!-- group activities by category and only show activites for current month on calendar
-      for weeknumber,weekdates in monthobj.eachweek.items
-        if weeknumber != "exists" and weekdates
-        for date in weekdates
-      <div class="container edit">
-        for category in categories
-        {{category.category}}
-        for aid,name,catid in activitiesbyname.values
-        
-        if catid == category.id
-        <div class="container">
-          <a class="btn btn-link" href="edit/{{aid}}"> {{name}}</a>
-        </div>
-        endif
-        endfor
-        endfor
-      </div>-->
+      
 
     </div>
     <!--end of month-->
@@ -266,39 +251,64 @@
   {%endfor%}
   {%endfor%}
 <!--end of year-->
-  <div class="container pt-3 text-center">
-    <a class="btn btn-primary shadow" href="/create/">Create Activities</a>
-  </div>
-  <div class="container">
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle shadow" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Filter
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        {%for category in categories%}
-        <a class="dropdown-item" href="#" id="{{category.category}}">{{category.category}}</a>
-        {%endfor%}
-        
-      </div>
-    </div>
-  </div>
-  
-  <div class="container">
-    {%for category in categories%}
-    {{category.category}}
-    {%for aid,name,catid in activitiesbyname.values%}
+</div>
+<div class="container pt-3 text-center">
+  <a class="btn btn-primary shadow" href="/create/">Create Activities</a>
+</div>
+
+<div class="m-5 d-flex flex-wrap">
+  {%for eachyear in years%}
+  {%for year,yearobj in eachyear.items%}
+  {%for month,monthobj in yearobj.items%}
+    {%if monthobj.activities%}
+      {%for date in monthobj.activities%}
+      <div class="card m-1" id='{{date.date}}' style="display: none;">
+        <div class="card-header">
+          <a class="navbar-brand">{{date.date}}</a>
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+              <a class="btn nav-link active">Summary</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link">Metrics</a>
+            </li>
+            
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="summary" style="display: block;">
+            <h5 class="card-title">Activities</h5>
+            {%for activity in date.recurring.all%}
     
-    {%if catid == category.id%}
-    <div class="container">
-      <a class="btn btn-link" href="edit/{{aid}}"> {{name}}</a>
-    </div>
-    {%endif%}
-    {%endfor%}
-    {%endfor%}
-  </div>
+            <p class="card-text">
+            <span class="badge activityname" style="background-color: {{activity.color}};">{{activity.name}}</span> : <span class="badge activityduration">{{activity.duration}}</span>
+            </p>
+            {%endfor%}
+          </div>
+          <div id="DATEMETRICS" style="display: none;">
+          
+          <p class="card-text">
+            graphs n stuff
+          </p>
+          
+          </div>
+        </div>
+      </div>
+      {%endfor%}
+      {%endif%}
+      {%endfor%}
+      {%endfor%}
+      {%endfor%}
+    
+</div>
+
+  
+  
+  
+  
 
     
-    
+  
   
 
 

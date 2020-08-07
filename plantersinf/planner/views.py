@@ -40,6 +40,7 @@ def index(request):
 			
 			yearlydates={
 				'january':{
+					'activities': getMonthlyActivities('january',year),
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-01-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-01-01')['daynum']),
@@ -48,66 +49,77 @@ def index(request):
 					#'editactivities': Activity.objects.filter(activity_date__month='january',activity_date__year=year).order_by('category').values_list('name','category').distinct()
 				},
 				'february':{
+					'activities': getMonthlyActivities('february',year),
 					'length':range(1,29),
 					'startday': findWeekday(str(year)+'-02-01')['weekday'],
 					'numberofweeks':numberOfWeeks(28,findWeekday(str(year)+'-02-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='february').order_by('day'),numberOfWeeks(28,findWeekday(str(year)+'-02-01')['daynum']),findWeekday(str(year)+'-02-01')['daynum'],28)
 				},
 				'march':{
+					'activities': getMonthlyActivities('march',year),
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-03-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-03-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='march').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-03-01')['daynum']),findWeekday(str(year)+'-03-01')['daynum'],31)
 				},
 				'april':{
+					'activities': getMonthlyActivities('april',year),
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-04-01')['weekday'],
 					'numberofweeks':range(numberOfWeeks(31,findWeekday(str(year)+'-04-01')['daynum'])),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='april').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-04-01')['daynum']),findWeekday(str(year)+'-04-01')['daynum'],31)
 				},
 				'may':{
+					'activities': getMonthlyActivities('may',year),
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-05-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-05-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='may').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-05-01')['daynum']),findWeekday(str(year)+'-05-01')['daynum'],31)
 				},
 				'june':{
+					'activities': getMonthlyActivities('june',year),
 					'length':range(1,31),
 					'startday': findWeekday(str(year)+'-06-01')['weekday'],
 					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-06-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='june').order_by('day'),numberOfWeeks(30,findWeekday(str(year)+'-06-01')['daynum']),findWeekday(str(year)+'-06-01')['daynum'],30)
 				},
 				'july':{
+					'activities': getMonthlyActivities('july',year),
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-07-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-07-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='july').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-07-01')['daynum']),findWeekday(str(year)+'-07-01')['daynum'],31)
 				},
 				'august':{
+					'activities': getMonthlyActivities('august',year),
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-08-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-08-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='august').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-08-01')['daynum']),findWeekday(str(year)+'-08-01')['daynum'],31)
 				},
 				'september':{
+					'activities': getMonthlyActivities('september',year),
 					'length':range(1,31),
 					'startday': findWeekday(str(year)+'-09-01')['weekday'],
 					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-09-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='september').order_by('day'),numberOfWeeks(30,findWeekday(str(year)+'-09-01')['daynum']),findWeekday(str(year)+'-09-01')['daynum'],30)
 				},
 				'october':{
+					'activities': getMonthlyActivities('october',year),
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-10-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-10-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='october').order_by('day'),numberOfWeeks(31,findWeekday(str(year)+'-10-01')['daynum']),findWeekday(str(year)+'-10-01')['daynum'],31)
 				},
 				'november':{
+					'activities': getMonthlyActivities('november',year),
 					'length':range(1,31),
 					'startday': findWeekday(str(year)+'-11-01')['weekday'],
 					'numberofweeks':numberOfWeeks(30,findWeekday(str(year)+'-11-01')['daynum']),
 					'eachweek': whereTheDatesGo(Date.objects.all().filter(year=year,month='november').order_by('day'),numberOfWeeks(30,findWeekday(str(year)+'-11-01')['daynum']),findWeekday(str(year)+'-11-01')['daynum'],30)
 				},
 				'december':{
+					'activities': getMonthlyActivities('december',year),
 					'length':range(1,32),
 					'startday': findWeekday(str(year)+'-12-01')['weekday'],
 					'numberofweeks':numberOfWeeks(31,findWeekday(str(year)+'-12-01')['daynum']),
@@ -1113,6 +1125,13 @@ def findWeekday(date):
 		'daynum':day,
 		'date':date
 	}
+
+
+def getMonthlyActivities(month,year):
+	monthact = Date.objects.filter(month=month,year=year).order_by('day')
+	#for each in monthact:
+	#	print(each.day)
+	return monthact
 
 def numberOfWeeks(numberofdays,startday):#startday is day of the week in a number form 0-6 = monday-sunday
 	if numberofdays==30:

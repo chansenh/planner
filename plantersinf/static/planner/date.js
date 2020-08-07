@@ -409,7 +409,7 @@ function greyOutFinishedRows(){
 
 function calculateTotalTime(){
     let finalhr=0,finalmin=0,finalsec=0;
-    
+    let overhr=0, overmin=0, oversec=0;
     let totalhour=0,totalminute=0,totalsecond=0;
     let currenthour=0,currentminute=0,currentsecond=0;
     //for each activity scheudled for the day, add the target time and current time separatly 
@@ -420,10 +420,23 @@ function calculateTotalTime(){
         const currenttime = current.split(':');
         let totalhr=Number(totaltime[0]),totalmin=Number(totaltime[1]),totalsec=Number(totaltime[2]);
         let currenthr=Number(currenttime[0]),currentmin=Number(currenttime[1]),currentsec=Number(currenttime[2]);
-        if(currenthr>totalhr || (currenthr>=totalhr && currentmin>=totalmin && currentsec>=totalsec)){
+        //row's current hour is larger than max time or row has been marked as finished. add activity duration to the time as current time has exceeded the duration 
+        if(currenthr>totalhr || (currenthr>=totalhr && currentmin>=totalmin && currentsec>=totalsec) || Number(document.getElementById(`finish_${row.id}`).value)==1){
             currenthour+=totalhr;
             currentminute+=totalmin;
             currentsecond+=totalsec;
+            //only applies to activities where current time is equal or greater than the activity's full duration
+            if(currenthr>=totalhr && currentmin>=totalmin && currentsec>=totalsec){
+                if(currenthr>totalhr){
+                    overhr+=currenthr-totalhr;
+                }
+                if(currentmin>totalmin){
+                    overmin+=currentmin-totalmin;
+                }
+                if(currentsec>totalsec){
+                    oversec+=currentsec-totalsec;
+                }
+            }
         }
         else{
             currenthour+=currenthr;
@@ -434,13 +447,59 @@ function calculateTotalTime(){
         totalminute+=totalmin;
         totalsecond+=totalsec;
     })
+    const overtime = convertToReadableTime(overhr,overmin,oversec);
     const totalduration = convertToReadableTime(totalhour,totalminute,totalsecond);
     const currentduration = convertToReadableTime(currenthour,currentminute,currentsecond);
-   
+    const remainingduration = getRemainingTime(totalduration,currentduration)
     
     document.getElementById('totalduration').innerHTML=totalduration;
-    document.getElementById('remainingduration').innerHTML=currentduration;
+    document.getElementById('remainingduration').innerHTML=remainingduration;
+    document.getElementById('currentduration').innerHTML=currentduration;
+    if(overhr!=0 || overmin!=0 || oversec!=0){
+        document.getElementById('overtime').textContent = `(+${overtime})`
+    }
     
+    
+}
+
+function getRemainingTime(totalduration, currentduration){
+    console.log(totalduration)
+    console.log(currentduration)
+    let hour = Number(totalduration.split(':')[0])-Number(currentduration.split(':')[0]);
+    let minute = Number(totalduration.split(':')[1])-Number(currentduration.split(':')[1]);
+    let second = Number(totalduration.split(':')[2])-Number(currentduration.split(':')[2]);
+    let raw = [second,minute,hour];
+    let remaining=[0,0,0];
+    console.log(hour,minute,second)
+    raw.forEach((time,idx) =>{
+        console.log('b4',time);
+        if(time<0){
+            time+=60;
+            
+        }
+        
+        console.log('afta',time);
+        remaining[idx]+=time;    
+    });
+    //minute is negative, hour must be changed to reflect approriate adjustment
+    if(minute<0){
+        remaining[2]-=1;
+    }
+    //second is negative, minute must be updated to reflect approriate adjustment
+    if(second<0){
+        remaining[1]-=1;
+    }
+
+    //string formating
+    remaining = remaining.map(time =>{
+        if(time<10){
+            time=`0${time}`
+        }
+        return time
+    });
+
+
+    return `${remaining[2]}:${remaining[1]}:${remaining[0]}`
 }
 
 function convertToReadableTime(hrs,mins,secs){
@@ -564,18 +623,21 @@ function activateFinishButton(){
         if(targetnode.classList.length>0 && validateNodeWithID(targetnode.id,'finishbutton')){
             let id = targetnode.id.split('_')[1];
             let finishnode = document.getElementById(`finish_${id}`);
+            //finish button is inactive,change to active, update remaining time with activity's full duration regardless of current time
             if(finishnode.value=='0'){
                 finishnode.value='1';
                 targetnode.classList.add('active');
                 document.getElementById(id).classList.add('table-primary')
+                
             }
+            //finish button is active,change to inactive, update remaining time with activity's current time
             else if(finishnode.value=='1'){
                 finishnode.value='0';
                 targetnode.classList.remove('active');
                 document.getElementById(id).classList.remove('table-primary')
             }
             
-            
+            calculateTotalTime();
         }
         
     })

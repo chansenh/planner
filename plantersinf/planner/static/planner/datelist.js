@@ -107,8 +107,8 @@ function calendarNavigation(calendarList){
         }
 
         if(event.target.id=='prev'){
-            let activemonthid = document.querySelector(`.active`).id.split('-')[0];
-            let activeyearid = Number(document.querySelector(`.active`).id.split('-')[1]);
+            let activemonthid = document.getElementById('years').querySelector(`.active`).id.split('-')[0];
+            let activeyearid = Number(document.getElementById('years').querySelector(`.active`).id.split('-')[1]);
 
             calendarList.forEach((obj,idx)=>{
                 
@@ -136,8 +136,8 @@ function calendarNavigation(calendarList){
             
         }
         if(event.target.id=='next'){
-            let activemonthid = document.querySelector(`.active`).id.split('-')[0];
-            let activeyearid = Number(document.querySelector(`.active`).id.split('-')[1]);
+            let activemonthid = document.getElementById('years').querySelector(`.active`).id.split('-')[0];
+            let activeyearid = Number(document.getElementById('years').querySelector(`.active`).id.split('-')[1]);
             //console.log('active is',activemonthid,activeyearid)
             calendarList.forEach((obj,idx)=>{ //id==may-2020 
                 let month = obj['id'].split('-')[0]
@@ -243,7 +243,7 @@ function enableFiltering(){
 }
 
 function checkActive(){
-    let active = document.querySelector('.active')
+    let active = document.getElementById('years').querySelector('.active')
     console.log(active)
     if (active){
         return true
@@ -252,8 +252,8 @@ function checkActive(){
 }
 
 function getActive(){
-    let month = document.querySelector('.active').id.split('-')[0]
-    let year = document.querySelector('.active').id.split('-')[1]
+    let month = document.getElementById('years').querySelector('.active').id.split('-')[0]
+    let year = document.getElementById('years').querySelector('.active').id.split('-')[1]
     return {
         month,
         year
@@ -310,33 +310,123 @@ function hightlightCurrentDay(){
 }
 
 function dayListener(){
-    document.querySelectorAll(`.calendar`).forEach(calendarmonth => {
-        calendarmonth.addEventListener('click',event=>{
-            console.log(event.target);
-            const node = event.target;
+    
+        ///    
             //if clicked node has a link within it, execute the link
-            if(node.getElementsByTagName('A').length != 0){
-                const daylink = node.getElementsByTagName('A')[0]; //only one link exists for any single day. manually select the first one
-                daylink.click()
+    ///     if(node.getElementsByTagName('A').length != 0){
+    ///         const daylink = node.getElementsByTagName('A')[0]; //only one link exists for any single day. manually select the first one
+    ///            daylink.click()
+    ///     }
+    ///     
+    ///     const week = ['mon','tue','wed','thu','fri','sat','sun'];
+    ///     let day="";
+    ///     node.classList.forEach(clas =>{
+    ///         if(clas=="activity"){
+    ///             let editactivity = document.createElement('a');
+    ///             editactivity.href = `/edit/${node.id}`
+    ///             editactivity.click()
+    ///         }
+    ///     })
+    ///     console.log(day)
+    document.getElementById('years').addEventListener('click', event=>{
+        let node = event.target
+        console.log(node);
+        if(node.id && (validateNodeWithID(node.id,'sun') || validateNodeWithID(node.id,'mon') || validateNodeWithID(node.id,'tue') || validateNodeWithID(node.id,'wed') || validateNodeWithID(node.id,'thu') || validateNodeWithID(node.id,'fri') || validateNodeWithID(node.id,'sat'))){
+            m  = {'january':01,'february':02,'march':03,'april':04,'may':05,'june':06,'july':07,'august':08,'september':09,'october':10,'november':11,'december':12,}
+            let month=m[node.querySelector('.btn').dataset.month];
+            let day = node.querySelector('.btn').dataset.day;
+            let year = node.querySelector('.btn').dataset.year;//all strings
+            console.log(year,month,day)
+            if(month<10){
+                month=`0${month}`
+            }
+            if(day<10){
+                day=`0${day}`
+            }
+            produceTotalDuration(`${year}-${month}-${day}`)
+            //card is already being shown, hide it and remvo active class
+            if(validateNodeWithID(`${year}-${month}-${day}`,'active')){
+                document.getElementById(`${year}-${month}-${day}`).style.display = "none";
+                document.getElementById(`${year}-${month}-${day}`).classList.remove('active');    
+            }
+            else{
+                document.getElementById(`${year}-${month}-${day}`).style.display = "block";
+                document.getElementById(`${year}-${month}-${day}`).classList.add('active')
             }
             
-            const week = ['mon','tue','wed','thu','fri','sat','sun'];
-            let day="";
-            node.classList.forEach(clas =>{
-                if(clas=="activity"){
-                    let editactivity = document.createElement('a');
-                    editactivity.href = `/edit/${node.id}`
-                    editactivity.click()
-                }
-            })
-            console.log(day)
-        });
+        }
     });
     
         
 }
 
 
+function produceTotalDuration(cardid){
+    let hour=0
+    let minute=0
+    let second=0
+    let nodetoinserton = document.getElementById(cardid).querySelector('.summary');
+    nodetoinserton.querySelectorAll('.activityduration').forEach(durationbadge =>{
+        let hr = Number(durationbadge.textContent.split(':')[0])
+        let min = Number(durationbadge.textContent.split(':')[1])
+        let sec = Number(durationbadge.textContent.split(':')[2])
+
+        hour+=hr
+        minute+=min
+        second+=sec
+    });
+    let time = convertToReadableTime(hour,minute,second);
+    let html = `
+    <p class="card-text">
+    <span class="badge activityname">Total Duration</span> : <span class="badge activityduration">${time}</span>
+    </p>
+    `
+    nodetoinserton.insertAdjacentHTML('beforeend',html);
+}
+
+function convertToReadableTime(hrs,mins,secs){
+    if(secs>59){
+        //above 60 seconds.
+        let remainingseconds = secs % 60;
+        let minutesadded = secs / 60;
+        
+        mins+=Math.floor(minutesadded);
+        secs=remainingseconds;
+        
+    }
+    if(mins>59){
+        let remainingminutes = mins % 60;
+        let hrsadded = mins / 60;
+        hrs+=Math.floor(hrsadded);
+        mins=remainingminutes;
+    }
+    let timestring="";
+    if(hrs<10){
+        hrs = `0${hrs}`
+    }
+    if(mins<10){
+        mins = `0${mins}`
+    }
+    if(secs<10){
+        secs = `0${secs}`
+    }
+    return `${hrs}:${mins}:${secs}`
+}
+
+//given the id of a node, does a class name exist within a nodes classlist?
+function validateNodeWithID(id,classname){
+    let valid=false;
+    console.log(document.getElementById(id).classList.length)
+    if(document.getElementById(id).classList.length>0){
+        document.getElementById(id).classList.forEach(currentclass =>{
+            if(classname == currentclass){
+                valid=true
+            }
+        })
+    }
+    
+    return valid    
+}
 
 
 
@@ -361,5 +451,6 @@ calendarNavigation(calendarList);
 enableFiltering();
 hightlightCurrentDay();
 dayListener();
+
 //mouseOver();
 

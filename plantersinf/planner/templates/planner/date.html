@@ -509,7 +509,7 @@
 						</td>
 						<input type="hidden" class="activate" name="active_{{activity.id}}" id="active_{{activity.id}}" value="{{activity.active}}">
 					<td><a class="btn btn-success text-white" id="start_{{activity.id}}" style="display:flexbox;">Start</a><input type="submit" class="btn btn-primary text-white" form='stopwatches' id="pause_{{activity.id}}" name="pause_{{activity.id}}" style="display: none;" value="Pause"><input type="submit" class="btn btn-danger text-white" form='stopwatches' id="stop_{{activity.id}}" name="stop_{{activity.id}}" style="display:flexbox;" value="Clear"></a></td>
-					<td><a class="btn btn-sm btn-outline-dark finishbutton" id='finishbutton_{{activity.id}}'>Finish</a><input type='hidden' class="finish" id='finish_{{activity.id}}' name='finish_{{activity.id}}' value='{{activity.finish}}'></td>
+					<td><a class="btn btn-sm btn-outline-dark finishbutton" href='#{{activity.id}}' id='finishbutton_{{activity.id}}'>Finish</a><input type='hidden' class="finish" id='finish_{{activity.id}}' name='finish_{{activity.id}}' value='{{activity.finish}}'></td>
 			</tr>
 				
 		  	{%endfor%}
@@ -523,9 +523,17 @@
 				</th>
 				
 			</tr>
-			<tr class="remaining_row">
+			<tr class="current_row">
 				<th scope="row">
 					<td><p class="lead">Current:</p></td>
+					<td><span id='currentduration'>00:00:00</span> <span id='overtime'></span></td>
+					<td></td>
+					<td></td>
+				</th>
+			</tr>
+			<tr class="remaining_row">
+				<th scope="row">
+					<td><p class="lead">Remaining:</p></td>
 					<td><span id='remainingduration'>00:00:00</span></td>
 					<td></td>
 					<td></td>
