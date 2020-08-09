@@ -305,7 +305,7 @@ function getCurrentDateObject(){
 function hightlightCurrentDay(){
     let d = getCurrentDateObject()
     
-    document.getElementById(`${d.month}${d.day}`).parentNode.classList.add('border-danger','border','shadow-sm');
+    document.getElementById(`${d.month}${d.day}${d.year}`).parentNode.classList.add('border-danger','border','shadow-sm');
     
 }
 
@@ -329,43 +329,82 @@ function dayListener(){
     ///     })
     ///     console.log(day)
     document.getElementById('years').addEventListener('click', event=>{
+        event.preventDefault();
         let node = event.target
         console.log(node);
-        if(node.id && (validateNodeWithID(node.id,'sun') || validateNodeWithID(node.id,'mon') || validateNodeWithID(node.id,'tue') || validateNodeWithID(node.id,'wed') || validateNodeWithID(node.id,'thu') || validateNodeWithID(node.id,'fri') || validateNodeWithID(node.id,'sat'))){
+        
+        
+        //clicked object is the link itself. display card associated with that day
+        if(validateNodeWithID(node.id,'linkbtn')){
+            console.log('linkbutton was lcicked')
             m  = {'january':01,'february':02,'march':03,'april':04,'may':05,'june':06,'july':07,'august':08,'september':09,'october':10,'november':11,'december':12,}
-            let month=m[node.querySelector('.btn').dataset.month];
-            let day = node.querySelector('.btn').dataset.day;
-            let year = node.querySelector('.btn').dataset.year;//all strings
+            let month=m[node.dataset.month];
+            let day = node.dataset.day;
+            let year = node.dataset.year;//all strings
             console.log(year,month,day)
             if(month<10){
                 month=`0${month}`
             }
+
             if(day<10){
                 day=`0${day}`
             }
-            produceTotalDuration(`${year}-${month}-${day}`)
+            
             //card is already being shown, hide it and remvo active class
             if(validateNodeWithID(`${year}-${month}-${day}`,'active')){
+                console.log(node.dataset.month,day)
+                document.getElementById(`${node.dataset.month}${Number(day)}${year}`).classList.remove('active','btn-outline-info');
                 document.getElementById(`${year}-${month}-${day}`).style.display = "none";
                 document.getElementById(`${year}-${month}-${day}`).classList.remove('active');    
             }
             else{
+                document.getElementById(`${node.dataset.month}${Number(day)}${year}`).classList.add('active','btn-outline-info');
                 document.getElementById(`${year}-${month}-${day}`).style.display = "block";
                 document.getElementById(`${year}-${month}-${day}`).classList.add('active')
-            }
+            }    
+        }
+
+        //clicked object is the day box. execute day link
+        else if(node.id=='day' && (validateNodeWithID(node.id,'sun') || validateNodeWithID(node.id,'mon') || validateNodeWithID(node.id,'tue') || validateNodeWithID(node.id,'wed') || validateNodeWithID(node.id,'thu') || validateNodeWithID(node.id,'fri') || validateNodeWithID(node.id,'sat'))){
             
+            //execute the link
+            let daylink = document.createElement('a');
+            daylink.href= node.getElementsByTagName('A')[0].href;
+            daylink.click()  
+        }
+
+        //object clicked is of acitivities listed within day box
+        else{
+            node.classList.forEach(clas =>{
+                if(clas=="activity"){
+                let editactivity = document.createElement('a');
+                editactivity.href = `/edit/${node.id}`
+                editactivity.click()
+                }
+            })
         }
     });
     
         
 }
 
+function populateCardDuration(){
+    document.querySelectorAll('.card').forEach(card =>{
+        produceTotalDuration(card.id);
+        populateCardWeekday(card.id)
+    });
+}
 
 function produceTotalDuration(cardid){
     let hour=0
     let minute=0
     let second=0
+
+    
+
+
     let nodetoinserton = document.getElementById(cardid).querySelector('.summary');
+    //calculate total duration of all activities in the day
     nodetoinserton.querySelectorAll('.activityduration').forEach(durationbadge =>{
         let hr = Number(durationbadge.textContent.split(':')[0])
         let min = Number(durationbadge.textContent.split(':')[1])
@@ -375,14 +414,40 @@ function produceTotalDuration(cardid){
         minute+=min
         second+=sec
     });
+
+    //nodetoinserton.querySelector
     let time = convertToReadableTime(hour,minute,second);
     let html = `
-    <p class="card-text">
-    <span class="badge activityname">Total Duration</span> : <span class="badge activityduration">${time}</span>
+    <p class="card-text durationbadge">
+    <span class="badge">Total Duration</span> : <span class="badge">${time}</span>
     </p>
     `
     nodetoinserton.insertAdjacentHTML('beforeend',html);
 }
+
+//replace fri with friday, sat with saturday, so on
+function populateCardWeekday(cardid){
+    let card = document.getElementById(cardid);
+    let datenode = card.querySelector('.navbar-brand');
+
+    let fulldate = datenode.textContent;
+
+    let day = returnDayFromClass(cardid);
+    datenode.textContent=`${day} | ${fulldate}`
+}
+
+function returnDayFromClass(id){
+    let day=''
+    let dotw=['mon','tue','wed','thu','fri','sat','sun']
+    let days={'mon':'Monday','tue':'Tuesday','wed':'Wednesday','thu':'Thursday','fri':'Friday','sat':'Saturday','sun':'Sunday'};
+    document.getElementById(id).classList.forEach(name =>{
+        if(dotw.includes(name)){
+            day=days[name];
+        }
+    })
+    return day
+}
+
 
 function convertToReadableTime(hrs,mins,secs){
     if(secs>59){
@@ -450,6 +515,7 @@ else{
 calendarNavigation(calendarList);
 enableFiltering();
 hightlightCurrentDay();
+populateCardDuration();
 dayListener();
 
 //mouseOver();
