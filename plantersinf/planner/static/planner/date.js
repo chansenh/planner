@@ -463,43 +463,28 @@ function calculateTotalTime(){
 }
 
 function getRemainingTime(totalduration, currentduration){
-    console.log(totalduration)
-    console.log(currentduration)
-    let hour = Number(totalduration.split(':')[0])-Number(currentduration.split(':')[0]);
-    let minute = Number(totalduration.split(':')[1])-Number(currentduration.split(':')[1]);
-    let second = Number(totalduration.split(':')[2])-Number(currentduration.split(':')[2]);
-    let raw = [second,minute,hour];
-    let remaining=[0,0,0];
-    console.log(hour,minute,second)
-    raw.forEach((time,idx) =>{
-        console.log('b4',time);
-        if(time<0){
-            time+=60;
-            
-        }
-        
-        console.log('afta',time);
-        remaining[idx]+=time;    
-    });
-    //minute is negative, hour must be changed to reflect approriate adjustment
-    if(minute<0){
-        remaining[2]-=1;
+
+    let hours = Number(totalduration.split(':')[0])*60*60-Number(currentduration.split(':')[0])*60*60;
+    let minutes = Number(totalduration.split(':')[1])*60-Number(currentduration.split(':')[1])*60;
+    let seconds = Number(totalduration.split(':')[2])-Number(currentduration.split(':')[2]);
+    let totalsecondsremaining = hours+minutes+seconds;
+
+    let totalminute = Math.floor(totalsecondsremaining/60);
+    let hour = Math.floor(totalminute/60)
+    let minute = totalminute - 60*hour;
+    let second = totalsecondsremaining - totalminute*60;
+    
+    if(hour<10){
+        hour=`0${hour}`;
     }
-    //second is negative, minute must be updated to reflect approriate adjustment
-    if(second<0){
-        remaining[1]-=1;
+    if(minute<10){
+        minute=`0${minute}`;
+    }
+    if(second<10){
+        second=`0${second}`;
     }
 
-    //string formating
-    remaining = remaining.map(time =>{
-        if(time<10){
-            time=`0${time}`
-        }
-        return time
-    });
-
-
-    return `${remaining[2]}:${remaining[1]}:${remaining[0]}`
+    return `${hour}:${minute}:${second}`
 }
 
 function convertToReadableTime(hrs,mins,secs){
