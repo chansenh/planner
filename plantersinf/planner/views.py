@@ -762,9 +762,12 @@ def edit(request,activityid=-1,dateid=-1):
 		return render(request,"planner/edit.html", context)
 	return redirect("/")
 
+#def processFinish(){
+#	
+#	}
 
 #controls pause and clear options for activity times
-def control(request,dateid):
+def control(request,dateid,activityid=0):
 	if request.method == 'POST':
 		print("PAUSED")
 		print(request.POST)
@@ -820,6 +823,18 @@ def control(request,dateid):
 				
 				
 				activity.save()
+		gobacktodate = "/date/{}".format(dateid)
+		#print(gobacktodate)
+		return redirect(gobacktodate)
+	if request.method=='GET':
+		print('we in beby')
+		activity = Activity.objects.get(id=activityid)
+		if activity.finish==1:
+			activity.finish=0
+		else:
+			activity.finish=1
+		
+		activity.save()
 		gobacktodate = "/date/{}".format(dateid)
 		#print(gobacktodate)
 		return redirect(gobacktodate)

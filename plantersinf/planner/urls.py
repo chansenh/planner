@@ -9,6 +9,7 @@ urlpatterns = [
 	url(r'^create/$', views.create),
 	url(r'^create/(?P<date>[-\w]+)$', views.create),
 	url(r'^control/(?P<dateid>\d+)$', views.control),
+	url(r'^control/(?P<dateid>\d+)/(?P<activityid>\d+)$', views.control),
 	url(r'^activate/(?P<id>\d+)$', views.activate),
 	url(r'^add/(?P<category>[-\w]+)$', views.add),
 	url(r'^add/(?P<category>[-\w]+)/(?P<dateid>[-\w]+)/(?P<toggle>\d+)$', views.add),

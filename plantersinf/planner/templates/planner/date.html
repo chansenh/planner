@@ -125,7 +125,7 @@
 		  </div>
 		</div>
 	</div>
-	<div class="container text-center">
+	<div class="container text-center date" id="{{date.id}}">
 		<p><h2>{{date.month|upper}} {{date.day}}</h2></p>
 	</div>
 	<!--visual activity clock-->
@@ -182,6 +182,8 @@
 		</div><!--row-->
 		<!--activity loop begins-->
 
+		<div id="visualactivitytimes">
+
 		
 		{%for activity in activities%}
 		
@@ -206,7 +208,7 @@
 						<input type="time" class="form-control border-info" name='endtime_{{activity.id}}' placeholder="{{activity.end_time}}" id='endtime_{{activity.id}}' value="{{activity.end_time}}">
 					</div>
 					<div class="p-2 align-self-center">
-						<input class="btn btn-outline-info btn-sm" type="submit" form="timevisual_{{activity.id}}">
+						<input class="btn btn-outline-info btn-sm" type="submit" id="btntimevisual_{{activity.id}}" form="timevisual_{{activity.id}}">
 					</div>
 				
 				
@@ -214,22 +216,22 @@
 			</div>
 		</form>
 			
-		<div class="row activity_row border rounded shadow-sm" id="clock_{{activity.id}}_{{activity.start_time}}_{{activity.end_time}}">
+		<div class="row activity_row border rounded shadow-sm" id="clock_{{activity.id}}" data-starttime="{{activity.start_time}}" data-endtime="{{activity.end_time}}">
 			<div class="col-1 border border-dark">
 				
 					<div class="row ">
 						<div class="col-6 p-0">
 							<div class="container p-0 m-0 d-flex justify-content-between">
-								<div class="startpercent00" style="background-color: white; width: 0%;"></div>
+								<div class="start startpercent00" style="background-color: white; width: 0%;"></div>
 								<div class="item  px-0 row_color" id="{{activity.id}}_0000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-								<div class="endpercent00" style="background-color: white; width: 0%;"></div>
+								<div class="end endpercent00" style="background-color: white; width: 0%;"></div>
 							</div>
 						</div>
 						<div class="col-6 p-0">
 							<div class="container p-0 m-0 d-flex justify-content-between">
-								<div class="startpercent01" style="background-color: white; width: 0%;"></div>
+								<div class="start startpercent01" style="background-color: white; width: 0%;"></div>
 								<div class="item  px-0 row_color" id="{{activity.id}}_0100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-								<div class="endpercent01" style="background-color: white; width: 0%;"></div>
+								<div class="end endpercent01" style="background-color: white; width: 0%;"></div>
 							</div>
 							
 						</div>
@@ -242,16 +244,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent02" style="background-color: white; width: 0%;"></div>
+							<div class="start start startpercent02" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_0200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent02" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent02" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent03" style="background-color: white; width: 0%;"></div>
+							<div class="start start startpercent03" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_0300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent03" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent03" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -263,16 +265,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent04" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent04" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_0400" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent04" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent04" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent05" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent05" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_0500" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent05" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent05" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -284,16 +286,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent06" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent06" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_0600" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent06" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent06" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent07" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent07" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_0700" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent07" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent07" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -305,16 +307,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent08" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent08" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_0800" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent08" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent08" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent09" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent09" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_0900" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent09" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent09" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -326,16 +328,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent10" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent10" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent10" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent10" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent11" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent11" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent11" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent11" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -347,16 +349,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent12" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent12" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent12" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent12" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent13" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent13" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent13" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent13" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -367,16 +369,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent14" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent14" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1400" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent14" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent14" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent15" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent15" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1500" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent15" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent15" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -388,16 +390,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent16" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent16" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1600" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent16" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent16" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent17" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent17" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1700" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent17" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent17" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -409,16 +411,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent18" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent18" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1800" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent18" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent18" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent19" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent19" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_1900" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent19" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent19" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -430,16 +432,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent20" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent20" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_2000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent20" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent20" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent21" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent21" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_2100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent21" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent21" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -450,16 +452,16 @@
 				<div class="row ">
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent22" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent22" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_2200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent22" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent22" style="background-color: white; width: 0%;"></div>
 						</div>
 					</div>
 					<div class="col-6 p-0">
 						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="startpercent23" style="background-color: white; width: 0%;"></div>
+							<div class="start startpercent23" style="background-color: white; width: 0%;"></div>
 							<div class="item  px-0 row_color" id="{{activity.id}}_2300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="endpercent23" style="background-color: white; width: 0%;"></div>
+							<div class="end endpercent23" style="background-color: white; width: 0%;"></div>
 						</div>
 						
 					</div>
@@ -472,6 +474,7 @@
 		</div>
 		
 		{%endfor%}
+	</div>
 		
 		
 	</div><!--clock-->
@@ -509,7 +512,7 @@
 						</td>
 						<input type="hidden" class="activate" name="active_{{activity.id}}" id="active_{{activity.id}}" value="{{activity.active}}">
 					<td><a class="btn btn-success text-white" id="start_{{activity.id}}" style="display:flexbox;">Start</a><input type="submit" class="btn btn-primary text-white" form='stopwatches' id="pause_{{activity.id}}" name="pause_{{activity.id}}" style="display: none;" value="Pause"><input type="submit" class="btn btn-danger text-white" form='stopwatches' id="stop_{{activity.id}}" name="stop_{{activity.id}}" style="display:flexbox;" value="Clear"></a></td>
-					<td><a class="btn btn-sm btn-outline-dark finishbutton" href='#{{activity.id}}' id='finishbutton_{{activity.id}}'>Finish</a><input type='hidden' class="finish" id='finish_{{activity.id}}' name='finish_{{activity.id}}' value='{{activity.finish}}'></td>
+					<td><a class="btn btn-sm btn-outline-dark finishbutton" href='#' id='finishbutton_{{activity.id}}'>Finish</a><input type='hidden' class="finish" id='finish_{{activity.id}}' name='finish_{{activity.id}}' value='{{activity.finish}}'></td>
 			</tr>
 				
 		  	{%endfor%}
