@@ -304,8 +304,11 @@ function getCurrentDateObject(){
 }
 function hightlightCurrentDay(){
     let d = getCurrentDateObject()
+    //in case the current day has not been created in the calender
+    if(document.getElementById(`${d.month}${d.day}${d.year}`)){
+        document.getElementById(`${d.month}${d.day}${d.year}`).parentNode.classList.add('border-danger','border','shadow-sm');
+    }
     
-    document.getElementById(`${d.month}${d.day}${d.year}`).parentNode.classList.add('border-danger','border','shadow-sm');
     
 }
 

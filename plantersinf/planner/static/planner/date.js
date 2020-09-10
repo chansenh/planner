@@ -55,12 +55,10 @@ class Stopwatch{
             hrout=`${this.hr}`;
         }
         const out = `${hrout}:${minout}:${secout}`;
-        //console.log(`time is ${out} compared to ${this.duration}`)
+        
         const targethr = Number(this.duration.split(':')[0])
         const targetmin = Number(this.duration.split(':')[1])
-        //console.log('enditme---------->',this.duration)
-        //console.log(targethr,this.hour,targethr>=this.hour)
-        //console.log(targetmin,this.minute,targetmin>=this.minute)
+        
         if (this.hour==targethr && this.minute==targetmin && this.second==0){
             //alert(`Activity ${this.id}, Times up!`);
             let activityname = findActivity(this.id)
@@ -74,7 +72,7 @@ class Stopwatch{
         }
         //document.getElementById('sound').play();
         return out;
-        //console.log(id,`${this.hour}:${this.minute}:${this.second}`);
+        
         
     }
     //inserts end time
@@ -103,7 +101,7 @@ class Stopwatch{
         }
         //this.interval = setInterval(() =>increment(this.id), 1000);
         
-        //console.log(document.getElementById(this.id).innerHTML);
+        
         
 
     }
@@ -115,7 +113,7 @@ class Stopwatch{
             document.getElementById(`pause_${this.id}`).style = "display: none";//hide pause
             document.getElementById(`time_${this.id}`).classList.remove('active');
             //get all classes of stopwatch. classlist will contain active if sotpwatch is counting
-
+            document.getElementById('sound').pause();
             clearInterval(this.interval);
         }
     }
@@ -124,6 +122,8 @@ class Stopwatch{
             this.active=0;
             
             clearInterval(this.interval);
+            document.getElementById('sound').pause();
+            document.getElementById('sound').currentTime = 0;
             this.reset();
         }
     }
@@ -150,26 +150,8 @@ class Stopwatch{
 
 function stopwatchControl(){
     
-    
-        
-    //let swlist = new StopwatchList();
-    //stopwatch = new Stopwatch(`time_1`);
-    //swlist.add(stopwatch);
-    //stopwatch = new Stopwatch(`time_2`);
-    //console.log(location);
-    //console.log(JSONdata);
-    //initialize stopwatch for every activity
-    
     populateVisualActivities();
     
-    
-    //populate activity list
-    //dateView.populateActivities(data.activities);
-    //dateView.populateActivities(window.localStorage.getItem('activelist'));
-    //***check only new activities show***//
-    //dateView.populateDropDownListOfActivities(data.activities);//possibly use local storage to pull from
-    //dateView.populateDropDownListOfActivities(window.localStorage.getItem('nonactivelist');
-
     let stopwatches = {}
     //create stopwatches for every activity
     document.querySelectorAll('.date_row').forEach(row =>{
@@ -190,8 +172,6 @@ function stopwatchControl(){
     
     document.querySelector('.date_table').addEventListener('click', event=>{
         
-        //console.log(event.target);
-        //console.log(stopwatches)
         //every activity has an active property to establish which activity is currently running on page load
         //1 - active
         //0 - not active
@@ -257,14 +237,35 @@ function stopwatchControl(){
 
 }
 
+//grab values of start and end times based on activity id in dataset
+//updates values of activity viusal clock based on those values
 function updateVisualTime(aid){
+    
+    let datanode = document.getElementById(`clock_${aid}`);
+    let start = datanode.dataset.starttime;
+    let end = datanode.dataset.endtime;
+    //formtoupdate.querySelector('.start').placeholder = start;
+    document.getElementById(`starttime_${aid}`).setAttribute('value',start);
+    document.getElementById(`starttime_${aid}`).placeholder = start;
+    document.getElementById(`endtime_${aid}`).setAttribute('value',end);
+    document.getElementById(`endtime_${aid}`).placeholder = end;
+    //formtoupdate.querySelector('.end').placeholder = end;
+    
+}
+
+//grab values of start and end times based on activity id in dataset
+//updates values of activity viusal clock based on those values
+function updateVisualTimeData(aid){
     const start = document.getElementById(`starttime_${aid}`).value;
     const end = document.getElementById(`endtime_${aid}`).value;
     let nodetoupdate = document.getElementById(`clock_${aid}`);
     nodetoupdate.dataset.starttime = start;
     nodetoupdate.dataset.endtime = end;
+    
+    
 }
 
+//resets all visual clocks to state 0
 function clearVisualActivities(){
     document.querySelectorAll(`.activity_row`).forEach(row=>{
         
@@ -284,6 +285,96 @@ function clearVisualActivities(){
         });
         
     });
+}
+
+function reorderVisualActivities(){
+    //known bug: if user changes more than a single activity's time, it will sort on that time but the activity's time will not change
+    //...only time of submit button pushed will be changed in database.
+    let allclocks = document.getElementById('visualactivitytimes');
+    let forms = [];
+    
+    allclocks.querySelectorAll('.activity_row').forEach(formnode =>{
+        let nid = formnode.id.split('_')[1];
+        let start = document.getElementById(`starttime_${nid}`).value;
+        let end = document.getElementById(`endtime_${nid}`).value;
+        let shr = start.split(':')[0];
+        let smin = start.split(':')[1];
+        let ehr = end.split(':')[0];
+        let emin = end.split(':')[1];
+        forms.push({'id':nid,'time':start});
+    });
+            
+    let sorted = sortClockTimes(forms);
+    organizeClockTimes(sorted);
+
+}
+
+
+function organizeClockTimes(sortedtimes){
+    let newClockHTML='';
+    let newFormHTML='';
+    //build new visualactivitytimes innerHTML
+    sortedtimes.forEach(activityobj =>{
+        let inner = document.getElementById(`visualgroup_${activityobj['id']}`).innerHTML;
+        newClockHTML+=`
+        <div id="visualgroup_${activityobj['id']}">
+        ${inner}
+        </div>
+        `;
+
+    });
+    //sets the newly ordered html divs to the loaded page
+    document.getElementById(`visualactivitytimes`).innerHTML = newClockHTML;
+
+    
+
+}
+
+function getObjectIndex(obj,array){
+    let result;
+    array.forEach((cur,idx) =>{
+        if(obj['id']==cur['id']){
+            result=idx;
+        }
+    });
+    return result;
+}
+
+function sortClockTimes(objarray){
+    let sorted =[];
+    let unsorted = [...objarray];
+    objarray.forEach((cur,idx) =>{
+        let earliest = getEarliestActivity(unsorted);
+        //remove earilest form unsorted
+        let earlyidx = getObjectIndex(earliest,unsorted);
+        sorted.push(earliest);
+        unsorted.splice(earlyidx,1);
+    });
+
+    return sorted;  
+}
+
+function getEarliestActivity(objarray){
+    let earliest=undefined;
+    objarray.forEach(cur =>{
+        if(earliest==undefined){
+            earliest=cur;
+        }
+        else{
+            let currenttime = cur['time'];
+            let earlytime = earliest['time'];
+            let currenthr = currenttime.split(':')[0];
+            let currentmin = currenttime.split(':')[1];
+            let earlyhr = earlytime.split(':')[0];
+            let earlymin = earlytime.split(':')[1];
+            //found a new earliest time. update earliest
+            if(Number(currenthr)<Number(earlyhr) || (Number(earlyhr)==Number(currenthr) && Number(currentmin)<Number(earlymin))){
+                earliest = cur;
+            }
+        }
+        
+    });
+    return earliest;
 }
 
 function populateVisualActivities(){
@@ -371,7 +462,7 @@ function newCategoryListener(){
     document.getElementById('category').addEventListener('keypress', event=>{
         //event.preventDefault();
         if (event){
-            //console.log(event.target);
+            
             if(checkCategory(document.getElementById('category').value)){//category is valid
                 //change href path to the valid category. check server sdie as well
                 document.querySelector('.category-btn').href=`/add/${document.getElementById('category').value}`;
@@ -381,16 +472,14 @@ function newCategoryListener(){
                 document.getElementById('category').value='';
                 //implementation needs work
             }
-            //if (document.getElementById('category').value>='A' && document.getElementById('category').value<='z'){
-            //    console.log(document.getElementById('category').value)
-            //}
+            
             
         }
     })
 
     document.querySelector('.category-btn').addEventListener('click', event=>{
         if (event){
-            //console.log(event.target);
+            
             if(checkCategory(document.getElementById('category').value)){//category is valid
                 //change href path to the valid category. check server sdie as well
                 let currentdateid = document.querySelector('.category-btn').id;
@@ -402,17 +491,11 @@ function newCategoryListener(){
                 document.getElementById('category').value='';
                 //implementation needs work
             }
-            //if (document.getElementById('category').value>='A' && document.getElementById('category').value<='z'){
-            //    console.log(document.getElementById('category').value)
-            //}
+            
             
         }
 
     })
-
-    //document.querySelector('.category_option').addEventListener('click',event=>{
-    //    console.log(event.target)
-    //})
 
 }
 
@@ -650,11 +733,14 @@ function visualSubmitAJAX(dateid,activityid){
     //xhttp.responseURL = `/control/${dateid}`
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-
+            console.log('submit has been processed. need to update DOM');
             //visual timeline needs to change to reflect async changes
+            updateVisualTimeData(activityid);
             updateVisualTime(activityid);
             clearVisualActivities();
+            reorderVisualActivities();
             populateVisualActivities();
+            //stopwatchControl();
             
 
 		}
@@ -755,7 +841,7 @@ function activateFinishButton(){
     })
 }
 
-//console.log(data);
+
 //let JSONdata=undefined;
 //fs.readFile(`${__dirname}/data/data.json`, 'utf-8', (err,data) => {
 //    JSONdata = data;

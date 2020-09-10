@@ -186,7 +186,7 @@
 
 		
 		{%for activity in activities%}
-		
+		<div id="visualgroup_{{activity.id}}">
 		<form action="/time/{{date.id}}" method="post" id="timevisual_{{activity.id}}">
 				{% csrf_token%}
 			<div class="row shadow-sm border-left border-right border-top border-dark rounded justify-content-end bg-light mt-3">
@@ -201,11 +201,11 @@
 					</div>
 					
 					<div class="p-2 align-self-center">
-						<input type="time" class="form-control border-info" name='starttime_{{activity.id}}' placeholder="{{activity.start_time}}" id='starttime_{{activity.id}}' value="{{activity.start_time}}">
+						<input type="time" class="start form-control border-info" name='starttime_{{activity.id}}' placeholder="{{activity.start_time}}" id='starttime_{{activity.id}}' value="{{activity.start_time}}">
 						
 					</div>
 					<div class="p-2 align-self-center">
-						<input type="time" class="form-control border-info" name='endtime_{{activity.id}}' placeholder="{{activity.end_time}}" id='endtime_{{activity.id}}' value="{{activity.end_time}}">
+						<input type="time" class="end form-control border-info" name='endtime_{{activity.id}}' placeholder="{{activity.end_time}}" id='endtime_{{activity.id}}' value="{{activity.end_time}}">
 					</div>
 					<div class="p-2 align-self-center">
 						<input class="btn btn-outline-info btn-sm" type="submit" id="btntimevisual_{{activity.id}}" form="timevisual_{{activity.id}}">
@@ -472,6 +472,7 @@
 			
 		
 		</div>
+		</div>
 		
 		{%endfor%}
 	</div>
@@ -507,8 +508,8 @@
 					<a class="edit-activity" href='/edit/{{activity.id}}/{{date.id}}' id='go_{{activity.id}}'>{{activity.name}}</a>
 					 
 					</td>
-					<td><input class="form-control activity-duration" id='duration_{{activity.id}}' value="{{activity.duration}}" readonly></td>
-					<td><input class="form-control text-success stopwatch" type="text" placeholder="{{activity.current_time}}" id='time_{{activity.id}}' name="time_{{activity.id}}" value="{{activity.current_time}}" readonly>
+					<td><input class="form-control activity-duration" style="min-width: 85px;" id='duration_{{activity.id}}' value="{{activity.duration}}" readonly></td>
+					<td><input class="form-control text-success stopwatch" type="text" style="min-width: 85px;" placeholder="{{activity.current_time}}" id='time_{{activity.id}}' name="time_{{activity.id}}" value="{{activity.current_time}}" readonly>
 						</td>
 						<input type="hidden" class="activate" name="active_{{activity.id}}" id="active_{{activity.id}}" value="{{activity.active}}">
 					<td><a class="btn btn-success text-white" id="start_{{activity.id}}" style="display:flexbox;">Start</a><input type="submit" class="btn btn-primary text-white" form='stopwatches' id="pause_{{activity.id}}" name="pause_{{activity.id}}" style="display: none;" value="Pause"><input type="submit" class="btn btn-danger text-white" form='stopwatches' id="stop_{{activity.id}}" name="stop_{{activity.id}}" style="display:flexbox;" value="Clear"></a></td>
