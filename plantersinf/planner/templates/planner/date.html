@@ -125,427 +125,431 @@
 		  </div>
 		</div>
 	</div>
-	<div class="container text-center date" id="{{date.id}}">
-		<p><h2>{{date.month|upper}} {{date.day}}</h2></p>
+	<div class="d-flex justify-content-between pageheader">
+		<div class="p-2">PREV</div>
+		<div class="p-2">
+			<div class="container text-center date" id="{{date.id}}">
+				<p><h2>{{date.month|upper}} {{date.day}} {{date.date}}</h2></p>
+			</div>
+		</div>
+		<div class="p-2">NEXT</div>
 	</div>
-	<!--visual activity clock-->
-	<div class="container clock" >
-		<div class="row">
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">12 AM</div>
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">2 AM</div>
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">4 AM</div>
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">6 AM</div>	
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">8 AM</div>	
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">10 AM</div>	
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">12 PM</div>	
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">2 PM</div>	
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">4 PM</div>	
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">6 PM</div>	
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">8 PM</div>	
-			</div>
-			<div class="col-1 p-0">
-				<div class="itemheader shadow-sm border border-dark rounded pl-1">10 PM</div>	
-			</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-		</div><!--row-->
-		<!--activity loop begins-->
+	
+	<div class="d-flex">
+		<!--visual activity clock-->
+		<div class="container clock" style="min-width: 650px;">
+			<div class="row">
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">12 AM</div>
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">2 AM</div>
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">4 AM</div>
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">6 AM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">8 AM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">10 AM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">12 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">2 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">4 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">6 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">8 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">10 PM</div>	
+				</div>	
+			</div><!--row-->
+			<!--activity loop begins-->
 
-		<div id="visualactivitytimes">
+			<div id="visualactivitytimes">
 
-		
-		{%for activity in activities%}
-		<div id="visualgroup_{{activity.id}}">
-		<form action="/time/{{date.id}}" method="post" id="timevisual_{{activity.id}}">
-				{% csrf_token%}
-			<div class="row shadow-sm border-left border-right border-top border-dark rounded justify-content-end bg-light mt-3">
-				
-					<div class="p-2 align-self-center h5">
-					
-						
-						{{activity.name}} 
-					
-				
-				
-					</div>
-					
-					<div class="p-2 align-self-center">
-						<input type="time" class="start form-control border-info" name='starttime_{{activity.id}}' placeholder="{{activity.start_time}}" id='starttime_{{activity.id}}' value="{{activity.start_time}}">
-						
-					</div>
-					<div class="p-2 align-self-center">
-						<input type="time" class="end form-control border-info" name='endtime_{{activity.id}}' placeholder="{{activity.end_time}}" id='endtime_{{activity.id}}' value="{{activity.end_time}}">
-					</div>
-					<div class="p-2 align-self-center">
-						<input class="btn btn-outline-info btn-sm" type="submit" id="btntimevisual_{{activity.id}}" form="timevisual_{{activity.id}}">
-					</div>
-				
-				
-				
-			</div>
-		</form>
-			
-		<div class="row activity_row border rounded shadow-sm" id="clock_{{activity.id}}" data-starttime="{{activity.start_time}}" data-endtime="{{activity.end_time}}">
-			<div class="col-1 border border-dark">
-				
-					<div class="row ">
-						<div class="col-6 p-0">
-							<div class="container p-0 m-0 d-flex justify-content-between">
-								<div class="start startpercent00" style="background-color: white; width: 0%;"></div>
-								<div class="item  px-0 row_color" id="{{activity.id}}_0000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-								<div class="end endpercent00" style="background-color: white; width: 0%;"></div>
-							</div>
-						</div>
-						<div class="col-6 p-0">
-							<div class="container p-0 m-0 d-flex justify-content-between">
-								<div class="start startpercent01" style="background-color: white; width: 0%;"></div>
-								<div class="item  px-0 row_color" id="{{activity.id}}_0100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-								<div class="end endpercent01" style="background-color: white; width: 0%;"></div>
-							</div>
+				{%for activity in activities%}
+				<div id="visualgroup_{{activity.id}}">
+					<form action="/time/{{date.id}}" method="post" id="timevisual_{{activity.id}}">
+							{% csrf_token%}
+						<div class="row shadow-sm border-left border-right border-top border-dark rounded justify-content-end bg-light mt-3">
+							
+								<div class="p-2 align-self-center h5">
+								
+									
+									{{activity.name}} 
+								
+							
+							
+								</div>
+								
+								<div class="p-2 align-self-center">
+									<input type="time" class="start form-control border-info" name='starttime_{{activity.id}}' placeholder="{{activity.start_time}}" id='starttime_{{activity.id}}' value="{{activity.start_time}}">
+									
+								</div>
+								<div class="p-2 align-self-center">
+									<input type="time" class="end form-control border-info" name='endtime_{{activity.id}}' placeholder="{{activity.end_time}}" id='endtime_{{activity.id}}' value="{{activity.end_time}}">
+								</div>
+								<div class="p-2 align-self-center">
+									<input class="btn btn-outline-info btn-sm" type="submit" id="btntimevisual_{{activity.id}}" form="timevisual_{{activity.id}}">
+								</div>
+							
+							
 							
 						</div>
+					</form>
+					
+					<div class="row activity_row border rounded shadow-sm" id="clock_{{activity.id}}" data-starttime="{{activity.start_time}}" data-endtime="{{activity.end_time}}">
+						<div class="col-1 border border-dark">
+							
+								<div class="row ">
+									<div class="col-6 p-0">
+										<div class="container p-0 m-0 d-flex justify-content-between">
+											<div class="start startpercent00" style="background-color: white; width: 0%;"></div>
+											<div class="item  px-0 row_color" id="{{activity.id}}_0000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+											<div class="end endpercent00" style="background-color: white; width: 0%;"></div>
+										</div>
+									</div>
+									<div class="col-6 p-0">
+										<div class="container p-0 m-0 d-flex justify-content-between">
+											<div class="start startpercent01" style="background-color: white; width: 0%;"></div>
+											<div class="item  px-0 row_color" id="{{activity.id}}_0100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+											<div class="end endpercent01" style="background-color: white; width: 0%;"></div>
+										</div>
+										
+									</div>
+									
+									
+								</div>
+							
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start start startpercent02" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent02" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start start startpercent03" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent03" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent04" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0400" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent04" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent05" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0500" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent05" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent06" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0600" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent06" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent07" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0700" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent07" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent08" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0800" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent08" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent09" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0900" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent09" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent10" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent10" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent11" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent11" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent12" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent12" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent13" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent13" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent14" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1400" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent14" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent15" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1500" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent15" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent16" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1600" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent16" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent17" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1700" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent17" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent18" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1800" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent18" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent19" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1900" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent19" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent20" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_2000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent20" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent21" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_2100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent21" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent22" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_2200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent22" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent23" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_2300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent23" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
 						
-						
+					
 					</div>
+				</div>
 				
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start start startpercent02" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_0200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent02" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start start startpercent03" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_0300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent03" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent04" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_0400" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent04" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent05" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_0500" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent05" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent06" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_0600" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent06" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent07" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_0700" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent07" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent08" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_0800" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent08" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent09" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_0900" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent09" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent10" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent10" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent11" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent11" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent12" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent12" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent13" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent13" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent14" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1400" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent14" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent15" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1500" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent15" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent16" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1600" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent16" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent17" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1700" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent17" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent18" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1800" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent18" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent19" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_1900" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent19" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent20" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_2000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent20" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent21" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_2100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent21" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-				</div>
-			</div>
-			<div class="col-1 border border-dark">
-				<div class="row ">
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent22" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_2200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent22" style="background-color: white; width: 0%;"></div>
-						</div>
-					</div>
-					<div class="col-6 p-0">
-						<div class="container p-0 m-0 d-flex justify-content-between">
-							<div class="start startpercent23" style="background-color: white; width: 0%;"></div>
-							<div class="item  px-0 row_color" id="{{activity.id}}_2300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
-							<div class="end endpercent23" style="background-color: white; width: 0%;"></div>
-						</div>
-						
-					</div>
-					
-					
-				</div>
+				{%endfor%}
 			</div>
 			
-		
-		</div>
-		</div>
-		
-		{%endfor%}
+			
+		</div><!--clock-->
+
+		<div class="container">
+			<table class="table table-hover">
+			  <thead class="thead-dark">
+				<tr>
+				  <th scope="col" style="width: 5%">Remove</th>
+				  <th scope="col" style="width: 40%">Activity Name</th>
+				  <th scope="col" style="width: 15%">Target Time (hr:min:sec)</th>
+				  <th scope="col" style="width: 15%">Current Time</th>
+				  <th scope="col" style="width: 15%">Control</th>
+				  <th scope="col" style="width: 10%"></th>
+				  
+				</tr>
+			  </thead>
+			  <tbody class="date_table" id='tablebody'>
+			  
+				  <form action="/control/{{date.id}}" method="post" id="stopwatches">
+					  {% csrf_token %}
+				  <div id="generatedrows">
+				  {%for activity in activities%}
+				<!--populate table rows with activity names from the date
+			  id="stopwatch_{{activity.id}}"
+			  -->
+					  
+					  
+				  <tr class="date_row" id='{{activity.id}}'>
+						  
+						  <th scope="row"><a class="text-danger remove" href='/remove/{{date.id}}/{{activity.id}}' id='remove_{{activity.id}}'>&times;</a></th>
+						  <td>
+						  <a class="edit-activity" href='/edit/{{activity.id}}/{{date.id}}' id='go_{{activity.id}}'>{{activity.name}}</a>
+						   
+						  </td>
+						  <td><input class="form-control activity-duration" style="min-width: 85px;" id='duration_{{activity.id}}' value="{{activity.duration}}" readonly></td>
+						  <td><input class="form-control text-success stopwatch" type="text" style="min-width: 85px;" placeholder="{{activity.current_time}}" id='time_{{activity.id}}' name="time_{{activity.id}}" value="{{activity.current_time}}" readonly>
+							  </td>
+							  <input type="hidden" class="activate" name="active_{{activity.id}}" id="active_{{activity.id}}" value="{{activity.active}}">
+						  <td><a class="btn btn-success text-white" id="start_{{activity.id}}" style="display:flexbox;">Start</a><input type="submit" class="btn btn-primary text-white" form='stopwatches' id="pause_{{activity.id}}" name="pause_{{activity.id}}" style="display: none;" value="Pause"><input type="submit" class="btn btn-danger text-white" form='stopwatches' id="stop_{{activity.id}}" name="stop_{{activity.id}}" style="display:flexbox;" value="Clear"></a></td>
+						  <td><a class="btn btn-sm btn-outline-dark finishbutton" href='#' id='finishbutton_{{activity.id}}'>Finish</a><input type='hidden' class="finish" id='finish_{{activity.id}}' name='finish_{{activity.id}}' value='{{activity.finish}}'></td>
+				  </tr>
+					  
+				  {%endfor%}
+				  </div>
+				  
+				  <tr class="total_row">
+					  <th scope="row">
+						  <td><p class="lead">Total:</p></td>
+						  <td><span id='totalduration'>00:00:00</span></td>
+						  <td></td>
+						  <td></td>
+					  </th>
+					  
+				  </tr>
+				  <tr class="current_row">
+					  <th scope="row">
+						  <td><p class="lead">Current:</p></td>
+						  <td><span id='currentduration'>00:00:00</span> <span id='overtime'></span></td>
+						  <td></td>
+						  <td></td>
+					  </th>
+				  </tr>
+				  <tr class="remaining_row">
+					  <th scope="row">
+						  <td><p class="lead">Remaining:</p></td>
+						  <td><span id='remainingduration'>00:00:00</span></td>
+						  <td></td>
+						  <td></td>
+					  </th>
+				  </tr>
+				  </form>
+			  </tbody>
+			  
+			</table>
+		  </div>
 	</div>
-		
-		
-	</div><!--clock-->
-    <div class="container pt-5">
-      <table class="table table-hover">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col" style="width: 5%">Remove</th>
-			<th scope="col" style="width: 40%">Activity Name</th>
-            <th scope="col" style="width: 15%">Target Time (hr:min:sec)</th>
-            <th scope="col" style="width: 15%">Current Time</th>
-			<th scope="col" style="width: 15%">Control</th>
-			<th scope="col" style="width: 10%"></th>
-            
-          </tr>
-        </thead>
-        <tbody class="date_table" id='tablebody'>
-			<form action="/control/{{date.id}}" method="post" id="stopwatches">
-				{% csrf_token %}
-			{%for activity in activities%}
-		  <!--populate table rows with activity names from the date
-		id="stopwatch_{{activity.id}}"
-		-->
-				
-				
-			<tr class="date_row" id='{{activity.id}}'>
-					
-					<th scope="row"><a class="text-danger remove" href='/remove/{{date.id}}/{{activity.id}}' id='remove_{{activity.id}}'>&times;</a></th>
-					<td>
-					<a class="edit-activity" href='/edit/{{activity.id}}/{{date.id}}' id='go_{{activity.id}}'>{{activity.name}}</a>
-					 
-					</td>
-					<td><input class="form-control activity-duration" style="min-width: 85px;" id='duration_{{activity.id}}' value="{{activity.duration}}" readonly></td>
-					<td><input class="form-control text-success stopwatch" type="text" style="min-width: 85px;" placeholder="{{activity.current_time}}" id='time_{{activity.id}}' name="time_{{activity.id}}" value="{{activity.current_time}}" readonly>
-						</td>
-						<input type="hidden" class="activate" name="active_{{activity.id}}" id="active_{{activity.id}}" value="{{activity.active}}">
-					<td><a class="btn btn-success text-white" id="start_{{activity.id}}" style="display:flexbox;">Start</a><input type="submit" class="btn btn-primary text-white" form='stopwatches' id="pause_{{activity.id}}" name="pause_{{activity.id}}" style="display: none;" value="Pause"><input type="submit" class="btn btn-danger text-white" form='stopwatches' id="stop_{{activity.id}}" name="stop_{{activity.id}}" style="display:flexbox;" value="Clear"></a></td>
-					<td><a class="btn btn-sm btn-outline-dark finishbutton" href='#' id='finishbutton_{{activity.id}}'>Finish</a><input type='hidden' class="finish" id='finish_{{activity.id}}' name='finish_{{activity.id}}' value='{{activity.finish}}'></td>
-			</tr>
-				
-		  	{%endfor%}
-			</form>
-			<tr class="total_row">
-				<th scope="row">
-					<td><p class="lead">Total:</p></td>
-					<td><span id='totalduration'>00:00:00</span></td>
-					<td></td>
-					<td></td>
-				</th>
-				
-			</tr>
-			<tr class="current_row">
-				<th scope="row">
-					<td><p class="lead">Current:</p></td>
-					<td><span id='currentduration'>00:00:00</span> <span id='overtime'></span></td>
-					<td></td>
-					<td></td>
-				</th>
-			</tr>
-			<tr class="remaining_row">
-				<th scope="row">
-					<td><p class="lead">Remaining:</p></td>
-					<td><span id='remainingduration'>00:00:00</span></td>
-					<td></td>
-					<td></td>
-				</th>
-			</tr>
-        </tbody>
-      </table>
-	</div>
+	
+    
 	
 	
   

@@ -114,6 +114,7 @@ class Stopwatch{
             document.getElementById(`time_${this.id}`).classList.remove('active');
             //get all classes of stopwatch. classlist will contain active if sotpwatch is counting
             document.getElementById('sound').pause();
+			document.getElementById('sound').currentTime = 0;
             clearInterval(this.interval);
         }
     }
@@ -313,19 +314,40 @@ function reorderVisualActivities(){
 function organizeClockTimes(sortedtimes){
     let newClockHTML='';
     let newFormHTML='';
+    let currenttimes={};
+    const totaldur = document.getElementById('totalduration').innerHTML;
+    const currentdur = document.getElementById('currentduration').innerHTML;
+    const remaindur = document.getElementById('remainingduration').innerHTML;
+    const overdur = document.getElementById('overtime').innerHTML;
     //build new visualactivitytimes innerHTML
     sortedtimes.forEach(activityobj =>{
-        let inner = document.getElementById(`visualgroup_${activityobj['id']}`).innerHTML;
+        let clockinner = document.getElementById(`visualgroup_${activityobj['id']}`).innerHTML;
         newClockHTML+=`
         <div id="visualgroup_${activityobj['id']}">
-        ${inner}
+        ${clockinner}
         </div>
+        `;
+        
+        let currenttime = document.getElementById(`time_${activityobj['id']}`).value;
+        currenttimes[`${activityobj['id']}`] = currenttime;
+        let rowinner = document.getElementById(`${activityobj['id']}`).innerHTML;
+
+        newFormHTML+=`
+        <tr class="date_row" id='${activityobj['id']}'>
+        ${rowinner}
+        </tr>
         `;
 
     });
     //sets the newly ordered html divs to the loaded page
     document.getElementById(`visualactivitytimes`).innerHTML = newClockHTML;
 
+    //TODO: dynamically setting order of elements inside of form has odd outcomes.
+    //maybe table is interfering? async function disabled til it is fixed
+    document.getElementById(`generatedrows`).innerHTML = `
+                                                    ${newFormHTML}
+                                                    `;
+    console.log(currenttimes);
     
 
 }
@@ -734,13 +756,16 @@ function visualSubmitAJAX(dateid,activityid){
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
             console.log('submit has been processed. need to update DOM');
+            
+
+            //broken due to ordering of form elements not owrking
             //visual timeline needs to change to reflect async changes
             updateVisualTimeData(activityid);
             updateVisualTime(activityid);
             clearVisualActivities();
             reorderVisualActivities();
             populateVisualActivities();
-            //stopwatchControl();
+            stopwatchControl();
             
 
 		}
@@ -848,7 +873,7 @@ function activateFinishButton(){
 //});
 //let swlist = new StopwatchList();
 //dateTableListeners()
-editVisualTime();
+//editVisualTime(); //need to fix conflict with table and form rearranging of elements
 activateFinishButton();
 stopwatchControl();
 toggleModal();

@@ -1,8 +1,8 @@
 function makePercentageChart(id,labellist,datalist,colorlist){
     //console.log(colorlist)
     labellist = labellist.map(label =>{
-        if(label.length>8){
-            let shorterstring=label.slice(0,5)+'...';
+        if(label.length>15){
+            let shorterstring=label.slice(0,14)+'...';
             return shorterstring
         }else{
             return label
