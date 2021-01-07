@@ -62,13 +62,23 @@ class Stopwatch{
         if (this.hour==targethr && this.minute==targetmin && this.second==0){
             //alert(`Activity ${this.id}, Times up!`);
             let activityname = findActivity(this.id)
+            //displays notification to user
             alertMessage(`Activty ${activityname} is complete!`)
+            //changes activity row color to mark completion
             document.getElementById(`${this.id}`).classList.add('table-primary')
+            //plays sound to user informing of activity completion
             document.getElementById('sound').play();
+            //show snooze button to silence music
+            document.getElementById('snoozebtn').style.display = "inline"
+            
+            //marks activity as finished to reflect changes in database
             document.getElementById(`finish_${this.id}`).value='1'
+            //turns 'on' finish button to reflect finish status to user
             document.getElementById(`finishbutton_${this.id}`).classList.add('active');
+            //current time column will turn red to signal time is over target time
             document.getElementById(`time_${this.id}`).classList.remove('text-success');
             document.getElementById(`time_${this.id}`).classList.add('text-danger');
+            
         }
         //document.getElementById('sound').play();
         return out;
@@ -113,8 +123,7 @@ class Stopwatch{
             document.getElementById(`pause_${this.id}`).style = "display: none";//hide pause
             document.getElementById(`time_${this.id}`).classList.remove('active');
             //get all classes of stopwatch. classlist will contain active if sotpwatch is counting
-            document.getElementById('sound').pause();
-			document.getElementById('sound').currentTime = 0;
+            snooze();
             clearInterval(this.interval);
         }
     }
@@ -123,8 +132,7 @@ class Stopwatch{
             this.active=0;
             
             clearInterval(this.interval);
-            document.getElementById('sound').pause();
-            document.getElementById('sound').currentTime = 0;
+            snooze();
             this.reset();
         }
     }
@@ -147,7 +155,14 @@ class Stopwatch{
     
 }//class Stopwatch
 
+function snooze(){
+    //silences song and resets it to beginning
+    document.getElementById('sound').pause();
+    document.getElementById('sound').currentTime = 0;
+    //hide the btn when its clicked on
+    document.getElementById('snoozebtn').style.display = 'none';
 
+}
 
 function stopwatchControl(){
     
@@ -706,8 +721,19 @@ function toggleModal(){
     }
 }
 
-function activityAlert(){
-
+function changeDays(){
+    document.querySelector('.pageheader').addEventListener('click',event=>{
+        
+        if(event.target.id){
+            let choice = event.target.id.split('_')[0];
+            let dateid = event.target.id.split('_')[1];
+            console.log(choice,dateid);
+            document.getElementById('changedays').action=`/changeday/${dateid}/${choice}`
+            //console.log(document.getElementById(event.target.id).href)
+            document.getElementById('changedays').submit();
+        }
+        
+    });
 }
 
 //given the id of a node, does a class name exist within a nodes classlist?
@@ -866,7 +892,14 @@ function activateFinishButton(){
     })
 }
 
-
+function snoozeListener(){
+    //if snooze button is clicked on
+    document.getElementById('snoozebtn').addEventListener('click', event =>{
+        console.log('pinishd')
+        snooze();
+    })
+    
+}
 //let JSONdata=undefined;
 //fs.readFile(`${__dirname}/data/data.json`, 'utf-8', (err,data) => {
 //    JSONdata = data;
@@ -874,9 +907,11 @@ function activateFinishButton(){
 //let swlist = new StopwatchList();
 //dateTableListeners()
 //editVisualTime(); //need to fix conflict with table and form rearranging of elements
+changeDays();
 activateFinishButton();
 stopwatchControl();
 toggleModal();
+snoozeListener();
 newCategoryListener();
 removeCategoryListener();
 markFinishedActivities();

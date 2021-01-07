@@ -1215,3 +1215,47 @@ def formatDateToString(currentmonth,currentday,currentyear):
 	date= '{}-{}-{}'.format(currentyear,monthstring,daystring)
 	dateinfo = findWeekday(date)
 	return dateinfo
+
+def changeDays(request,dateid="",choice=""):
+	current = Date.objects.get(id=dateid)
+	#redirectpath is set to current date object
+	redirectpath = "/date/{}".format(dateid)
+	datesorted=[]
+	dates = Date.objects.order_by('date')#('year','-month','day')
+	for obj in dates:
+		datesorted.append(obj)
+	for idx in range(len(datesorted)):
+		#current date is found in the ordered list
+		if datesorted[idx].date == current.date:
+			if choice=='prev':
+				#previous selected and idx must be greater than 0 for previous date to exist
+				if not idx==0:
+					redirectpath = "/date/{}".format(datesorted[idx-1].id)
+			if choice=='next':
+				#next selected and idx must be less than list size for next date to exist
+				if not idx==len(datesorted)-1:
+					redirectpath = "/date/{}".format(datesorted[idx+1].id)
+	return redirect(redirectpath)
+
+	
+
+def isLastDayOfMonth(yearobj,months,month,day):
+	
+	monthnumber = months[month]
+	totaldays = yearobj[monthnumber]
+	if int(totaldays)==int(day):
+		return True
+	return False
+
+def getPreviousMonthNumber(months,month):
+	
+	monthnumber = months[month]
+	if int(monthnumber) == 1:
+		return 12
+	return int(monthnumber)-1
+
+def getNextMonthNumber(months,month):
+	monthnumber = months[month]
+	if int(monthnumber) == 12:
+		return 1
+	return int(monthnumber)+1

@@ -126,13 +126,16 @@
 		</div>
 	</div>
 	<div class="d-flex justify-content-between pageheader">
-		<div class="p-2">PREV</div>
+		<div class="p-2 btn btn-link changeDays" href="#" id="prev_{{date.id}}">PREV</div>
 		<div class="p-2">
 			<div class="container text-center date" id="{{date.id}}">
 				<p><h2>{{date.month|upper}} {{date.day}} {{date.date}}</h2></p>
 			</div>
 		</div>
-		<div class="p-2">NEXT</div>
+		<div class="p-2 btn btn-link changeDays" href="#" id="next_{{date.id}}">NEXT</div>
+		<form action="" method="GET" id='changedays' style="display:none">
+			
+		</form>
 	</div>
 	
 	<div class="d-flex">
@@ -178,7 +181,7 @@
 			</div><!--row-->
 			<!--activity loop begins-->
 
-			<div id="visualactivitytimes">
+			<div id="visualactivitytimes pt-4">
 
 				{%for activity in activities%}
 				<div id="visualgroup_{{activity.id}}">
@@ -550,7 +553,9 @@
 	</div>
 	
     
-	
+	<div class="snooze">
+		<div class="btn btn-lg btn-info" style="display: none;" id="snoozebtn">Snooze</div>
+	</div>
 	
   
 
