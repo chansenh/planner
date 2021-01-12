@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+	  <title>Choose a Date</title>
+    <meta name="description" content="a planner" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!--<link rel="stylesheet" type="text/css" href="../js/stylesheet.css">-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    
+</head>
+
+<body>
+  
+  <!--canvas container-->
+  <div class="fluid-container">
+    <div class="container editlist p-2">
+      <a class="btn btn-sm btn-dark" href="/dashboard">
+        Dashboard
+      </a>
+      <a href="/" class="btn btn-primary btn-sm">Home</a>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle shadow" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Filter
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {%for category in categories%}
+          <a class="dropdown-item" href="#" id="{{category.category}}">{{category.category}}</a>
+          {%endfor%}
+          
+        </div>
+      </div>
+    </div>
+   
+
+
+    <div id="years">
+
+    {%for eachyear in years%}
+    {%for year,yearobj in eachyear.items%}
+    {%for month,monthobj in yearobj.items%}
+    
+    {%if monthobj.eachweek.exists%}
+      {%if month == activemonth and year == activeyear%}
+    <div class="container month pb-3 pt-3 border active" id="{{month}}-{{year}}"style="display: none; min-width: 768px;">
+      {%else%}
+      <div class="container month pb-3 pt-3 border" id="{{month}}-{{year}}"style="display: none; min-width: 768px;">
+      {%endif%}
+      <div class="container navigation">
+        <div class="row">
+          <div class="col">
+            <div class="container previous-{{month}}" id="p-{{month}}-{{year}}">
+              <button class="btn btn-primary rounded-circle float-left shadow" id="prev">Prev</button>
+            </div>
+          </div>
+          <div class="col">
+            <div class="container text-center">
+              <p style="font-size: 26px;"><strong>{{month|upper}} {{year}}</strong></p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="container next-{{month}}" id="n-{{month}}-{{year}}">
+              <button class="btn btn-primary rounded-circle float-right shadow" id="next">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="container calendar text-center border shadow">
+        <div class="row">
+            <div class="col p-0 border-right border-left">Sun</div>
+            <div class="col p-0 border-right border-left">Mon</div>
+            <div class="col p-0 border-right border-left">Tue</div>
+            <div class="col p-0 border-right border-left">Wed</div>
+            <div class="col p-0 border-right border-left">Thu</div>
+            <div class="col p-0 border-right border-left">Fri</div>
+            <div class="col p-0 border-right border-left">Sat</div>
+        </div>
+        
+        
+          <!--populate table rows with activity dates
+          each row is 7 equal size col p-0s
+          for daynum in monthobj.length
+          -->
+      
+        {%for weeknumber,weekdates in monthobj.eachweek.items%}
+        {%if weeknumber != "exists"%}
+        <div class="row week_{{weeknumber}} p-0 border-top border-bottom">
+          {%if weekdates%}
+          <!--eachday==7 is sunday; 1,2,3,4,5,6,7-->
+          <div class="col p-0 border-right border-left sun" id='day'>
+            <div class="container sun" id='day' data-toggle='tooltip' data-placement='top' title='Click to enter' style="cursor: pointer;">
+              {%for date in weekdates%}    
+              {%if date.weekday == "sun"%}
+              <a type='button' class="linkbtn btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}{{date.year}}" data-toggle='tooltip' data-placement='top' title='Display card' data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}}; cursor: pointer;" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
+              {%endif%}
+              {%endfor%}
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left mon" id='day'>
+            <div class="container mon" id='day' data-toggle='tooltip' data-placement='top' title='Click to enter' style="cursor: pointer;">
+              {%for date in weekdates%}    
+              {%if date.weekday == "mon"%}
+              <a type='button' class="linkbtn btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}{{date.year}}" data-toggle='tooltip' data-placement='top' title='Display card' data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}}; cursor: pointer;" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
+              {%endif%}
+              {%endfor%}
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left tue" id='day'>
+            <div class="container tue" id='day' data-toggle='tooltip' data-placement='top' title='Click to enter' style="cursor: pointer;">
+              {%for date in weekdates%}    
+              {%if date.weekday == "tue"%}
+              <a type='button' class="linkbtn btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}{{date.year}}" data-toggle='tooltip' data-placement='top' title='Display card' data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+              {%for act in date.recurring.all%}
+              <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}}; cursor: pointer;" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+              {%endfor%}
+              </ul>
+              {%endif%}
+              {%endfor%}
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left wed" id='day'>
+            <div class="container wed" id='day' data-toggle='tooltip' data-placement='top' title='Click to enter' style="cursor: pointer;">
+              {%for date in weekdates%}    
+              {%if date.weekday == "wed"%}
+              <a type='button' class="linkbtn btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}{{date.year}}" data-toggle='tooltip' data-placement='top' title='Display card' data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}}; cursor: pointer;" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
+              {%endif%}
+              {%endfor%}
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left thu" id='day'>
+            <div class="container thu" id='day' data-toggle='tooltip' data-placement='top' title='Click to enter' style="cursor: pointer;">
+              {%for date in weekdates%}    
+              {%if date.weekday == "thu"%}
+              <a type='button' class="linkbtn btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}{{date.year}}" data-toggle='tooltip' data-placement='top' title='Display card' data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}}; cursor: pointer;" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
+              {%endif%}
+              {%endfor%}
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left fri" id='day'>
+            <div class="container fri" id='day' data-toggle='tooltip' data-placement='top' title='Click to enter' style="cursor: pointer;">
+              {%for date in weekdates%}    
+              {%if date.weekday == "fri"%}
+              <a type='button' class="linkbtn btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}{{date.year}}" data-toggle='tooltip' data-placement='top' title='Display card' data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li  class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}}; cursor: pointer;" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
+              {%endif%}
+              {%endfor%}
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left sat" id='day'>
+            <div class="container sat" id='day' data-toggle='tooltip' data-placement='top' title='Click to enter' style="cursor: pointer;">
+              {%for date in weekdates%}    
+              {%if date.weekday == "sat"%}
+              <a type='button' class="linkbtn btn" href='/date/{{date.id}}' id="{{date.month}}{{date.day}}{{date.year}}" data-toggle='tooltip' data-placement='top' title='Display card' data-month="{{date.month}}" data-year="{{date.year}}" data-day="{{date.day}}">{{date.day}}</a>
+              <ul class="list-group">
+                {%for act in date.recurring.all%}
+                <li class="list-group-item p-0 m-0 rounded shadow activity" style="background-color: {{act.color}}; cursor: pointer;" width="10" id="{{act.id}}" data-toggle="tooltip" data-placement="right" title="{{act.name}}">{{act.category.category}}</li>
+                {%endfor%}
+              </ul>
+              {%endif%}
+              {%endfor%}
+              <br>
+            </div>
+          </div>
+          {%else%}
+          <div class="col p-0 border-right border-left sun">
+            <div class="container sun">
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left mon">
+            <div class="container mon">
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left tue">
+            <div class="container tue">
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left wed">
+            <div class="container wed">
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left thu">
+            <div class="container thu">
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left fri">
+            <div class="container fri">
+              <br>
+            </div>
+          </div>
+          <div class="col p-0 border-right border-left sat">
+            <div class="container sat">
+              <br>
+            </div>
+          </div>
+          {%endif%}  
+        </div>
+        {%endif%}
+        {%endfor%}
+        
+      </div>
+
+      
+
+    </div>
+    <!--end of month-->
+
+    
+    {%endif%}
+    {%endfor%}
+  <!--</div>-->
+  {%endfor%}
+  {%endfor%}
+<!--end of year-->
+</div>
+<div class="container pt-3 text-center">
+  <a class="btn btn-primary shadow" href="/create/">Create Activities</a>
+</div>
+
+<div class="m-5 d-flex flex-wrap">
+  {%for eachyear in years%}
+  {%for year,yearobj in eachyear.items%}
+  {%for month,monthobj in yearobj.items%}
+    {%if monthobj.activities%}
+      {%for date in monthobj.activities%}
+      <div class="card m-1 {{date.weekday}}" id='{{date.date}}' style="display: none;">
+        <div class="card-header">
+          <p class="navbar-brand">{{date.date}}</p>
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+              <a class="btn nav-link active">Summary</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link">Metrics</a>
+            </li>
+            
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="summary" style="display: block;">
+            <h5 class="card-title">Activities</h5>
+            {%for activity in date.recurring.all%}
+    
+            <p class="card-text">
+            <span class="badge activityname" style="background-color: {{activity.color}};">{{activity.name}}</span> : <span class="badge activityduration">{{activity.duration}}</span>
+            </p>
+            {%endfor%}
+          </div>
+          <div id="DATEMETRICS" style="display: none;">
+          
+          <p class="card-text">
+            graphs n stuff
+          </p>
+          
+          </div>
+        </div>
+      </div>
+      {%endfor%}
+      {%endif%}
+      {%endfor%}
+      {%endfor%}
+      {%endfor%}
+    
+</div>
+
+  
+  
+  
+  
+
+    
+  
+  
+
+
+
+  </div>
+  <!--canvas container-->
+  {%load static%}
+  <script src="{% static 'planner/datelist.js' %}"></script>
+</body>      
+</html>

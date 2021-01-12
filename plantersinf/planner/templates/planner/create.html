@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+	  <title>Planner</title>
+    <meta name="description" content="a planner" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!--<link rel="stylesheet" type="text/css" href="../js/stylesheet.css">-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	
+    
+</head>
+
+<body>
+  <!--canvas container-->
+  <div class="fluid-container">
+
+	<div class="container">
+		<div class="card text-center">
+			<div class="card-header">
+			  Create activity
+			</div>
+			<div class="card-body">
+				<form action="/create/" method="post" id='activity'>
+				  {% csrf_token %}
+				  <div class="form-row mb-4">
+						  <div class="col-md-1">
+							  <a class="text-danger removecat" href='#' id='removecat'>&times;</a>
+						  </div>
+						  <div class="col-md">
+							  <label for="categoryselection">Select a category:</label>
+							  <select class="form-control" id="categoryselection" name="categoryselection">
+								  {%if categories%}
+								  {%for category in categories%}
+								  {%if category.category == editcategory%}
+								  <option id="{{category.category}}" value="{{category.category}}" selected>{{category.category}}</option>
+								  {%else%}
+								  <option id="{{category.category}}" value="{{category.category}}">{{category.category}}</option>
+								  {%endif%}
+								  {%endfor%}
+								  
+								  {%else%}
+								  <option value="" >no categories</option>
+								  {%endif%}
+							  </select>
+						  </div>
+						  <div class="col-md">
+							  <div class="form-group">
+								  <label for="category"></label>
+								  <div class="input-group mt-4">
+									  <div class="input-group-prepend">
+										  <div class="input-group-text">New Category</div>
+									  </div>
+									  <input class="form-control" type="text" id="category" name="category" placeholder="Category Name">
+									  <div class="input-group-append">
+										  <a class="btn btn-primary category-btn" href="#">Add</a>
+									  </div>
+								  </div>
+								  
+								  
+							  </div>
+						  </div>	
+				  </div>
+				  <div class="form-row">
+					  <div class="col-lg">
+						  <div class="input-group mb-3">
+							  <div class="input-group-prepend">
+								  <div class="input-group-text">
+									  Activity Name
+								  </div>
+							  </div>
+							  
+							  <input type="text" class="form-control" name="name" placeholder="fill in activity name">
+							  
+						  </div>
+					  </div>
+					  <div class="col-lg">
+						  <div class="form-group">
+							  <div class="btn-group btn-group-toggle dotw">
+								  
+								  <label class="btn btn-outline-primary days mr-2 rounded shadow-sm" for="hiddenmon" id="mon">
+									  <input type="hidden" class="day" name="mon" id="hiddenmon" value="0">Mo
+								  </label>
+		  
+								  <label class="btn btn-outline-primary days mr-2 rounded shadow-sm" for="hiddentue"id="tue">
+									  <input type="hidden" class="day" name="tue" id="hiddentue" value="0">Tu
+								  </label>
+		  
+								  <label class="btn btn-outline-primary days mr-2 rounded shadow-sm" for="hiddenwed"id="wed">
+									  <input type="hidden" class="day" name="wed" id="hiddenwed" value="0">We
+								  </label>
+		  
+								  <label class="btn btn-outline-primary days mr-2 rounded shadow-sm" for="hiddenthu"id="thu">
+									  <input type="hidden" class="day" name="thu" id="hiddenthu" value="0">Th
+								  </label>
+		  
+								  <label class="btn btn-outline-primary days mr-2 rounded shadow-sm" for="hiddenfri"id="fri">
+									  <input type="hidden" class="day" name="fri" id="hiddenfri" value="0">Fr
+								  </label>
+		  
+								  <label class="btn btn-outline-primary days mr-2 rounded shadow-sm" id="sat"for="hiddensat">
+									  <input type="hidden" class="day" id="hiddensat"name="sat" value="0">Sa
+								  </label>
+								  
+								  <label class="btn btn-outline-primary days mr-2 rounded shadow-sm" for="hiddensun"id="sun">
+									  <input type="hidden" class="day" name="sun" id="hiddensun" value="0">Su
+								  </label>
+								  
+							  </div>
+						  </div>
+					  </div>
+				  </div>
+				  
+  
+				  
+				  <div class="form-row">
+					  <div class="col-sm">
+						  <div class="form-group">
+							  <label for="sdate">Choose Start Date</label>
+							  <input type="date" name="sdate" max="3000-12-31" min="1000-01-01" class="form-control" value='{{date}}'>
+						  </div>
+					  </div>
+					  <div class="col-sm">
+						  <div class="form-group">
+							  <label for="edate">Choose End Date</label>
+							  <input type="date" name="edate" min="1000-01-01" max="3000-12-31" class="form-control" value='{{date}}'>
+						  </div>
+					  </div>
+				  </div>
+				  
+				  <div class="form-row">
+					  <div class="col-sm">
+						  <div class="form-group">
+							  <label for="start_time">Activity Start Time</label>
+							  <input type="time"class="form-control" name="start_time" id="start_time">
+						  </div>
+					  </div>
+					  <div class="col-sm">
+						  <div class="form-group">
+							  <label for="end_time">Activity End Time</label>
+							  <input type="time"class="form-control" name="end_time" id="end_time">
+						  </div>
+					  </div>
+					  
+  
+				  </div>
+				  
+				  <div class="form-row">
+					  <div class="col">
+						  <div class="form-group">
+							  <label for="activitycolor">Edit activity color:</label>
+							  <input type="color" id="activitycolor" name="activitycolor" class="form-control" value="#caefea">
+						  </div>
+					  </div>
+					  
+				  </div>
+					  <hr>
+					<input type="submit" class="btn btn-primary btn-block submitbtn" form='activity' id='submitbtn' value="Create">
+				  
+			  </form>
+			</div>
+			<div class="card-footer text-muted">
+			  they call me<a class="btn btn-primary" href="/"> back home</a>
+			</div>
+		  </div>
+	  </div>
+
+
+
+
+
+    
+  
+
+
+
+  </div>
+  <!--canvas container-->
+  {%load static%}
+  <script src="{% static 'planner/create.js' %}"></script>
+</body>      
+</html>

@@ -1,0 +1,572 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+	  <title>Planner</title>
+    <meta name="description" content="a planner" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!--<link rel="stylesheet" type="text/css" href="../js/stylesheet.css">-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    
+</head>
+
+<body>
+  <!--canvas container-->
+  <div class="fluid-container">
+    
+    <div class="container p-2">
+		<div class="row">
+			
+		  <div class="col-sm">
+				
+				<a class="btn btn-primary" href="/back/{{date.month}}/{{date.year}}">Back to calandar</a>
+				
+				<!-- Trigger the modal with a button -->
+				<button type="button" class="btn btn-info modalbtn" id='createmodal-{{toggle}}' data-toggle="modal" data-target="#myModal">Create Activity</button>
+
+				<!-- Modal -->
+				<div id="myModal" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+
+					<!-- Modal content-->
+					<div class="modal-content">
+					<div class="modal-header">
+						
+						<h4 class="modal-title">Create Activity</h4>
+					</div>
+					<div class="modal-body">
+						<form action="/create/{{date.date}}" method="post" id='activity'>
+							{% csrf_token %}
+							<div class="form-group row">
+								<div class="col-sm-1">
+									<a class="text-danger removecat" href='#' id='removecat-{{date.id}}'>&times;</a>
+								</div>
+								<div class="col-sm">
+									<div class="container float-right">
+										<label for="categoryselection">Select a category:</label>
+										<select class="form-control" id="categoryselection" name="categoryselection">
+											{%if categories%}
+											{%for category in categories%}
+											<option id="{{category.category}}" value="{{category.category}}">{{category.category}}</option>
+											{%endfor%}
+											{%else%}
+											<option value="" >no categories</option>
+											{%endif%}
+										</select>
+									</div>
+								</div>
+								
+								
+						  </div>
+						  <div class="container">
+							<label for="category"></label>
+							<input type="text" id="category" name="category" placeholder="New Category">
+							<a class="btn btn-primary category-btn" href="#" id="{{date.id}}">Add to list</a>
+						  </div>
+							  <div class="form-group row">
+								<div class="col-lg">
+									<div class="container">
+										<label for="name">Activity Name</label>
+										<input type="text" class="form-control" name="name" placeholder="Enter name">
+										<div class="container p-0 m-0">
+											
+											<div class="form-group row">
+												<div class="col-lg">
+													<label for="sdate">Choose Start Date</label>
+													<input type="date" name="sdate" max="3000-12-31" min="1000-01-01" class="form-control" value='{{date.date}}'>
+												</div>
+												<div class="col-lg">
+													<label for="edate">Choose End Date</label>
+													<input type="date" name="edate" min="1000-01-01" max="3000-12-31" class="form-control" value='{{date.date}}'>
+												</div>
+											</div>
+											
+										</div>
+									</div>
+									
+								</div>
+								<div class="col-lg">
+									<div class="container">
+										<label for="start_time">Activity Start Time</label>
+										<input type="time"class="form-control" name="start_time">
+										<label for="end_time">Activity End Time</label>
+										<input type="time"class="form-control" name="end_time">
+				
+									</div>
+									
+								</div>
+							  </div>
+							  <div class="form-group row">
+								  <div class="container">
+									<label for="activitycolor">Select activity color:</label>
+									<input type="color" id="activitycolor" name="activitycolor" value="#ff0000">
+								  </div>
+							  </div>
+							  
+							  <div class="form-group row">
+								
+							  </div>
+							  
+							
+				
+							  <input type="submit" class="btn btn-primary" form='activity'>
+							</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+					</div>
+
+				</div>
+				</div>
+		  </div>
+		</div>
+	</div>
+	<div class="d-flex justify-content-between pageheader">
+		<div class="p-2 btn btn-link changeDays" href="#" id="prev_{{date.id}}">PREV</div>
+		<div class="p-2">
+			<div class="container text-center date" id="{{date.id}}">
+				<p><h2>{{date.month|upper}} {{date.day}} {{date.date}}</h2></p>
+			</div>
+		</div>
+		<div class="p-2 btn btn-link changeDays" href="#" id="next_{{date.id}}">NEXT</div>
+		<form action="" method="GET" id='changedays' style="display:none">
+			
+		</form>
+	</div>
+	
+	<div class="d-flex">
+		<!--visual activity clock-->
+		<div class="container clock" style="min-width: 650px;">
+			<div class="row">
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">12 AM</div>
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">2 AM</div>
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">4 AM</div>
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">6 AM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">8 AM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">10 AM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">12 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">2 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">4 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">6 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">8 PM</div>	
+				</div>
+				<div class="col-1 p-0">
+					<div class="itemheader shadow-sm border border-dark rounded pl-1">10 PM</div>	
+				</div>	
+			</div><!--row-->
+			<!--activity loop begins-->
+
+			<div id="visualactivitytimes pt-4">
+
+				{%for activity in activities%}
+				<div id="visualgroup_{{activity.id}}">
+					<form action="/time/{{date.id}}" method="post" id="timevisual_{{activity.id}}">
+							{% csrf_token%}
+						<div class="row shadow-sm border-left border-right border-top border-dark rounded justify-content-end bg-light mt-3">
+							
+								<div class="p-2 align-self-center h5">
+								
+									
+									{{activity.name}} 
+								
+							
+							
+								</div>
+								
+								<div class="p-2 align-self-center">
+									<input type="time" class="start form-control border-info" name='starttime_{{activity.id}}' placeholder="{{activity.start_time}}" id='starttime_{{activity.id}}' value="{{activity.start_time}}">
+									
+								</div>
+								<div class="p-2 align-self-center">
+									<input type="time" class="end form-control border-info" name='endtime_{{activity.id}}' placeholder="{{activity.end_time}}" id='endtime_{{activity.id}}' value="{{activity.end_time}}">
+								</div>
+								<div class="p-2 align-self-center">
+									<input class="btn btn-outline-info btn-sm" type="submit" id="btntimevisual_{{activity.id}}" form="timevisual_{{activity.id}}">
+								</div>
+							
+							
+							
+						</div>
+					</form>
+					
+					<div class="row activity_row border rounded shadow-sm" id="clock_{{activity.id}}" data-starttime="{{activity.start_time}}" data-endtime="{{activity.end_time}}">
+						<div class="col-1 border border-dark">
+							
+								<div class="row ">
+									<div class="col-6 p-0">
+										<div class="container p-0 m-0 d-flex justify-content-between">
+											<div class="start startpercent00" style="background-color: white; width: 0%;"></div>
+											<div class="item  px-0 row_color" id="{{activity.id}}_0000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+											<div class="end endpercent00" style="background-color: white; width: 0%;"></div>
+										</div>
+									</div>
+									<div class="col-6 p-0">
+										<div class="container p-0 m-0 d-flex justify-content-between">
+											<div class="start startpercent01" style="background-color: white; width: 0%;"></div>
+											<div class="item  px-0 row_color" id="{{activity.id}}_0100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+											<div class="end endpercent01" style="background-color: white; width: 0%;"></div>
+										</div>
+										
+									</div>
+									
+									
+								</div>
+							
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start start startpercent02" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent02" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start start startpercent03" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent03" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent04" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0400" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent04" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent05" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0500" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent05" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent06" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0600" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent06" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent07" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0700" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent07" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent08" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0800" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent08" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent09" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_0900" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent09" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent10" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent10" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent11" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent11" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent12" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent12" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent13" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent13" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent14" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1400" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent14" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent15" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1500" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent15" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent16" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1600" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent16" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent17" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1700" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent17" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent18" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1800" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent18" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent19" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_1900" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent19" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent20" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_2000" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent20" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent21" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_2100" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent21" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+							</div>
+						</div>
+						<div class="col-1 border border-dark">
+							<div class="row ">
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent22" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_2200" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent22" style="background-color: white; width: 0%;"></div>
+									</div>
+								</div>
+								<div class="col-6 p-0">
+									<div class="container p-0 m-0 d-flex justify-content-between">
+										<div class="start startpercent23" style="background-color: white; width: 0%;"></div>
+										<div class="item  px-0 row_color" id="{{activity.id}}_2300" style="background-color: {{activity.color}}; width: 0%;">&nbsp</div>
+										<div class="end endpercent23" style="background-color: white; width: 0%;"></div>
+									</div>
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						
+					
+					</div>
+				</div>
+				
+				{%endfor%}
+			</div>
+			
+			
+		</div><!--clock-->
+
+		<div class="container">
+			<table class="table table-hover">
+			  <thead class="thead-dark">
+				<tr>
+				  <th scope="col" style="width: 5%">Remove</th>
+				  <th scope="col" style="width: 40%">Activity Name</th>
+				  <th scope="col" style="width: 15%">Target Time (hr:min:sec)</th>
+				  <th scope="col" style="width: 15%">Current Time</th>
+				  <th scope="col" style="width: 15%">Control</th>
+				  <th scope="col" style="width: 10%"></th>
+				  
+				</tr>
+			  </thead>
+			  <tbody class="date_table" id='tablebody'>
+			  
+				  <form action="/control/{{date.id}}" method="post" id="stopwatches">
+					  {% csrf_token %}
+				  <div id="generatedrows">
+				  {%for activity in activities%}
+				<!--populate table rows with activity names from the date
+			  id="stopwatch_{{activity.id}}"
+			  -->
+					  
+					  
+				  <tr class="date_row" id='{{activity.id}}'>
+						  
+						  <th scope="row"><a class="text-danger remove" href='/remove/{{date.id}}/{{activity.id}}' id='remove_{{activity.id}}'>&times;</a></th>
+						  <td>
+						  <a class="edit-activity" href='/edit/{{activity.id}}/{{date.id}}' id='go_{{activity.id}}'>{{activity.name}}</a>
+						   
+						  </td>
+						  <td><input class="form-control activity-duration" style="min-width: 85px;" id='duration_{{activity.id}}' value="{{activity.duration}}" readonly></td>
+						  <td><input class="form-control text-success stopwatch" type="text" style="min-width: 85px;" placeholder="{{activity.current_time}}" id='time_{{activity.id}}' name="time_{{activity.id}}" value="{{activity.current_time}}" readonly>
+							  </td>
+							  <input type="hidden" class="activate" name="active_{{activity.id}}" id="active_{{activity.id}}" value="{{activity.active}}">
+						  <td><a class="btn btn-success text-white" id="start_{{activity.id}}" style="display:flexbox;">Start</a><input type="submit" class="btn btn-primary text-white" form='stopwatches' id="pause_{{activity.id}}" name="pause_{{activity.id}}" style="display: none;" value="Pause"><input type="submit" class="btn btn-danger text-white" form='stopwatches' id="stop_{{activity.id}}" name="stop_{{activity.id}}" style="display:flexbox;" value="Clear"></a></td>
+						  <td><a class="btn btn-sm btn-outline-dark finishbutton" href='#' id='finishbutton_{{activity.id}}'>Finish</a><input type='hidden' class="finish" id='finish_{{activity.id}}' name='finish_{{activity.id}}' value='{{activity.finish}}'></td>
+				  </tr>
+					  
+				  {%endfor%}
+				  </div>
+				  
+				  <tr class="total_row">
+					  <th scope="row">
+						  <td><p class="lead">Total:</p></td>
+						  <td><span id='totalduration'>00:00:00</span></td>
+						  <td></td>
+						  <td></td>
+					  </th>
+					  
+				  </tr>
+				  <tr class="current_row">
+					  <th scope="row">
+						  <td><p class="lead">Current:</p></td>
+						  <td><span id='currentduration'>00:00:00</span> <span id='overtime'></span></td>
+						  <td></td>
+						  <td></td>
+					  </th>
+				  </tr>
+				  <tr class="remaining_row">
+					  <th scope="row">
+						  <td><p class="lead">Remaining:</p></td>
+						  <td><span id='remainingduration'>00:00:00</span></td>
+						  <td></td>
+						  <td></td>
+					  </th>
+				  </tr>
+				  </form>
+			  </tbody>
+			  
+			</table>
+		  </div>
+	</div>
+	
+    
+	<div class="snooze">
+		<div class="btn btn-lg btn-info" style="display: none;" id="snoozebtn">Snooze</div>
+	</div>
+	
+  
+
+
+
+  </div>
+  <!--canvas container-->
+  {%load static%}
+<audio id="sound">
+	<source src="{% static 'planner/B16.mp3' %}" type="audio/mpeg" id="finish">
+</audio>
+<script src="{% static 'planner/date.js' %}"></script>
+</body>      
+</html>

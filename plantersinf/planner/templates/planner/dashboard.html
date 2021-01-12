@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!--bootstrap and dependencies for front end functionality-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+
+</head>
+<body>
+	<!--main container-->
+	<div class="fluid-container bg-dark border border-white" style="min-height: 100vh;">
+	<div class="fluid-container bg-dark h-100" style="height: 100%;">	
+		<div class="d-flex flex-row">
+			<div class="container pl-3 m-0 align-self-center" style="width:25%; max-width: 150px;">
+				<a href="/" class="btn btn-primary btn-sm">Home</a>
+			</div>
+			<!--top bar container-->
+			<div class="container p-0 m-0 shadow bg-dark">
+				<div class="container" id="optionbar">
+					<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+						<a class="navbar-brand navmonth" href="#">Options</a>
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarNavDropdown">
+						<ul class="navbar-nav" id="option">
+							
+							<li class="nav-item dropdown btn btn-sm btn-outline-info p-0 mx-2">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarweek" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Week
+								</a>
+								<div class="dropdown-menu" aria-labelledby="navbarweek" id="week">
+									<a class="dropdown-item active" href="#" id="-1">none</a>
+									<a class="dropdown-item" href="#" id="0">all weeks</a>
+									<a class="dropdown-item" href="#" id="1">week 1</a>
+									<a class="dropdown-item" href="#" id="2">week 2</a>
+									<a class="dropdown-item" href="#" id="3">week 3</a>
+									<a class="dropdown-item" href="#" id="4">week 4</a>
+									<a class="dropdown-item" href="#" id="5">week 5</a>
+									
+								</div>
+							</li>
+							<li class="nav-item dropdown btn btn-sm btn-outline-info p-0 mx-2">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarday" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Day
+							</a>
+							<div class="dropdown-menu" aria-labelledby="navbarday" id="day">
+								<a class="dropdown-item active" href="#" id="-1">none</a>
+								<a class="dropdown-item" href="#" id="0">all days</a>
+								<a class="dropdown-item" href="#" id="1">1</a>
+								<a class="dropdown-item" href="#" id="2">2</a>
+								<a class="dropdown-item" href="#" id="3">3</a>
+								<a class="dropdown-item" href="#" id="4">4</a>
+								<a class="dropdown-item" href="#" id="5">5</a>
+								<a class="dropdown-item" href="#" id="6">6</a>
+								<a class="dropdown-item" href="#" id="7">7</a>
+								<a class="dropdown-item" href="#" id="8">8</a>
+								<a class="dropdown-item" href="#" id="9">9</a>
+								<a class="dropdown-item" href="#" id="10">10</a>
+								<a class="dropdown-item" href="#" id="11">11</a>
+								<a class="dropdown-item" href="#" id="12">12</a>
+								<a class="dropdown-item" href="#" id="13">13</a>
+								<a class="dropdown-item" href="#" id="14">14</a>
+								<a class="dropdown-item" href="#" id="15">15</a>								
+								<a class="dropdown-item" href="#" id="16">16</a>
+								<a class="dropdown-item" href="#" id="17">17</a>
+								<a class="dropdown-item" href="#" id="18">18</a>
+								<a class="dropdown-item" href="#" id="19">19</a>								
+								<a class="dropdown-item" href="#" id="20">20</a>
+								<a class="dropdown-item" href="#" id="21">21</a>
+								<a class="dropdown-item" href="#" id="22">22</a>
+								<a class="dropdown-item" href="#" id="23">23</a>
+								<a class="dropdown-item" href="#" id="24">24</a>
+								<a class="dropdown-item" href="#" id="25">25</a>
+								<a class="dropdown-item" href="#" id="26">26</a>
+								<a class="dropdown-item" href="#" id="27">27</a>
+								<a class="dropdown-item" href="#" id="28">28</a>
+								<a class="dropdown-item" href="#" id="29">29</a>
+								<a class="dropdown-item" href="#" id="30">30</a>
+								<a class="dropdown-item" href="#" id="31">31</a>
+								
+							</div>
+							</li>
+							<li class="nav-item dropdown btn btn-sm btn-outline-info p-0 mx-2">
+								<a class="nav-link dropdown-toggle" href="#" id="navbartype" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									Type
+								</a>
+								<div class="dropdown-menu" aria-labelledby="navbartype" id="type">
+									<a class="dropdown-item active" href="#" id='all'>all types</a>
+									<a class="dropdown-item" href="#" id='event'>events</a>
+									<a class="dropdown-item" href="#" id='category'>categories</a>
+									
+								</div>
+								</li>
+						</ul>
+						</div>
+					</nav>
+				</div>
+			</div>
+			<!--top bar container-->
+		</div>
+		
+
+
+		<!--page body, full size-->
+		<div class="fluid-container d-flex bg-light">
+			<div class="sidebar bg-dark text-white" style="width:15%; min-width: 150px;">
+				<!--each table is a single month. make table for every month-->
+				<div class="container py-5 calendar text-center border border-white" id='calendar'>
+					<p class="lead">Metrics</p>
+					<!--for each year in years-->
+			{%for eachyear in years%}
+				{%for year,yearobj in eachyear.items%}
+					<div class="container" id="{{year}}" style="display:none;">
+						<p class="lead">{{year}}</p>
+						<!--for each month in year-->
+					{%for month,monthobj in yearobj.items%}
+						<div class="row justify-content-center">
+							<!--<a href="#" class="btn btn-light w-75" id="{{month}}_{{year}}">{{month}}</a>-->
+							<label class="btn btn-outline-light month rounded w-100" for="input{{month}}{{year}}" id="{{month}}_{{year}}">
+								<input type="hidden" id="input{{month}}{{year}}" value="0">{{month}}
+							</label>
+						</div>
+					{%endfor%}
+						<div class="d-flex justify-content-around" id="page_{{year}}">
+							<a href="#top" class="btn btn-sm btn-primary" id="prev">prev</a>
+							<a href="#top" class="btn btn-sm btn-primary" id="next">next</a>
+						</div>
+						
+					</div>
+				{%endfor%}
+			{%endfor%}
+					<!--	-->
+					
+				</div>
+			</div>
+			<div class="d-flex readout">
+				
+				
+				<div class="flex-fill container" id='yearcharts' style="max-width: 1600px;">
+					
+			{%for eachyear in years%}
+				{%for year,yearobj in eachyear.items%}
+					{%for month,monthobj in yearobj.items%}
+					<div class="monthchart" id="{{month}}-{{year}}" style="display: none;" >
+					
+					<div class="flex-fill">
+						<div class="flex-row">
+							<p class="lead">
+								{{year}}-{{month}}
+							</p>
+						</div>
+						
+						
+						
+						<div class="charts" id="{{month}}-{{year}}-charts">
+							<div class="d-flex flex-wrap weekeventbox"></div>
+							<div class="d-flex flex-wrap weekcategorybox"></div>
+							<div class="d-flex flex-wrap eventbox">
+								{%for daynum,dayobj in monthobj.completed.items%}
+								{%if dayobj%}
+								<div class="eventchart mb-5 border border-right-0 px-1 ml-1 shadow-sm" id="{{month}}-{{year}}-{{daynum}}" style="display: none;">
+									<div style="height: 250px; width: 200px;">
+										
+										<p>{{daynum}}</p>
+										<canvas class="canvas" id="{{month}}-{{year}}-{{daynum}}-event" style="width: 200px; height: 200px;"></canvas>		
+									
+									</div>
+								</div>
+								
+								
+								{%endif%}
+								{%endfor%}
+							</div>
+						
+							<div class="d-flex flex-wrap categorybox">
+								{%for daynum,dayobj in monthobj.categorygrouped.items%}
+								{%if dayobj%}
+								<div class="categorychart mb-5 border border-left-0 px-1 mr-1 shadow-sm" id="{{month}}-{{year}}-{{daynum}}" style="display: none;">
+									<div style="height: 250px; width: 200px;">
+										
+										<p>{{daynum}}</p>
+										<canvas class="canvas" id="{{month}}-{{year}}-{{daynum}}-category" style="width: 200px; height: 200px;"></canvas>		
+									
+									</div>
+								</div>
+								
+								{%endif%}	
+								{%endfor%}	
+							</div>
+							<div class="d-flex flex-wrap"></div>
+							
+							<canvas id="{{month}}-{{year}}-100-complete" width="10" height="10" style="display: hidden;"></canvas>		
+								
+						</div>
+						
+
+						<div id='{{month}}-{{year}}-eventvars' style="display:none;">
+						
+							{%for daynum,dayobj in monthobj.completed.items%}
+							{%if dayobj%}
+								{%for activityname,activityobj in dayobj.items%}
+						
+								<div class="{{month}}-{{year}}" id='{{activityname}}_{{daynum}}' data-completed="{{activityobj.minutescomplete}}" data-name="{{activityname}}" data-color="{{activityobj.color}}" data-daynumber="{{daynum}}"></div>
+						
+								{%endfor%}
+							{%endif%}
+							{%endfor%}
+							<div class="{{month}}-{{year}}" id='tempfix_100' data-completed="0" data-name="tempfix"></div>
+						</div>
+						<div id='{{month}}-{{year}}-categoryvars' style="display:none;">
+						
+							{%for daynum,dayobj in monthobj.categorygrouped.items%}
+							{%if dayobj%}
+								{%for categoryname,categoryobj in dayobj.items%}
+						
+								<div class="{{month}}-{{year}}" id='{{categoryname}}_{{daynum}}' data-occuring="{{categoryobj.count}}" data-name="{{categoryname}}" data-color="{{categoryobj.color}}" data-daynumber="{{daynum}}"></div>
+						
+								{%endfor%}
+							{%endif%}
+							{%endfor%}
+							<div class="{{month}}-{{year}}" id='tempfix_100' data-completed="0" data-name="tempfix"></div>
+						</div>
+
+
+					</div>
+				</div>
+					{%endfor%}
+				{%endfor%}
+			{%endfor%}
+		
+
+				</div>
+				
+				
+			</div>
+			
+		</div>
+		<!--page body-->
+		
+		
+		
+
+	</div>
+	</div>
+
+	{%load static%}
+  <script src="{% static 'planner/dashboard.js' %}"></script>
+</body>
+</html>
