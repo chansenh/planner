@@ -231,7 +231,96 @@ def date(request,id,toggle=0):
 		#print(act.current_time,act.active,act.start_time,act.end_time)
 	return render(request, "planner/date.html",context)
 
-def createRangeOfDates(start_date,end_date,name,storestart,storeend,duration,daysoftheweek,color,category,finish=0):
+# sideeffect = maybe add daysoftheweek to caculate the amount of total dates being created for each function call.
+def createDateRange(start_date,end_date,dotw):
+	print('creating date range')
+	year = [0,31,28,31,30,31,30,31,31,30,31,30,31]#zero to take up zeroth spot; starting at index >=1
+	months = ['null','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+	startday = int(start_date.split('-')[2])
+	startmonth = int(start_date.split('-')[1])
+	startyear = int(start_date.split('-')[0])
+	endday = int(end_date.split('-')[2])
+	endmonth = int(end_date.split('-')[1])
+	endyear = int(end_date.split('-')[0])
+	week = dotw.split(',')
+	activitydays=0
+	#endyear - startyear = amoutn of years
+	#initialize all days of each month that the activity occurs on
+	for currentyear in range(startyear,endyear+1):
+		#creating dates existing within a specific year
+		if startyear == endyear:
+			for currentmonth in range(startmonth,endmonth+1):
+				daysinmonth = year[currentmonth]
+				#print(daysinmonth)
+				#initialize each day of current month including start and end months
+				for currentday in range(1,year[currentmonth]+1):
+					#print(months[currentmonth],currentday,currentyear)
+					#does this day match with a day from week variable
+					#does this day fall in range between start_date and end_date
+					
+					#if currentmonth==startmonth and currentday>=startday
+					#print(currentmonth,currentday,currentyear)
+					dateinfo = formatDateToString(currentmonth,currentday,currentyear)
+					#keep track of active days
+					if week.count(dateinfo['weekday']):
+						activitydays+=1
+					
+					#print(dateinfo)
+					query = Date.objects.filter(date=dateinfo['date'])
+					#check to see if date has been created
+					if not query:#create the date
+						newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
+						#print(dateinfo)
+
+		
+		#creating dates spanning multiple years
+		else:
+
+
+			if currentyear == startyear:
+				for currentmonth in range(startmonth,len(year)):
+					
+					for currentday in range(1,year[currentmonth]+1):
+						#print(months[currentmonth],currentday,currentyear)
+						dateinfo = formatDateToString(currentmonth,currentday,currentyear)
+						#keep track of active days
+						if week.count(dateinfo['weekday']):
+							activitydays+=1
+						query = Date.objects.filter(date=dateinfo['date'])
+						if not query:#create the date
+							newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
+							#print(dateinfo)
+			if currentyear == endyear:
+				for currentmonth in range(1,endmonth+1):
+					
+					for currentday in range(1,year[currentmonth]+1):
+						#print(months[currentmonth],currentday,currentyear)
+						dateinfo = formatDateToString(currentmonth,currentday,currentyear)
+						#keep track of active days
+						if week.count(dateinfo['weekday']):
+							activitydays+=1
+						query = Date.objects.filter(date=dateinfo['date'])
+						if not query:#create the date
+							newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
+							#print(dateinfo)
+			if currentyear>startyear and currentyear<endyear:
+				for currentmonth in range(1,len(year)):
+					
+						for currentday in range(1,year[currentmonth]+1):
+							#print(months[currentmonth],currentday,currentyear)
+							dateinfo = formatDateToString(currentmonth,currentday,currentyear)
+							#keep track of active days
+							if week.count(dateinfo['weekday']):
+								activitydays+=1
+							query = Date.objects.filter(date=dateinfo['date'])
+							if not query:#create the date
+								newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
+								#print(dateinfo)
+	return activitydays
+
+
+
+def createActivities(start_date,end_date,name,storestart,storeend,duration,daysoftheweek,color,category,finish=0):
 	year = [0,31,28,31,30,31,30,31,31,30,31,30,31]#zero to take up zeroth spot; starting at index >=1
 	startdateinfo = findWeekday(start_date)
 	enddateinfo = findWeekday(end_date)
@@ -249,224 +338,181 @@ def createRangeOfDates(start_date,end_date,name,storestart,storeend,duration,day
 	foundstart=0
 	foundend=0
 	week = daysoftheweek.split(',')
-	looppurpose = ['date','activity']
+
 	# check every date in existance to the new start and end dates and all dates inbetween
 	# if a match is made then date exists no need to create a duplicate
 	#grab month/day explicitly instead of looping through all dates
 	#first loop will create the date objects
 	#second loop will create the activities
-	for purpose in looppurpose:
-		print('in loop; purpose is',purpose)
-		
-		#spans over multiple years
-		if startyear!=endyear:
-			#a forloop for the length of years. and do the else below for each year
-			for currentyear in range(startyear,endyear+1):
-				if currentyear==startyear:
-					#go from start month to the december 31
 
-					#go through each month
-					for currentmonth in range(startmonth,13):#include 12
-						#grab day amount of relevant month
-						dayamount = year[currentmonth]
-						
-						#we are at the first month
-						if currentmonth==startmonth:#begin from start day to dayamount in the current month
-							for currentday in range(startday,dayamount+1):
-								
-								dateinfo = formatDateToString(currentmonth,currentday,currentyear)
-								if purpose=='date':
-									query = Date.objects.filter(date=dateinfo['date'])
-									if not query:#create the date
-										
-										newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-										
-								if purpose=='activity' and week.count(dateinfo['weekday']):
-									#create activities for date ranges only if weekday of date is among the user's selected days
-									print('new activity time!')
-									newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
-									print(newactivity.name)
-						else: #currentmonth is some month passed the start month. go from 1st to last day of the month
-							for currentday in range(1,dayamount+1):
-								
-								dateinfo = formatDateToString(currentmonth,currentday,currentyear)
-								if purpose=='date':
-									query = Date.objects.filter(date=dateinfo['date'])
-									if not query:#create the date
-										
-										newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-										
-								if purpose=='activity' and week.count(dateinfo['weekday']):
-									#create activities for date ranges only if weekday of date is among the user's selected days
-									print('new activity time!')
-									newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
-									print(newactivity.name)
-
-					
-				elif currentyear==endyear:
-					#go from january 1 to end month
-
-					#go through each month
-					for currentmonth in range(1,endmonth+1):#include 12
-						#grab day amount of relevant month
-						dayamount = year[currentmonth]
-						
-						#we are at the last month
-						if currentmonth==endmonth:#begin from first day to end activity day of dayamount in the current month
-							for currentday in range(1,endday+1):
-								
-								dateinfo = formatDateToString(currentmonth,currentday,currentyear)
-								if purpose=='date':
-									query = Date.objects.filter(date=dateinfo['date'])
-									if not query:#create the date
-										
-										newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-										
-								if purpose=='activity' and week.count(dateinfo['weekday']):
-									#create activities for date ranges only if weekday of date is among the user's selected days
-									
-									newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
-									
-						else: #currentmonth is some month before the end month. go from 1st to last day of the month
-							for currentday in range(1,dayamount+1):
-								
-								dateinfo = formatDateToString(currentmonth,currentday,currentyear)
-								if purpose=='date':
-									query = Date.objects.filter(date=dateinfo['date'])
-									if not query:#create the date
-										
-										newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-										
-								if purpose=='activity' and week.count(dateinfo['weekday']):
-									#create activities for date ranges only if weekday of date is among the user's selected days
-									print('new activity time!')
-									newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
-									print(newactivity.name)
-					
-			
-				else:
-					#current year is a year inbetween start and end year. fill entire year from jan 1 to dec 31
-
-					#go through each month
-					for currentmonth in range(1,13):#include 12
-						#grab day amount of relevant month
-						dayamount = year[currentmonth]
-						
-						#go from 1st to last day of the month
-						for currentday in range(1,dayamount+1):
-							
-							dateinfo = formatDateToString(currentmonth,currentday,currentyear)
-							if purpose=='date':
-								query = Date.objects.filter(date=dateinfo['date'])
-								if not query:#create the date
-									
-									newdateobject= Date.objects.create(date=dateinfo['date'],month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-									
-							if purpose=='activity' and week.count(dateinfo['weekday']):
-								#create activities for date ranges only if weekday of date is among the user's selected days
-								
-								newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
-								
-					
-		
-		# start and end years are equal
-		else:
-			#date range is within one month
-			if endmonth==startmonth:
-				print('same month!')
-				for currentday in range(startday,endday+1):
-					if startmonth<10:
-						monthstring = '0{}'.format(startmonth)
-					else:
-						monthstring=startmonth
-					if currentday<10:
-						daystring='0{}'.format(currentday)
-					else:
-						daystring=currentday
-					date= '{}-{}-{}'.format(startyear,monthstring,daystring)
-					dateinfo = findWeekday(date)
-					if purpose=='date':
-						query = Date.objects.filter(date=date)
-						if not query:#create the date
-							print('creating new date object')
-							newdateobject= Date.objects.create(date=date,month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-							print(newdateobject.date)
-					if purpose=='activity' and week.count(dateinfo['weekday']):
-						#create activities for date ranges only if weekday of date is among the user's selected days
-						print('new activity time!')
-						newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
-						print(newactivity.name)
-			#date range greater than 1 month 		
-			else:
+	#spans over multiple years
+	if startyear!=endyear:
+		#a forloop for the length of years. and do the else below for each year
+		for currentyear in range(startyear,endyear+1):
+			if currentyear==startyear:
+				#go from start month to the december 31
 
 				#go through each month
-				for currentmonth in range(startmonth,endmonth+1):
+				for currentmonth in range(startmonth,13):#include 12
 					#grab day amount of relevant month
 					dayamount = year[currentmonth]
 					
 					#we are at the first month
 					if currentmonth==startmonth:#begin from start day to dayamount in the current month
 						for currentday in range(startday,dayamount+1):
-							if currentmonth<10:
-								monthstring = '0{}'.format(currentmonth)
-							else:
-								monthstring=currentmonth
-							if currentday<10:
-								daystring='0{}'.format(currentday)
-							else:
-								daystring=currentday
-							date= '{}-{}-{}'.format(startyear,monthstring,daystring)
-							dateinfo = findWeekday(date)
-							if purpose=='date':
-								query = Date.objects.filter(date=date)
-								if not query:#create the date
-									newdateobject = Date.objects.create(date=date,month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-							if purpose=='activity' and week.count(dateinfo['weekday']):
-								#create activities for date ranges only if date weekday is among the selected days
-								newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
-						
-					#we are at the last month of date range
-					elif currentmonth==endmonth:#loop from first day of the month to end day in date range 
-						for currentday in range(1,endday+1):
-							if currentmonth<10:
-								monthstring = '0{}'.format(currentmonth)
-							else:
-								monthstring=currentmonth
-							if currentday<10:
-								daystring='0{}'.format(currentday)
-							else:
-								daystring=currentday
-							date= '{}-{}-{}'.format(startyear,monthstring,daystring)
-							dateinfo = findWeekday(date)
-							if purpose=='date':
-								query = Date.objects.filter(date=date)
-								if not query:#create the date
-									newdateobject = Date.objects.create(date=date,month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-							if purpose=='activity' and week.count(dateinfo['weekday']):
-								#create activities for date ranges only if date weekday is among the selected days
-								newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+							
+							dateinfo = formatDateToString(currentmonth,currentday,currentyear)
 								
-					#we are at a month inbetween the start and end months
-					else:#loop through 1 to the dayamount in the current month; entire month gets filled
+							if week.count(dateinfo['weekday']):
+								#create activities for date ranges only if weekday of date is among the user's selected days
+								print('new activity time!')
+								newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+								print(newactivity.name)
+					else: #currentmonth is some month passed the start month. go from 1st to last day of the month
 						for currentday in range(1,dayamount+1):
-							if currentmonth<10:
-								monthstring = '0{}'.format(currentmonth)
-							else:
-								monthstring=currentmonth
-							if currentday<10:
-								daystring='0{}'.format(currentday)
-							else:
-								daystring=currentday
-							date= '{}-{}-{}'.format(startyear,monthstring,daystring)
-							dateinfo = findWeekday(date)
-							if purpose=='date':
-								query = Date.objects.filter(month=dateinfo['month'],day=dateinfo['day'])
-								if not query:#create the date
-									newdateobject = Date.objects.create(date=date,month=dateinfo['month'],day=dateinfo['day'],year=dateinfo['year'],start_count=0,end_count=0,weekday=dateinfo['weekday'])
-							if purpose=='activity' and week.count(dateinfo['weekday']):
-								#create activities for date ranges only if date weekday is among the selected days
-								newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+							
+							dateinfo = formatDateToString(currentmonth,currentday,currentyear)
 								
+							if week.count(dateinfo['weekday']):
+								#create activities for date ranges only if weekday of date is among the user's selected days
+								print('new activity time!')
+								newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+								print(newactivity.name)
+
+				
+			elif currentyear==endyear:
+				#go from january 1 to end month
+
+				#go through each month
+				for currentmonth in range(1,endmonth+1):#include 12
+					#grab day amount of relevant month
+					dayamount = year[currentmonth]
+					
+					#we are at the last month
+					if currentmonth==endmonth:#begin from first day to end activity day of dayamount in the current month
+						for currentday in range(1,endday+1):
+							
+							dateinfo = formatDateToString(currentmonth,currentday,currentyear)
+									
+							if week.count(dateinfo['weekday']):
+								#create activities for date ranges only if weekday of date is among the user's selected days
+								
+								newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+								
+					else: #currentmonth is some month before the end month. go from 1st to last day of the month
+						for currentday in range(1,dayamount+1):
+							
+							dateinfo = formatDateToString(currentmonth,currentday,currentyear)
+									
+							if week.count(dateinfo['weekday']):
+								#create activities for date ranges only if weekday of date is among the user's selected days
+								print('new activity time!')
+								newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+								print(newactivity.name)
+				
+		
+			else:
+				#current year is a year inbetween start and end year. fill entire year from jan 1 to dec 31
+
+				#go through each month
+				for currentmonth in range(1,13):#include 12
+					#grab day amount of relevant month
+					dayamount = year[currentmonth]
+					
+					#go from 1st to last day of the month
+					for currentday in range(1,dayamount+1):
+						
+						dateinfo = formatDateToString(currentmonth,currentday,currentyear)
+							
+						if week.count(dateinfo['weekday']):
+							#create activities for date ranges only if weekday of date is among the user's selected days
+							
+							newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=dateinfo['date']),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+							
+				
+	
+	# start and end years are equal
+	else:
+		#date range is within one month
+		if endmonth==startmonth:
+			print('same month!')
+			for currentday in range(startday,endday+1):
+				if startmonth<10:
+					monthstring = '0{}'.format(startmonth)
+				else:
+					monthstring=startmonth
+				if currentday<10:
+					daystring='0{}'.format(currentday)
+				else:
+					daystring=currentday
+				date= '{}-{}-{}'.format(startyear,monthstring,daystring)
+				dateinfo = findWeekday(date)
+				if week.count(dateinfo['weekday']):
+					#create activities for date ranges only if weekday of date is among the user's selected days
+					print('new activity time!')
+					newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+					print(newactivity.name)
+		#date range greater than 1 month 		
+		else:
+
+			#go through each month
+			for currentmonth in range(startmonth,endmonth+1):
+				#grab day amount of relevant month
+				dayamount = year[currentmonth]
+				
+				#we are at the first month
+				if currentmonth==startmonth:#begin from start day to dayamount in the current month
+					for currentday in range(startday,dayamount+1):
+						if currentmonth<10:
+							monthstring = '0{}'.format(currentmonth)
+						else:
+							monthstring=currentmonth
+						if currentday<10:
+							daystring='0{}'.format(currentday)
+						else:
+							daystring=currentday
+						date= '{}-{}-{}'.format(startyear,monthstring,daystring)
+						dateinfo = findWeekday(date)
+						if week.count(dateinfo['weekday']):
+							#create activities for date ranges only if date weekday is among the selected days
+							newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+					
+				#we are at the last month of date range
+				elif currentmonth==endmonth:#loop from first day of the month to end day in date range 
+					for currentday in range(1,endday+1):
+						if currentmonth<10:
+							monthstring = '0{}'.format(currentmonth)
+						else:
+							monthstring=currentmonth
+						if currentday<10:
+							daystring='0{}'.format(currentday)
+						else:
+							daystring=currentday
+						date= '{}-{}-{}'.format(startyear,monthstring,daystring)
+						dateinfo = findWeekday(date)
+						
+						if week.count(dateinfo['weekday']):
+							#create activities for date ranges only if date weekday is among the selected days
+							newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+							
+				#we are at a month inbetween the start and end months
+				else:#loop through 1 to the dayamount in the current month; entire month gets filled
+					for currentday in range(1,dayamount+1):
+						if currentmonth<10:
+							monthstring = '0{}'.format(currentmonth)
+						else:
+							monthstring=currentmonth
+						if currentday<10:
+							daystring='0{}'.format(currentday)
+						else:
+							daystring=currentday
+						date= '{}-{}-{}'.format(startyear,monthstring,daystring)
+						dateinfo = findWeekday(date)
+						
+						if week.count(dateinfo['weekday']):
+							#create activities for date ranges only if date weekday is among the selected days
+							newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time='00:00:00',days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
+							
 
 # start and end is string, selecteddays is list of abbreviated days of the week selected during activity creation		
 #def createActivityRange(start_date,end_date,selecteddays):
@@ -505,6 +551,52 @@ def createRangeOfDates(start_date,end_date,name,storestart,storeend,duration,day
 	#	if not foundend: # end date was not found create date object with end date as its date	
 	#		e = Date.objects.create(date=end_date,start_count=0,end_count=1,month=enddateinfo['month'],day=enddateinfo['day'], year=enddateinfo['year'], weekday=enddateinfo['weekday'])
 	
+#UNDER CONSTRUCTION#
+def modifyAllActivities(start_date,end_date,name,start,end,duration,daysoftheweek,color,category,lengthofactivity):
+	startday = int(start_date.split('-')[2])
+	endday = int(end_date.split('-')[2])
+	startmonth = int(start_date.split('-')[1])
+	endmonth = int(end_date.split('-')[1])
+	startyear = int(start_date.split('-')[0])
+	endyear = int(end_date.split('-')[0])
+	activitygroup = Activity.objects.filter(name=name).order_by('activity_date__date')
+	##order_by('activity_date__day')
+	activitylist=[]
+	#necessary date objects have already been created
+	#must now assign activities new activity dates using start and end dates
+	#if len(activitygruop) > lengthofactivity == reduce activity range, delete activitise
+	#determine which activities to delete
+	#for activity in activitygroup:
+		#activityyear = int(activity.activity_date.date.split('-')[0])
+		#activitymonth = int(activity.activity_date.date.split('-')[1])
+		#activityday = int(activity.activity_date.date.split('-')[2])
+		#activitylength takes place within same month
+		#if startmonth==endmonth:
+		
+		#if activityyear>=startyear and activityyear<=endyear and activitymonth>=startmonth and activitymonth<=endmonth and activityday>=startday
+		
+	#if len(activitygroup) < lengthofactivity == increase activity range, create activities
+
+
+	for activity in activitygroup:
+		activitylist.append(activity)
+		#activity dates can change. must cycle through startdate to enddate and manually assign
+		#possible to add more dates to activties than originally exist. must create new activities to fill the extra dates
+		#possible to shorten dates 
+		##dateinfo = formatDateToString(currentmonth,currentday,currentyear)
+		##activity.start_date=Date.objects.get(date=start_date)
+		##activity.end_date=Date.objects.get(date=end_date)
+		##activity.name=request.POST['name']
+		##activity.start_time=request.POST['start_time']
+		##activity.end_time=request.POST['end_time']
+		##activity.duration=duration
+		##activity.days=daysoftheweek
+		##activity.activity_date=???????
+		##activity.color=color
+		##activity.category=Category.objects.get(category=category)
+		##activity.save()
+	#print('activities: ',len(activitygroup))
+	#print(activitygroup[0].activity_date.date)
 
 
 def create(request,date=''):
@@ -555,24 +647,24 @@ def create(request,date=''):
 		
 		end_date = request.POST['edate']
 		## CREATE RANGE DATE DATA
-
+		createDateRange(start_date,end_date,daysoftheweek)
 		# no days are selected and the activity takes place on a single day
 		# automatically find teh appropriate weekday and assign it
 		if not days and start_date == end_date:
 			day = findWeekday(start_date)
 			singleday = day['weekday']+','
-			createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,singleday,color,category)
+			createActivities(start_date,end_date,request.POST['name'],start,end,duration,singleday,color,category)
 		# no days are selected and a range of days exist for the activity
 		# assume all days are desired and assign all days to the activity over the particular range
 		elif not days:
 			daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
-			createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
+			createActivities(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
 		# at least a single day was selected, carry on as normal
 		else:
 			for each in days:
 				daysoftheweek+=each+','
 		
-			createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
+			createActivities(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
 		
 		if date:
 			print('POSTING ON ',date)
@@ -623,6 +715,7 @@ def edit(request,activityid=-1,dateid=-1):
 		storestart = "{}{}".format(request.POST['start_time'].split(':')[0], request.POST['start_time'].split(':')[1])
 		storeend = "{}{}".format(request.POST['end_time'].split(':')[0], request.POST['end_time'].split(':')[1])
 		color = request.POST['activitycolor']
+		name = request.POST['name']
 		#print(storestart)
 		#recurring = request.POST['recurring']
 		startsplit = start.split(':')
@@ -649,54 +742,75 @@ def edit(request,activityid=-1,dateid=-1):
 		start_date=request.POST['sdate']
 		
 		end_date = request.POST['edate']
-
+		lengthofactivity = createDateRange(start_date,end_date,daysoftheweek)
 		#update all indicates whether or not all activities of the same name will be updated
 		if not updateall:
 			activitytoupdate = Activity.objects.get(id=activityid)
 			activitytoupdate.start_date=Date.objects.get(date=start_date)
 			activitytoupdate.end_date=Date.objects.get(date=end_date)
-			activitytoupdate.name=request.POST['name']
-			activitytoupdate.start_time=request.POST['start_time']
-			activitytoupdate.end_time=request.POST['end_time']
+			activitytoupdate.name=name
+			activitytoupdate.start_time=start
+			activitytoupdate.end_time=end
 			activitytoupdate.duration=duration
 			activitytoupdate.days=daysoftheweek
 			activitytoupdate.color=color
 			activitytoupdate.category=Category.objects.get(category=category)
 			activitytoupdate.save()
-			
+		
+		#updateall is set to 1
+		#delete activities of the same name and create new activities
 		else:
-			#updateall is set to 1
-			#delete activities of the same name and create new activities
-			activitygroup = Activity.objects.filter(name=request.POST['name'])
-			for activity in activitygroup:
-				activity.delete()
+
+			#set filter on dates greater than or equal to current date to apply changes only to future activities.
+			#previous days will not have changes made
+			
+			#change each activity to reflect changes
+			
+				###activity.delete()
+			print(lengthofactivity)
+			modifyAllActivities(start_date,end_date,name,start,end,duration,daysoftheweek,color,category,lengthofactivity)
+				#create the start date
+				#if not Date.objects.filter(date=start_date):
+
+				#if not Date.objects.filter(date=end_date):
+				#activity.start_date=Date.objects.get(date=start_date)
+				#activity.end_date=Date.objects.get(date=end_date)
+				#activity.name=request.POST['name']
+				#activity.start_time=request.POST['start_time']
+				#activity.end_time=request.POST['end_time']
+				#activity.duration=duration
+				#activity.days=daysoftheweek
+				#activity.activity_date=???????
+				#activity.color=color
+				#activity.category=Category.objects.get(category=category)
+				#activity.save()
 
 			## CREATE RANGE DATE DATA
 
 			# no days are selected and the activity takes place on a single day
 			# automatically find teh appropriate weekday and assign it
-			if not days and start_date == end_date:
-				day = findWeekday(start_date)
-				singleday = day['weekday']+','
-				createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,singleday,color,category)
+			###if not days and start_date == end_date:
+			###	day = findWeekday(start_date)
+			###	singleday = day['weekday']+','
+			###	createActivities(start_date,end_date,request.POST['name'],start,end,duration,singleday,color,category)
 			# no days are selected and a range of days exist for the activity
 			# assume all days are desired and assign all days to the activity over the particular range
-			elif not days:
-				daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
-				createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
+			###elif not days:
+			###	daysoftheweek='sun,mon,tue,wed,thu,fri,sat'
+			###	createActivities(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
 			# at least a single day was selected, carry on as normal
-			else:
-				for each in days:
-					daysoftheweek+=each+','
+			###else:
+			###	for each in days:
+			###		daysoftheweek+=each+','
 			
-				createRangeOfDates(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
+			###	createActivities(start_date,end_date,request.POST['name'],start,end,duration,daysoftheweek,color,category)
 			#for activity in activitygroup:
 				#sdate = Date.objects.get(date=activitystart_date)
 				#activity.name=activityname
 				#activity.start_date
 			# needs to be updated; duration,current_time,days?,active=0,	
 			#redirect back to calendar once changes are made
-		print(dateid)
+		###print(dateid)
 		if dateid == '-1':
 			return redirect("/")
 		else:

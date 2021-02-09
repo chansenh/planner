@@ -11,13 +11,14 @@ class Stopwatch{
         this.interval=undefined;
         this.duration = duration;
         this.active = 0;
+        this.snoozeamount=0;
         
     }
 
     increment(){
         let secout="";
         let minout="";
-        let hrout="00";
+        let hrout="";
         //update
         this.second++;
 
@@ -56,8 +57,34 @@ class Stopwatch{
         }
         const out = `${hrout}:${minout}:${secout}`;
         
-        const targethr = Number(this.duration.split(':')[0])
-        const targetmin = Number(this.duration.split(':')[1])
+        let targethr = Number(this.duration.split(':')[0])
+        let targetmin = Number(this.duration.split(':')[1])
+
+        //snooze has been clicked at least once
+        if (this.snoozeamount>0){
+            //calculate new finish time in targethr and targetmin variables
+            let snoozed = this.snoozeamount;
+			// for any snoozed <6, snoozehr will be 0. for any snoozed >=6, snoozehr will be >=1
+            let snoozehr= Math.floor(snoozed/6);
+            let snoozemin = snoozed%6;
+            if (snoozehr>=1){
+                targethr= targethr + snoozehr;
+            }
+            if (snoozemin>=1){
+                //max amount is 50. 60 would be equal to zero in previous calculation
+                //number multiplied by is amount of minutes for each click of snooze button
+                snoozemin = snoozemin*10; //each snooze quanity === 10 extra minutes
+                //max amount is 109 as targetmin has max of 59 mins and snoozemin has max of 50
+                targetmin = targetmin + snoozemin //45 + 30 = 75
+                if(targetmin>=60){
+                    
+                    let newhour = Math.floor(targetmin/60);
+                    let newminute = targetmin%60;
+                    targethr= targethr + newhour;
+                    targetmin = targetmin + newminute;
+                }
+            }
+        }
         
         if (this.hour==targethr && this.minute==targetmin && this.second==0){
             //alert(`Activity ${this.id}, Times up!`);
@@ -69,7 +96,7 @@ class Stopwatch{
             //plays sound to user informing of activity completion
             document.getElementById('sound').play();
             //show snooze button to silence music
-            document.getElementById('snoozebtn').style.display = "inline"
+            document.getElementById(`snooze_${this.id}`).style.display = "inline"
             
             //marks activity as finished to reflect changes in database
             document.getElementById(`finish_${this.id}`).value='1'
@@ -104,9 +131,9 @@ class Stopwatch{
             
             
             this.interval = setInterval(()=>{
-                this.time = this.increment();
-                document.getElementById(`time_${this.id}`).value = this.time;
-            }, 1000);
+							    this.time = this.increment();
+				                document.getElementById(`time_${this.id}`).value = this.time;
+				            }, 1000);
 
         }
         //this.interval = setInterval(() =>increment(this.id), 1000);
@@ -123,16 +150,21 @@ class Stopwatch{
             document.getElementById(`pause_${this.id}`).style = "display: none";//hide pause
             document.getElementById(`time_${this.id}`).classList.remove('active');
             //get all classes of stopwatch. classlist will contain active if sotpwatch is counting
-            snooze();
+            document.getElementById('sound').pause();
+            document.getElementById('sound').currentTime = 0;
+			document.getElementById(`snooze_${this.id}`).style.display = "none"
+			this.snoozeamount=0;
             clearInterval(this.interval);
         }
     }
     stop(){
         if(this.interval){
             this.active=0;
-            
+            document.getElementById('sound').pause();
+            document.getElementById('sound').currentTime = 0;
+			document.getElementById(`snooze_${this.id}`).style.display = "none"
             clearInterval(this.interval);
-            snooze();
+            
             this.reset();
         }
     }
@@ -141,17 +173,22 @@ class Stopwatch{
         this.minute = 0;
         this.second = 0;
         this.active=0;
+        this.snoozeamount=0;
         this.time='00:00:00';
-        
-        
         this.interval=null;
     }
     
-
-    updateDOM(){
-        
-        document.getElementById(`time_${this.id}`).innerHTML = `${this.hour}:${this.minute}:${this.second}`;
+    snooze(){
+        //silences song and resets it to beginning
+        document.getElementById('sound').pause();
+        document.getElementById('sound').currentTime = 0;
+        //hide the btn when its clicked on
+        document.getElementById(`snooze_${this.id}`).style.display = 'none';
+        this.snoozeamount++;
+    
     }
+
+    
     
 }//class Stopwatch
 
@@ -247,6 +284,22 @@ function stopwatchControl(){
         //    });
             
         //}
+    })
+
+    //if snooze button is clicked on
+    document.getElementById('stopwatchcontainer').addEventListener('click', event =>{
+        if (event.target && event.target.classList){
+            let classlist = event.target.classList
+            console.log(classlist,event.target.id)
+            if (event.target.classList.contains("snooze")){
+                let stopwatchid = event.target.id.split('_')[1];
+                stopwatches[`stopwatch_${stopwatchid}`].snooze()
+                document.getElementById(`snooze_${stopwatchid}`).style.display = "none";
+                console.log(stopwatchid)
+            }
+            
+        }
+        
     })
 
     
@@ -740,7 +793,7 @@ function changeDays(){
 function validateNodeWithID(id,classname){
     let valid=false;
     
-    if(document.getElementById(id).classList.length>0){
+    if(document.getElementById(id) && document.getElementById(id).classList && document.getElementById(id).classList.length>0){
         document.getElementById(id).classList.forEach(currentclass =>{
             if(classname == currentclass){
                 valid=true
@@ -892,14 +945,7 @@ function activateFinishButton(){
     })
 }
 
-function snoozeListener(){
-    //if snooze button is clicked on
-    document.getElementById('snoozebtn').addEventListener('click', event =>{
-        console.log('pinishd')
-        snooze();
-    })
-    
-}
+
 //let JSONdata=undefined;
 //fs.readFile(`${__dirname}/data/data.json`, 'utf-8', (err,data) => {
 //    JSONdata = data;
@@ -911,7 +957,6 @@ changeDays();
 activateFinishButton();
 stopwatchControl();
 toggleModal();
-snoozeListener();
 newCategoryListener();
 removeCategoryListener();
 markFinishedActivities();
