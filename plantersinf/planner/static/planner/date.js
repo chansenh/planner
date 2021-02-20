@@ -131,10 +131,12 @@ class Stopwatch{
             document.getElementById(`time_${this.id}`).classList.add('active');
             
             let timeinterval=1000;
+            let previousms = (this.hour*60*60+this.minute*60+this.second)*1000;
             let start = Date.now();
-            console.log(start)
+            //console.log(start)
             this.interval = setInterval(()=>{
-                                let now = Date.now()-start;
+                                //console.log(start)
+                                let now = (Date.now()-start)+previousms;
                                 let hr = Number(this.duration.split(':')[0]);
                                 let min = Number(this.duration.split(':')[1]);
                                 let sec = Number(this.duration.split(':')[2]);
