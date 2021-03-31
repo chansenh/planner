@@ -12,6 +12,7 @@ class Stopwatch{
         this.duration = duration;
         this.active = 0;
         this.snoozeamount=0;
+        this.played=false;
         
     }
 
@@ -87,7 +88,7 @@ class Stopwatch{
             }
         }
         
-        if (this.hour==targethr && this.minute==targetmin && this.second==0){
+        if (this.hour>=targethr && this.minute>=targetmin && this.second>=0 && !(this.played)){
             //alert(`Activity ${this.id}, Times up!`);
             let activityname = findActivity(this.id)
             //displays notification to user
@@ -96,6 +97,7 @@ class Stopwatch{
             document.getElementById(`${this.id}`).classList.add('table-primary')
             //plays sound to user informing of activity completion
             document.getElementById('sound').play();
+            this.played=true;
             //show snooze button to silence music
             document.getElementById(`snooze_${this.id}`).style.display = "inline"
             
@@ -195,12 +197,14 @@ class Stopwatch{
         this.snoozeamount=0;
         this.time='00:00:00';
         this.interval=null;
+        this.played=false;
     }
     
     snooze(){
         //silences song and resets it to beginning
         document.getElementById('sound').pause();
         document.getElementById('sound').currentTime = 0;
+        this.played=false;
         //hide the btn when its clicked on
         document.getElementById(`snooze_${this.id}`).style.display = 'none';
         this.snoozeamount++;
@@ -211,14 +215,7 @@ class Stopwatch{
     
 }//class Stopwatch
 
-function snooze(){
-    //silences song and resets it to beginning
-    document.getElementById('sound').pause();
-    document.getElementById('sound').currentTime = 0;
-    //hide the btn when its clicked on
-    document.getElementById('snoozebtn').style.display = 'none';
 
-}
 
 function stopwatchControl(){
     
