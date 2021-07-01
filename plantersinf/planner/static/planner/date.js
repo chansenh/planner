@@ -961,6 +961,99 @@ function activateFinishButton(){
     })
 }
 
+function agendaListener(){
+
+    document.getElementById('agendacontainer').addEventListener('click',event =>{
+        event.preventDefault()
+        console.log(event.target)
+        if(event.target.id && event.target.id.includes("_") && event.target.id.split('_')[0]=="agenda"){
+            console.log(event.target.href)
+            document.getElementById('addagenda').value = "1"
+            document.getElementById('agendaform').action = event.target.href
+            document.getElementById('agendaform').submit();
+        }
+        else if(event.target.id && event.target.id=="remove"){
+            document.getElementById('removeagenda').value = "1"
+            document.getElementById('agendaentry').value = event.target.parentNode.id.split('_')[1]
+            document.getElementById('agendaform').action = event.target.href
+            document.getElementById('agendaform').submit();
+        }
+        else if(event.target.classList.contains("direction")){
+            //shift d-flex box up one
+            //acitivty name_agenda item name
+            let targetnode=event.target
+            if(!(targetnode.id)){
+                
+                while(!(targetnode.id)){
+                    targetnode = targetnode.parentNode
+                }
+            }
+            let direction = targetnode.id
+            let agendaitemid = targetnode.parentNode.parentNode.id
+            //send the form to server and reorganize data there
+            
+            let activityname = agendaitemid.split('_')[0]
+            let agendaname = agendaitemid.split('_')[1]
+            let agendaquerylist = document.getElementById(agendaitemid.split('_')[0]).querySelectorAll('.agenda-item')
+            document.getElementById('alteragenda').value=direction
+            document.getElementById('agendaentry').value = agendaname
+            document.getElementById('agendaform').action = document.getElementById(agendaitemid).querySelector('.formhref').href
+            document.getElementById('agendaform').submit();
+
+        }
+        else if(event.target.classList.contains("task")){
+            
+            let targetnode = event.target
+            //paragraph div was clicked on
+            if (!(targetnode.classList.contains("list-group-item"))){
+                targetnode = targetnode.parentNode
+            }
+            let tasknode = targetnode.parentNode
+            let agenda = tasknode.id.split("_")[0]
+            let task = tasknode.id.split("_")[1]
+            document.getElementById('checkedagenda').value="1"
+            //task is highlighted
+            if (targetnode.classList.contains("btn-primary")){
+                //remove highlight/deactivate
+                document.getElementById(`${targetnode.id}`).classList.remove("btn-primary","active")
+                
+                let elementtoremove = document.getElementById(`checked_${agenda}_${task}`)
+                
+                elementtoremove.parentNode.removeChild(elementtoremove)
+                
+                
+                document.getElementById('agendaform').action = document.getElementById(`${agenda}_${task}`).querySelector('.formhref').href
+                document.getElementById('agendaform').submit();
+                
+                  
+            }
+            //HERE
+            //the form action is adding activity id. which allows server to know what activity the task belongs to
+            else{
+                //highlight/activate
+                document.getElementById(`${targetnode.id}`).classList.add("btn-primary","active")
+                let checked = document.createElement("input");
+                checked.setAttribute("type","hidden")
+                checked.setAttribute("name",agenda)
+                checked.setAttribute("value",task)
+                checked.setAttribute("id",`checked_${agenda}_${task}`)
+                document.getElementById(`${agenda}_${task}`).appendChild(checked)
+                
+                document.getElementById('agendaform').action = document.getElementById(`${agenda}_${task}`).querySelector('.formhref').href
+                document.getElementById('agendaform').submit();
+            }
+            
+        }
+    });
+}
+
+function nodeidSplitter(id,splitter){
+    if (typeof(id)==string){
+        let splitlist = id.split(splitter)
+        return splitlist
+    }
+    return undefined
+}
 
 //let JSONdata=undefined;
 //fs.readFile(`${__dirname}/data/data.json`, 'utf-8', (err,data) => {
@@ -977,3 +1070,4 @@ newCategoryListener();
 removeCategoryListener();
 markFinishedActivities();
 calculateTotalTime();
+agendaListener();

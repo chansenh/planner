@@ -70,7 +70,7 @@
 								</div>
 							</div>
 							
-							<input type="text" class="form-control" name="name" value="{{editname}}">
+							<input type="text" class="form-control" name="name" value="{{editname}}" id="name">
 							
 						</div>
 					</div>
@@ -117,13 +117,13 @@
 					<div class="col-sm">
 						<div class="form-group">
 							<label for="sdate">Edit Start Date</label>
-							<input type="date" name="sdate" max="3000-12-31" min="1000-01-01" class="form-control" value='{{editstart_date}}'>
+							<input type="date" name="sdate" max="3000-12-31" min="1000-01-01" class="form-control" value='{{editstart_date}}' id='sdate'>
 						</div>
 					</div>
 					<div class="col-sm">
 						<div class="form-group">
 							<label for="edate">Edit End Date</label>
-							<input type="date" name="edate" min="1000-01-01" max="3000-12-31" class="form-control" value='{{editend_date}}'>
+							<input type="date" name="edate" min="1000-01-01" max="3000-12-31" class="form-control" value='{{editend_date}}' id='edate'>
 						</div>
 					</div>
 				</div>
@@ -160,6 +160,12 @@
 							<a type="button" class="btn btn-secondary text-white" id="alleventsbtn">No</a>
 							
 						</div>
+						<div class="form-group mt-4">
+							<label for="futureevents">Apply changes to future events only?</label>
+							<input type="hidden" name="futureevents" id="futureeventsvalue" value="0">
+							<a type="button" class="btn btn-secondary text-white" id="futureeventsbtn">No</a>
+						</div>
+						
 					</div>
 				</div>
 					<hr>

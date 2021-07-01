@@ -1,6 +1,6 @@
 from django.db import models
 
-# Create your models here.
+# Create models here.
 class Activity(models.Model):
 	name=models.CharField(max_length=20)
 	start_date=models.ForeignKey('Date', related_name="start",on_delete=models.CASCADE)
@@ -15,6 +15,7 @@ class Activity(models.Model):
 	activity_date = models.ForeignKey('Date', related_name="recurring",on_delete=models.CASCADE)
 	color = models.CharField(max_length=10)
 	category= models.ForeignKey('Category', related_name="activities",on_delete=models.CASCADE)
+	agenda= models.ForeignKey('Agenda', related_name="activities", blank=True,null=True,on_delete=models.CASCADE)
 	#created_at = models.DateTimeField(auto_now_add=True)
 	#updated_at = models.DateTimeField(auto_now=True)
 	#objects=UserManager()
@@ -30,3 +31,8 @@ class Date(models.Model):
 
 class Category(models.Model):
 	category= models.CharField(max_length=40)
+
+class Agenda(models.Model):
+	name = models.CharField(max_length=20)
+	list = models.TextField()
+	active = models.TextField()

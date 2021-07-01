@@ -107,11 +107,53 @@ function editListener(){
                 //turn on
                 node.innerHTML='Yes';
                 document.getElementById('alleventsvalue').value='1'
+                document.getElementById('futureeventsvalue').value='0'
                 node.classList.remove('btn-seconday');
                 node.classList.add('btn-success');
+                //turn off future events button 
+                document.getElementById('futureeventsvalue').value='0'
+                document.getElementById('futureeventsbtn').classList.remove('btn-success');
+                document.getElementById('futureeventsbtn').classList.add('btn-seconday');
+                document.getElementById('futureeventsbtn').innerHTML='No'
+                document.getElementById('sdate').removeAttribute('readonly')
+                document.getElementById('name').removeAttribute('readonly')
             }
         }
     })
+
+    document.getElementById('futureeventsbtn').addEventListener('click',event=>{
+        //console.log(event.target)
+        let node = event.target;
+        let targetid = event.target.id;
+        if(targetid){
+            if(node.innerHTML=='Yes'){
+                //turn off
+                node.innerHTML='No';
+                document.getElementById('futureeventsvalue').value='0'
+                node.classList.remove('btn-success');
+                node.classList.add('btn-seconday');
+                
+            }
+            else{
+                //turn on
+                node.innerHTML='Yes';
+                document.getElementById('futureeventsvalue').value='1'
+                node.classList.remove('btn-seconday');
+                node.classList.add('btn-success');
+                document.getElementById('sdate').setAttribute('readonly',true)
+                document.getElementById('name').setAttribute('readonly',true)
+                //turn off all events button 
+                document.getElementById('alleventsvalue').value='0'
+                document.getElementById('alleventsbtn').classList.remove('btn-success');
+                document.getElementById('alleventsbtn').classList.add('btn-seconday');
+                document.getElementById('alleventsbtn').innerHTML='No'
+
+            }
+        }
+    })
+
+    
+
 }
 
 function checkForTime(){
