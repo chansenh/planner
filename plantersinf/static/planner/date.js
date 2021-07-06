@@ -960,7 +960,186 @@ function activateFinishButton(){
         
     })
 }
+function agendaAJAX(formid,formpath){
 
+    let xhttp;
+    let formelement = document.getElementById(formid);
+
+    xhttp = new XMLHttpRequest();
+    
+    //xhttp.responseURL = `/control/${dateid}`
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+            console.log('submit has been processed. need to update DOM');
+            
+
+            //update agendalist
+            updateAgenda();
+            
+            
+
+		}
+    };
+
+    xhttp.open(formelement.method, formpath, true);
+    
+	xhttp.send(new FormData(formelement));
+
+}
+
+function agendaListener(){
+
+    document.getElementById('agendacontainer').addEventListener('click',event =>{
+        event.preventDefault()
+        console.log(event.target)
+        
+        //adds task to activity
+        if(event.target.id && event.target.id.includes("_") && event.target.id.split('_')[0]=="agenda"){
+            console.log(event.target.href)
+            let activityname = event.target.parentNode.id.split("_")[1]
+            document.getElementById('addagenda').value = "1"
+            let formpath = document.getElementById('agendaform').action
+            let patharray = formpath.split("/")
+            let dateid = patharray.pop()
+            document.getElementById('agendaform').action = event.target.href
+            formpath = event.target.href
+            patharray = formpath.split("/")
+            patharray.pop()
+            let activityid = patharray.pop()
+            //document.getElementById('agendaform').submit();
+            //TODO actually insert the task in the agenda list under appropriate activity name
+            let tasktoinsert = document.getElementById('agendaentry').value
+            let htmltoinsert = `<div class="d-flex agenda-item m-2 p-0" id="${activityname}_${tasktoinsert}">
+                                    <a class="text-danger btn btn-small formhref" href='/agenda/${dateid}/${activityid}/${tasktoinsert}' id='remove'>&times;</a>
+                                    <li class="list-group-item task btn btn-sm" id="${activityname}_${tasktoinsert}_item" style="min-width: max-content;"><p class="task p-0 m-0" style="font-size: small; width: 150px; min-width: max-content;">${tasktoinsert}</p></li>
+
+                                    <div class="d-flex flex-column justify-content-around">
+                                        <div class="direction" id="up">
+                                            <svg class="direction" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                                <path class="direction" fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="direction" id="down">
+                                            <svg class="direction" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                                <path class="direction" fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                                            </svg>
+                                        </div>
+                                        
+                                        
+                                    </div>
+                                </div>`
+            
+            document.querySelectorAll('.list-group').forEach(element =>{
+                console.log(element.id)
+                console.log(activityname)
+                if(element.id == activityname){
+                    document.getElementById(element.id).insertAdjacentHTML('beforeend',htmltoinsert)
+                }
+            });
+            agendaAJAX('agendaform',event.target.href)
+        }
+        
+        //removes task from all activities of same name
+        else if(event.target.id && event.target.id=="remove"){
+            document.getElementById('removeagenda').value = "1"
+            document.getElementById('agendaentry').value = event.target.parentNode.id.split('_')[1]
+            document.getElementById('agendaform').action = event.target.href
+            //document.getElementById('agendaform').submit();
+            //TODO acutally remove task from DOM
+            let activityname = event.target.parentNode.id.split("_")[0]
+            let taskname = event.target.parentNode.id.split("_")[1]
+            document.getElementById(activityname).querySelectorAll('.agenda-item').forEach(node => {
+                if (node.id.split("_")[1] == taskname){
+                    node.parentNode.removeChild(node)
+                }
+            })
+            agendaAJAX('agendaform',event.target.href)
+        }
+
+        //moves task up or down within list
+        else if(event.target.classList.contains("direction")){
+            //shift d-flex box up one
+            //acitivty name_agenda item name
+            let targetnode=event.target
+            if(!(targetnode.id)){
+                
+                while(!(targetnode.id)){
+                    targetnode = targetnode.parentNode
+                }
+            }
+            let direction = targetnode.id
+            let agendaitemid = targetnode.parentNode.parentNode.id
+            //send the form to server and reorganize data there
+            
+            let activityname = agendaitemid.split('_')[0]
+            let agendaname = agendaitemid.split('_')[1]
+            let agendaquerylist = document.getElementById(agendaitemid.split('_')[0]).querySelectorAll('.agenda-item')
+            document.getElementById('alteragenda').value=direction
+            document.getElementById('agendaentry').value = agendaname
+            document.getElementById('agendaform').action = document.getElementById(agendaitemid).querySelector('.formhref').href
+            document.getElementById('agendaform').submit();
+            //TODO acutally manipulate DOM objects to reflect chosen action
+        }
+
+        // task is cycled between selected/deselected modes
+        else if(event.target.classList.contains("task")){
+            
+            let targetnode = event.target
+            //paragraph div was clicked on
+            if (!(targetnode.classList.contains("list-group-item"))){
+                targetnode = targetnode.parentNode
+            }
+            let tasknode = targetnode.parentNode
+            let agenda = tasknode.id.split("_")[0]
+            let task = tasknode.id.split("_")[1]
+            document.getElementById('checkedagenda').value="1"
+            //task is highlighted
+            if (targetnode.classList.contains("btn-primary")){
+                //remove highlight/deactivate
+                document.getElementById(`${targetnode.id}`).classList.remove("btn-primary","active")
+                
+                let elementtoremove = document.getElementById(`checked_${agenda}_${task}`)
+                
+                elementtoremove.parentNode.removeChild(elementtoremove)
+                
+                
+                document.getElementById('agendaform').action = document.getElementById(`${agenda}_${task}`).querySelector('.formhref').href
+                document.getElementById('agendaform').submit();
+                
+                  
+            }
+            //HERE
+            //the form action is adding activity id. which allows server to know what activity the task belongs to
+            else{
+                //highlight/activate
+                document.getElementById(`${targetnode.id}`).classList.add("btn-primary","active")
+                let checked = document.createElement("input");
+                checked.setAttribute("type","hidden")
+                checked.setAttribute("name",agenda)
+                checked.setAttribute("value",task)
+                checked.setAttribute("id",`checked_${agenda}_${task}`)
+                document.getElementById(`${agenda}_${task}`).appendChild(checked)
+                
+                document.getElementById('agendaform').action = document.getElementById(`${agenda}_${task}`).querySelector('.formhref').href
+                document.getElementById('agendaform').submit();
+            }
+            
+        }
+    });
+}
+
+function updateAgenda(){
+    console.log(document.getElementById('agendacontainer'))
+
+}
+
+function nodeidSplitter(id,splitter){
+    if (typeof(id)==string){
+        let splitlist = id.split(splitter)
+        return splitlist
+    }
+    return undefined
+}
 
 //let JSONdata=undefined;
 //fs.readFile(`${__dirname}/data/data.json`, 'utf-8', (err,data) => {
@@ -977,3 +1156,4 @@ newCategoryListener();
 removeCategoryListener();
 markFinishedActivities();
 calculateTotalTime();
+agendaListener();

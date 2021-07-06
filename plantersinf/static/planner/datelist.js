@@ -3,6 +3,7 @@ let calendarList=[];
 function buildCalendarList(){
     let objcount = 0;
     document.querySelectorAll('.month').forEach(monthnode =>{
+        console.log(monthnode)
         let monthobj = {
             'id':monthnode.id
         }
@@ -56,8 +57,8 @@ function overlayActiveCategories(){
             }
         })
     }); 
-    console.log('====ACTIVES=====')
-    console.log(listofactivecategories)
+    //console.log('====ACTIVES=====')
+    //console.log(listofactivecategories)
     document.querySelectorAll(`.activity`).forEach(container =>{
         let activitycat = container.innerHTML;
         console.log('current cat',activitycat)
@@ -180,8 +181,8 @@ function addMonthToCalendarButtons(){
             'prev': 'december',
         },
         'february': {
-            'next': 'february',
-            'prev': 'december',
+            'next': 'march',
+            'prev': 'january',
         },
         'march': {
             'next': 'april',
@@ -378,11 +379,13 @@ function dayListener(){
 
         //object clicked is of acitivities listed within day box
         else{
-            node.classList.forEach(clas =>{
-                if(clas=="activity"){
-                let editactivity = document.createElement('a');
-                editactivity.href = `/edit/${node.id}`
-                editactivity.click()
+            node.classList.forEach(classname =>{
+                if(classname=="activity"){
+                    //need date id to link the user click to a particular day
+                    let datenode = node.parentNode
+                    let editactivity = document.createElement('a');
+                    editactivity.href = `/edit/${node.id}/${datenode.id}`
+                    editactivity.click()
                 }
             })
         }
@@ -502,6 +505,7 @@ function validateNodeWithID(id,classname){
 
 //start
 buildCalendarList();
+console.log(calendarList)
 let month = calendarList[0]['id'].split('-')[0];
 let year = calendarList[0]['id'].split('-')[1];
 if (!checkActive()){//if there is no active month then server did not render active
