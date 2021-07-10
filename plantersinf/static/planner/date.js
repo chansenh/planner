@@ -960,24 +960,25 @@ function activateFinishButton(){
         
     })
 }
-function agendaAJAX(formid,formpath){
+function agendaAJAX(formid){
 
     let xhttp;
     let formelement = document.getElementById(formid);
-
+    let formpath = formelement.action
+    console.log(formpath)
     xhttp = new XMLHttpRequest();
     
     //xhttp.responseURL = `/control/${dateid}`
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-            console.log('submit has been processed. need to update DOM');
-            
 
-            //update agendalist
-            updateAgenda();
-            
-            
-
+            document.getElementById('agendaentry').value=""
+            document.getElementById('checkedagenda').value="0"
+            document.getElementById('alteragenda').value="0"
+            document.getElementById('addagenda').value="0"
+            document.getElementById('removeagenda').value="0"
+            document.getElementById('agendaform').action = ""
+         
 		}
     };
 
@@ -990,11 +991,12 @@ function agendaAJAX(formid,formpath){
 function agendaListener(){
 
     document.getElementById('agendacontainer').addEventListener('click',event =>{
-        event.preventDefault()
+        
         console.log(event.target)
         
         //adds task to activity
-        if(event.target.id && event.target.id.includes("_") && event.target.id.split('_')[0]=="agenda"){
+        if(event.target.id && event.target.parentNode.id && event.target.id.includes("_") && event.target.id.split('_')[0]=="agenda"){
+            event.preventDefault()
             console.log(event.target.href)
             let activityname = event.target.parentNode.id.split("_")[1]
             document.getElementById('addagenda').value = "1"
@@ -1036,11 +1038,13 @@ function agendaListener(){
                     document.getElementById(element.id).insertAdjacentHTML('beforeend',htmltoinsert)
                 }
             });
-            agendaAJAX('agendaform',event.target.href)
+            
+            agendaAJAX('agendaform')
         }
         
         //removes task from all activities of same name
         else if(event.target.id && event.target.id=="remove"){
+            event.preventDefault()
             document.getElementById('removeagenda').value = "1"
             document.getElementById('agendaentry').value = event.target.parentNode.id.split('_')[1]
             document.getElementById('agendaform').action = event.target.href
@@ -1053,11 +1057,12 @@ function agendaListener(){
                     node.parentNode.removeChild(node)
                 }
             })
-            agendaAJAX('agendaform',event.target.href)
+            agendaAJAX('agendaform')
         }
 
         //moves task up or down within list
         else if(event.target.classList.contains("direction")){
+            event.preventDefault()
             //shift d-flex box up one
             //acitivty name_agenda item name
             let targetnode=event.target
@@ -1072,17 +1077,67 @@ function agendaListener(){
             //send the form to server and reorganize data there
             
             let activityname = agendaitemid.split('_')[0]
-            let agendaname = agendaitemid.split('_')[1]
-            let agendaquerylist = document.getElementById(agendaitemid.split('_')[0]).querySelectorAll('.agenda-item')
+            let taskname = agendaitemid.split('_')[1]
+            let taskquery = document.getElementById(activityname).querySelectorAll('.agenda-item')
             document.getElementById('alteragenda').value=direction
-            document.getElementById('agendaentry').value = agendaname
+            document.getElementById('agendaentry').value = taskname
             document.getElementById('agendaform').action = document.getElementById(agendaitemid).querySelector('.formhref').href
-            document.getElementById('agendaform').submit();
+            
             //TODO acutally manipulate DOM objects to reflect chosen action
+            tasklist=[]
+            nodelist=[]
+            taskquery.forEach(tasknode=>{
+                tasklist.push(tasknode.id.split("_")[1])
+            })
+            let taskidx = tasklist.indexOf(taskname)
+            if (direction=='up' && taskidx>0){
+                
+                let elementgoingdown = tasklist[taskidx-1]
+                
+                //moving clicked element upwards in the list
+                tasklist[taskidx-1] = tasklist[taskidx]
+
+                //swapping not clicked element downwards in list
+                tasklist[taskidx] = elementgoingdown
+                
+                tasklist.forEach(taskelement =>{
+                    nodelist.push(document.getElementById(`${activityname}_${taskelement}`))
+                })
+                document.getElementById(activityname).innerHTML = ""
+                nodelist.forEach(tasknode =>{
+                    
+                    document.getElementById(activityname).appendChild(tasknode)
+                })
+                agendaAJAX('agendaform')
+
+                
+            }else if (direction=='down' && taskidx<tasklist.length-1){
+                
+                
+                let elementgoingup = tasklist[taskidx+1]
+                
+                //moving clicked element downwards in the list
+                tasklist[taskidx+1] = tasklist[taskidx]
+
+                //swapping not clicked element downwards in list
+                tasklist[taskidx] = elementgoingup
+                tasklist.forEach(taskelement =>{
+                    nodelist.push(document.getElementById(`${activityname}_${taskelement}`))
+                })
+                document.getElementById(activityname).innerHTML = ""
+                nodelist.forEach(tasknode =>{
+                    
+                    document.getElementById(activityname).appendChild(tasknode)
+                })
+                agendaAJAX('agendaform')
+            }
+
+            
         }
 
         // task is cycled between selected/deselected modes
         else if(event.target.classList.contains("task")){
+            event.preventDefault()
             
             let targetnode = event.target
             //paragraph div was clicked on
@@ -1104,7 +1159,7 @@ function agendaListener(){
                 
                 
                 document.getElementById('agendaform').action = document.getElementById(`${agenda}_${task}`).querySelector('.formhref').href
-                document.getElementById('agendaform').submit();
+                agendaAJAX('agendaform')
                 
                   
             }
@@ -1121,9 +1176,16 @@ function agendaListener(){
                 document.getElementById(`${agenda}_${task}`).appendChild(checked)
                 
                 document.getElementById('agendaform').action = document.getElementById(`${agenda}_${task}`).querySelector('.formhref').href
-                document.getElementById('agendaform').submit();
+                agendaAJAX('agendaform')
             }
             
+        }
+        else if(event.target.id=='clear'){
+            event.preventDefault()
+            let activityname = event.target.parentNode.id.split("_")[1]
+            document.getElementById(activityname).innerHTML=""
+            document.getElementById('agendaform').action = event.target.href
+            agendaAJAX('agendaform')
         }
     });
 }

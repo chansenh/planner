@@ -22,7 +22,9 @@ urlpatterns = [
 	url(r'^time/(?P<dateid>\d+)$', views.updateTime),
 	url(r'^dashboard$', views.dashboard),
 	url(r'^changeday/(?P<dateid>\d+)/(?P<choice>[-\w]+)$', views.changeDays),
+	url(r'^clear/(?P<dateid>\d+)/(?P<activityid>\d+)$', views.clearagenda),
 	url(r'^agenda/(?P<dateid>\d+)/(?P<activityid>\d+)/(?P<clicked>[-\w\s]+)$', views.agenda)
+	
 	#url(r'^books/(?P<id>\d+)/add$', views.reviewbook),
 	#url(r'^books/add$', views.addbook),
 	#url(r'^books/delete/(?P<id>\d+)$', views.deletereview),

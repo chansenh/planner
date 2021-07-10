@@ -556,11 +556,8 @@
 	</div>
 
 
-	<div class="container border mb-5" id="agendacontainer">
-		TODO LIST
-		{%for each in agendas%}
-		{{each.name}}
-		{%endfor%}
+	<div class="container border rounded mb-5 p-4" id="agendacontainer">
+		
 		<form action="/date/{{date.id}}" method="post" id="agendaform">
 			{% csrf_token %}
 			<div class="container" style="width:250px" id="agendainputs">
@@ -572,10 +569,11 @@
 			</div>
 			{%for activity in activities%}
 			<div class="container">
-				<div class="d-flex my-2" id="agenda_{{activity.name}}">
+				<div class="d-flex align-items-center my-2" id="agenda_{{activity.name}}">
 					
 					<a href="/agenda/{{date.id}}/{{activity.id}}/addto{{activity.name}}" class="btn btn-sm btn-success mx-1" id="agenda_{{activity.id}}">Add</a>
 					<p class="py-0 my-0 px-1 mx-1 font-weight-bold">{{activity.name}}</p>
+					<a href="/clear/{{date.id}}/{{activity.id}}" class="text-danger ml-5" style="font-size: 12px;" id='clear'>clear</a>
 					
 					
 				</div>
@@ -585,6 +583,7 @@
 
 				<ul class="list-group" id="{{activity.name}}">
 					{%for task,active in tasks%}
+					{%if task%}
 					<div class="d-flex agenda-item m-2 p-0" id="{{activity.name}}_{{task}}">
 						<a class="text-danger btn btn-small formhref" href='/agenda/{{date.id}}/{{activity.id}}/{{task}}' id='remove'>&times;</a>
 						{%if active == "0"%}
@@ -608,6 +607,7 @@
 							
 						</div>
 					</div>
+					{%endif%}
 					{%endfor%}
 
 				</ul>	

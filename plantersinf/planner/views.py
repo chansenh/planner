@@ -616,25 +616,39 @@ def findActivityName(name,query):
 				found = 1
 	return found
 
+def clearagenda(request,dateid,activityid):
+	
+	activityobj = Activity.objects.get(id=activityid)
+	#activityobj.agenda.delete()
+	
+	agendaobject = Agenda.objects.get(name=activityobj.name)
+	#agendaobj = Agenda.objects.get(name=activityobj.name)
+	#print(agendatoclear)
+	agendaobject.list=""
+	agendaobject.active=""
+	agendaobject.save()
+	return redirect("/date/{}".format(dateid))
+
+
+
 def agenda(request,dateid,activityid,clicked):
 	
 	if request.POST:
-		print(request.POST)
+		
 		
 		incomingdata = processPOST(request.POST)
 		
-		print("PROCESSED===",incomingdata)
+		
 		
 		agendaentry=incomingdata["agendaentry"]
 		activity = Activity.objects.get(id=activityid)
 		#agenda = Agenda.objects.get(name=activity.name)
-		print(type(activity.name),activity.name)
-		print(type(agendaentry),agendaentry)
+		
 		
 		if incomingdata["checked"]=="1":
 			tasks=None
 			if activity.name in incomingdata.keys():
-				print("FOUND",activity.name)
+				
 				tasks = incomingdata[activity.name]
 				
 				if not (type(tasks) is list):
@@ -672,22 +686,19 @@ def finishAgendaTask(name,entries,clicked):
 		agendalist = agendaobject.list.split(",")
 		activelist = agendaobject.active.split(",")
 		
-		print('agendalist ====',agendalist)
-		print('activelist ====',activelist)
-		print('entries =======',entries)
+		
 		for task,active in zip(agendalist,activelist):
 			
 			if task in entries:
-				print('task is',task)
-				print('clickd is', clicked)
+				
 				if clicked==task:
-					print('found match')
+					
 					if active=="1":
-						print('unmarking')
+						
 					#where is task position to relate to active list
 						activelist[agendalist.index(task)]="0"
 					elif active=="0":
-						print('marking')
+						
 						activelist[agendalist.index(task)]="1"
 					#where is task position to relate to active list
 			else:
@@ -701,8 +712,7 @@ def finishAgendaTask(name,entries,clicked):
 					
 		commaseperatedactive = ",".join(activelist)
 		agendaobject.active = commaseperatedactive
-	print(agendaobject.list)
-	print(agendaobject.active)
+	
 	agendaobject.save()
 
 
