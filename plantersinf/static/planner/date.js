@@ -859,7 +859,6 @@ function visualSubmitAJAX(dateid,activityid){
             updateVisualTime(activityid);
             clearVisualActivities();
             reorderVisualActivities();
-            populateVisualActivities();
             stopwatchControl();
             
 
@@ -993,10 +992,10 @@ function agendaListener(){
     document.getElementById('agendacontainer').addEventListener('click',event =>{
         
         console.log(event.target)
-        
+        event.preventDefault()
         //adds task to activity
-        if(event.target.id && event.target.parentNode.id && event.target.id.includes("_") && event.target.id.split('_')[0]=="agenda"){
-            event.preventDefault()
+        if(event.target.id && event.target.parentNode.id && event.target.id.includes("_") && event.target.id.split('_')[0]=="agenda" && document.getElementById('agendaentry').value.length>0){
+            
             console.log(event.target.href)
             let activityname = event.target.parentNode.id.split("_")[1]
             document.getElementById('addagenda').value = "1"
@@ -1044,7 +1043,7 @@ function agendaListener(){
         
         //removes task from all activities of same name
         else if(event.target.id && event.target.id=="remove"){
-            event.preventDefault()
+            
             document.getElementById('removeagenda').value = "1"
             document.getElementById('agendaentry').value = event.target.parentNode.id.split('_')[1]
             document.getElementById('agendaform').action = event.target.href
@@ -1062,7 +1061,7 @@ function agendaListener(){
 
         //moves task up or down within list
         else if(event.target.classList.contains("direction")){
-            event.preventDefault()
+            
             //shift d-flex box up one
             //acitivty name_agenda item name
             let targetnode=event.target
@@ -1137,7 +1136,7 @@ function agendaListener(){
 
         // task is cycled between selected/deselected modes
         else if(event.target.classList.contains("task")){
-            event.preventDefault()
+            
             
             let targetnode = event.target
             //paragraph div was clicked on
@@ -1181,12 +1180,13 @@ function agendaListener(){
             
         }
         else if(event.target.id=='clear'){
-            event.preventDefault()
+            
             let activityname = event.target.parentNode.id.split("_")[1]
             document.getElementById(activityname).innerHTML=""
             document.getElementById('agendaform').action = event.target.href
             agendaAJAX('agendaform')
         }
+        
     });
 }
 

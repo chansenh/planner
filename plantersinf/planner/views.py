@@ -5,11 +5,10 @@ import datetime
 activecalandar={"month":"","year":""}
 def index(request):
 	months={}
-	listofactivities = Activity.objects.order_by("category").values_list("name","category","id").distinct()
+	#listofactivities = Activity.objects.order_by("category").values_list("name","category","id").distinct()
 	#aprilactivities=Activity.objects.filter(name="sex")#.order_by("category").values_list("name","category").distinct()
 	distinctactivities={}
 	context = {
-		"aprilactivities": Activity.objects.filter(activity_date__month="may",activity_date__year=2020).order_by("category").values_list("name","category").distinct(),
 		"activitiesbyname": distinctactivities,
 		"activities":Activity.objects.all(),
 		"dates": Date.objects.all(),#where month == 1 = jan, month==2 = feb...
@@ -20,10 +19,10 @@ def index(request):
 	}
 	print("loading...")
 	
-	for name,catid,aid in listofactivities:
-		if name not in distinctactivities.keys():
+	#for name,catid,aid in listofactivities:
+	#	if name not in distinctactivities.keys():
 			#Activity.objects.get()
-			distinctactivities[name] = (aid,name,catid)
+	#		distinctactivities[name] = (aid,name,catid)
 	#rangeofyears = Date.objects.all().order_by("year").distinct()
 	#print(rangeofyears)
 	today = datetime.date.today()
@@ -163,7 +162,7 @@ def index(request):
 				weeklyinfo = sorted(monthcontent['eachweek'].items())
 				monthcontent['eachweek'] = weeklyinfo
 				print(monthcontent['eachweek'])
-	print(context)
+	#print(context)
 			
 		
 
@@ -224,7 +223,7 @@ def date(request,id,toggle=0):
 	date = Date.objects.get(id=id)
 	#grab all activities where start_date.date<=activity_date and end_date.date>=activity_date
 	#grab all activities where date object to be loaded falls between activity start and end date
-	activities = Activity.objects.all()
+	activities = Activity.objects.filter(activity_date__date=date.date).order_by("start_time")
 	#day of the week restrictions need to be added here when implemented
 	#print(date.date)
 	
@@ -243,7 +242,7 @@ def date(request,id,toggle=0):
 		#	activity.agenda = query[0]
 
 	#activities = activities.filter(start_date__date__lte=date.date, end_date__date__gte=date.date)
-	activities = activities.filter(activity_date__date=date.date).order_by("start_time")
+	#activities = activities.filter(activity_date__date=date.date).order_by("start_time")
 	
 	#check each activity for an agenda and gather into a list to show on front-end
 	for activity in activities:

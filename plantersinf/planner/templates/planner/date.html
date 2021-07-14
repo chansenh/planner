@@ -571,9 +571,9 @@
 			<div class="container">
 				<div class="d-flex align-items-center my-2" id="agenda_{{activity.name}}">
 					
-					<a href="/agenda/{{date.id}}/{{activity.id}}/addto{{activity.name}}" class="btn btn-sm btn-success mx-1" id="agenda_{{activity.id}}">Add</a>
+					<a href="/agenda/{{date.id}}/{{activity.id}}/{{activity.name}}" class="btn btn-sm btn-success mx-1" id="agenda_{{activity.id}}">Add</a>
 					<p class="py-0 my-0 px-1 mx-1 font-weight-bold">{{activity.name}}</p>
-					<a href="/clear/{{date.id}}/{{activity.id}}" class="text-danger ml-5" style="font-size: 12px;" id='clear'>clear</a>
+					<a href="/agenda/clear/{{date.id}}/{{activity.id}}" class="text-danger ml-5" style="font-size: 12px;" id='clear'>clear</a>
 					
 					
 				</div>
