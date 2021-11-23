@@ -303,6 +303,8 @@ function getCurrentDateObject(){
         year:dateobj.getFullYear()
     }
 }
+
+//produces a border around current day in calendar
 function hightlightCurrentDay(){
     let d = getCurrentDateObject()
     //in case the current day has not been created in the calender
@@ -517,13 +519,20 @@ else{
     makeMonthActive(active.month,active.year);
 }
 
-
+function limitActivityNamesInCalendarBadges(){
+    document.querySelectorAll(`.list-group-item`).forEach(itemnode =>{
+        if(itemnode.innerHTML.length>10){
+            itemnode.innerHTML = itemnode.innerHTML.slice(0,10);
+        }
+    });
+}
 
 calendarNavigation(calendarList);
 enableFiltering();
 hightlightCurrentDay();
 populateCardDuration();
 dayListener();
+limitActivityNamesInCalendarBadges();
 
 //mouseOver();
 
