@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <title>Delete the user</title>
+ </head>
+ <body>
+  
+	<section class="jumbotron text-center">
+		<div class="container">
+			<h1 class="jumbotron-heading">Are you sure you want to delete the following user?</h1>
+		</div>
+		<div class="container">
+				<div class="row">
+					<div class="col-sm-1">
+						
+						<h6 class="text-left">Name:</h6>
+						
+					</div>
+					<div class="col-sm-4">
+						<p class="text-left">{{user.first_name}} {{user.last_name}}
+					</div>
+				</div>
+				
+		</div>
+	</section> 
+
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-4">
+				<a class="btn btn-lg text-primary" href="/dashboard/admin">Cancel</a>
+			</div>
+			<div class="col-sm-2">
+				<form action="/deleteuser" method="post" id='delete'>
+				{% csrf_token %}
+					<input type="submit" class="btn btn-lg text-danger" value="Delete"></input>
+				</form>
+			</div>
+		</div>
+			
+	</div> 
+
+	
+
+
+	{% if messages %}
+	<div class="container overflow-auto" style="height:300px">
+		{% for message in messages %}
+		<div class="row">
+			<div class="col-sm">
+				{%if 'error' in message.tags %}
+				<p class="text-danger">{{message}}</p>
+				{%else %}
+				<p class="text-success">{{message}}</p>
+				{%endif%}
+			</div>
+		</div>
+		{% endfor %}
+
+	</div>
+	{% endif %}
+
+
+	</div>
+
+
+
+
+
+
+
+ </body>
+</html>

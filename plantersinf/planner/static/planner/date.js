@@ -14,6 +14,7 @@ class Stopwatch{
         this.active = 0;
         this.snoozeamount=0;
         this.target=false;
+        this.alert=false;
         this.snoozed=false;
         this.timesnoozed='00:00:00'
         this.snoozetime='00:00:00';
@@ -68,8 +69,8 @@ class Stopwatch{
         let snoozehr = Number(this.snoozetime.split(':')[0]);
         let snoozemin = Number(this.snoozetime.split(':')[1]);
        
-        console.log(this.duration,this.snoozetime)
-        console.log('this.hr and this.min',this.hour,this.minute,'VS',snoozehr,snoozemin)
+        //console.log(this.duration,this.snoozetime)
+        //console.log('this.hr and this.min',this.hour,this.minute,'VS',snoozehr,snoozemin)
         
         //check and update snooze time if different
         //if snoozehr+snoozemin is not equal to snoozemultiplier, the snooze interval has changed
@@ -92,8 +93,17 @@ class Stopwatch{
             //this.played=false;
         //}
         //console.log(`duration: ${targethr}:${targetmin}, snooze: ${snoozehr}:${snoozemin}`)
+        let totalElapsedMinutesToTriggerAlert = targethr*60+targetmin-15
+        let alerthour = Math.floor(totalElapsedMinutesToTriggerAlert/60)
+        let alertminute = totalElapsedMinutesToTriggerAlert%60
+        //console.log('totalmin',totalElapsedMinutesToTriggerAlert)
+        //console.log('alerthr: ',alerthour,' | alretmin: ',alertminute)
+        if (totalElapsedMinutesToTriggerAlert>0 && this.hour==alerthour && this.minute==alertminute && this.second>=0 && !(this.alert)){
+            document.getElementById('alert').play();
+            this.alert=true;
+        }
         if (this.hour>=targethr && this.minute>=targetmin && this.second>=0 && !(this.target)){
-            console.log(`Activity ${this.id}, Times up!`);
+            //console.log(`Activity ${this.id}, Times up!`);
             let activityname = findActivity(this.id)
             //displays notification to user
             alertMessage(`Activty ${activityname} is complete!`)
@@ -115,7 +125,7 @@ class Stopwatch{
             
         }
         if(this.hour>=snoozehr && this.minute>=snoozemin && !(this.snoozed)){
-            console.log(`Activity ${this.id}, SNOOZED!`);
+            //console.log(`Activity ${this.id}, SNOOZED!`);
             let activityname = findActivity(this.id)
             //displays notification to user
             alertMessage(`Activty ${activityname} is SNOOZED!`)
@@ -178,7 +188,7 @@ class Stopwatch{
                                 //this.time = `${hours}:${minutes}:${seconds}`;
 							    this.time = this.increment(hours,minutes,seconds);
 				                document.getElementById(`time_${this.id}`).value = this.time;
-                                console.log(snoozemultiplier);
+                                //console.log(snoozemultiplier);
 				            }, timeinterval);
 
         }
@@ -225,6 +235,7 @@ class Stopwatch{
         //this.snoozetime='99:99:00';
         this.interval=null;
         this.played=false;
+        this.alert=false;
     }
     
     snooze(){
@@ -240,7 +251,7 @@ class Stopwatch{
         this.snoozeamount++;
 
 
-        console.log(`snooze() ${this.snoozetime}`)
+        //console.log(`snooze() ${this.snoozetime}`)
         //calculate new finish time in targethr and targetmin variables
         
     
@@ -362,12 +373,12 @@ function stopwatchControl(){
     document.getElementById('stopwatchcontainer').addEventListener('click', event =>{
         if (event.target && event.target.classList){
             let classlist = event.target.classList
-            console.log(classlist,event.target.id)
+            //console.log(classlist,event.target.id)
             if (event.target.classList.contains("snooze")){
                 let stopwatchid = event.target.id.split('_')[1];
                 stopwatches[`stopwatch_${stopwatchid}`].snooze()
                 document.getElementById(`snooze_${stopwatchid}`).style.display = "none";
-                console.log(stopwatchid)
+                //console.log(stopwatchid)
             }
             
         }
@@ -487,7 +498,7 @@ function organizeClockTimes(sortedtimes){
     document.getElementById(`generatedrows`).innerHTML = `
                                                     ${newFormHTML}
                                                     `;
-    console.log(currenttimes);
+    //console.log(currenttimes);
     
 
 }
@@ -852,7 +863,7 @@ function changeDays(){
         if(event.target.id){
             let choice = event.target.id.split('_')[0];
             let dateid = event.target.id.split('_')[1];
-            console.log(choice,dateid);
+            //console.log(choice,dateid);
             document.getElementById('changedays').action=`/changeday/${dateid}/${choice}`
             //console.log(document.getElementById(event.target.id).href)
             document.getElementById('changedays').submit();
@@ -1020,7 +1031,7 @@ function agendaAJAX(formid){
     let xhttp;
     let formelement = document.getElementById(formid);
     let formpath = formelement.action
-    console.log(formpath)
+    //console.log(formpath)
     xhttp = new XMLHttpRequest();
     
     //xhttp.responseURL = `/control/${dateid}`
@@ -1047,7 +1058,7 @@ function agendaListener(){
 
     document.getElementById('agendacontainer').addEventListener('click',event =>{
         
-        console.log(event.target)
+        //console.log(event.target)
         event.preventDefault()
         //adds task to activity
         if(event.target.id && event.target.parentNode.id && event.target.id.includes("_") && event.target.id.split('_')[0]=="agenda" && document.getElementById('agendaentry').value.length>0){
@@ -1087,8 +1098,8 @@ function agendaListener(){
                                 </div>`
             
             document.querySelectorAll('.list-group').forEach(element =>{
-                console.log(element.id)
-                console.log(activityname)
+                //console.log(element.id)
+                //console.log(activityname)
                 if(element.id == activityname){
                     document.getElementById(element.id).insertAdjacentHTML('beforeend',htmltoinsert)
                 }
@@ -1247,7 +1258,7 @@ function agendaListener(){
 }
 
 function updateAgenda(){
-    console.log(document.getElementById('agendacontainer'))
+    //console.log(document.getElementById('agendacontainer'))
 
 }
 
@@ -1265,7 +1276,7 @@ function snoozeListener(){
         
         let newSnooze = Number(document.getElementById('timeSnooze').value)
         //document.getElementById('editSnoozeForm').submit()
-        console.log(typeof(newSnooze),newSnooze)
+        //console.log(typeof(newSnooze),newSnooze)
         
         if(newSnooze>0){
             snoozemultiplier=newSnooze
