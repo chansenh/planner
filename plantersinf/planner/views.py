@@ -260,13 +260,24 @@ def date(request,id,toggle=0):
 			allagendas.append((agendaname,pairedlist))
 
 	#print("allgendas",allagendas)
+	day = {
+		'mon':'Monday',
+		'tue':'Tuesday',
+		'wed':'Wednesday',
+		'thu':'Thursday',
+		'fri':'Friday',
+		'sat':'Saturday',
+		'sun':'Sunday',
+		}
+
 	context = {
 		"activities":activities,
 		"date": date,
 		"categories":Category.objects.all(),
 		"toggle":toggle,
 		"allagendas":allagendas,
-		"agendas":Agenda.objects.all()
+		"agendas":Agenda.objects.all(),
+		"day":day[date.weekday]
 	}
 	#for date in context["dates"]:
 	#	print(date.date,date.start_count,date.end_count)
