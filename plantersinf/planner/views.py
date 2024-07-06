@@ -4,9 +4,8 @@ import datetime
 
 activecalandar={"month":"","year":""}
 def index(request):
+
 	months={}
-	#listofactivities = Activity.objects.order_by("category").values_list("name","category","id").distinct()
-	#aprilactivities=Activity.objects.filter(name="sex")#.order_by("category").values_list("name","category").distinct()
 	distinctactivities={}
 	context = {
 		"activitiesbyname": distinctactivities,
@@ -19,24 +18,22 @@ def index(request):
 	}
 	print("loading...")
 	
-	#for name,catid,aid in listofactivities:
-	#	if name not in distinctactivities.keys():
-			#Activity.objects.get()
-	#		distinctactivities[name] = (aid,name,catid)
-	#rangeofyears = Date.objects.all().order_by("year").distinct()
-	#print(rangeofyears)
+	
 	today = datetime.date.today()
 	timestring = today.strftime("%d/%m/%Y")
 	currentyear = int(timestring.split("/")[2]) #2020
-	#grabyear = Date.objects.filter(year="")
-	yearrange = []
-	years=[]
-	for year in range(currentyear-5,currentyear+5): #range of 5 years to populate dates
+	
+	yearrange = [] #list of numerical years to iterate through
+	years=[] #list of yearobj which contains all information about specific year
+	for year in range(currentyear-2,currentyear+2): #created a limit of 4 years to populate dates
+
+		#checks that year exists
 		yearexists = Date.objects.filter(year=year)
 		if yearexists:
+			#append the year number to the list
 			yearrange.append(year)
 			
-			
+			#object containing all activity information of a specific year
 			yearlydates={
 				"january":{
 					"activities": getMonthlyActivities("january",year),
@@ -125,36 +122,38 @@ def index(request):
 					"eachweek": whereTheDatesGo(Date.objects.all().filter(year=year,month="december").order_by("day"),numberOfWeeks(31,findWeekday(str(year)+"-12-01")["daynum"]),findWeekday(str(year)+"-12-01")["daynum"],31)
 				}
 			}
+
+			#creates an object
+			# key == String representation of the numerical year
+			# value == yearlydates object
 			yearobj = {str(year): yearlydates}
+			# appends yearobj to main years list
 			years.append(yearobj)
 			
-	#year=[january,february,march,april,may,june,july,august,september,october,november,december]
+	
 	monthlist=["january","february","march","april","may","june","july","august","september","october","november","december"]
 	#need something for leap year
 			
-	#print(yearrange)
+	# provides information to display on the DOM
 	context["years"]=years
 	context["activemonth"] = activecalandar["month"]
 	context["activeyear"] =  activecalandar["year"]
+	#clears location on where to begin displaying the year. will fill in once init
 	activecalandar["year"]=""
 	activecalandar["month"]=""
-	#context["aprilactivities"] = aprilactivities
-	#print(context["dates"])
-	#print(context["activities"])
-	#print(context[2021])
-	#print(years)
+	
+	# dev: manual reseting of database
 	#for activity in context["year"]:
 	#	print(activity)
 	#	print(context["year"][activity])
-		#print(activity)
+	#	print(activity)
 	#	activity.delete()
-
 	#for date in context["dates"]:
 	#	date.delete()
-
 	#for cat in context["categories"]:
 	#	cat.delete()
 	
+	#ascending order sort of every activity in each week
 	for year in context["years"]:
 		for year,yearcontent in year.items():
 			for month,monthcontent in yearcontent.items():
@@ -168,29 +167,35 @@ def index(request):
 
 	return render(request,"planner/datelist.html",context)
 
+#sets month and year to control display on the DOM
 def back(request,month,year):
-	#print("{},{}".format(month,year))
 	activecalandar["month"] = month
 	activecalandar["year"] = year
 	print(activecalandar)
 	return redirect("/")
 
+# creating function
+# used to create a new category for an activity to associate with.
+# toggles visual on DOM when using the creating function within a specific day
+# enables activity creation using top level visual 
 def add(request, category, dateid="",toggle=0):
-	#implement check to validate category syntax
-	#print("existing categories")
-	#for each in Category.objects.all():
-		#print(each.category)
+	
 	cat = Category.objects.filter(category=category)
 	if not cat:
 		#create category
 		Category.objects.create(category=category)
 	else:
+		#category exists
 		print("Category already exists")
 	if dateid:
+		#add function call originated from specific day 
 		return redirect("/date/{}/{}".format(dateid,toggle))
 	else:
+		#add function call originated from top level
 		return redirect("/create/")
 
+# delete function
+# deletes category from category list or removes activity from specific date
 def remove(request,activityid="",dateid="",cat=""):
 	if cat:
 		#removes category from existance muahahaha
@@ -199,8 +204,9 @@ def remove(request,activityid="",dateid="",cat=""):
 	else:
 		#removes activity. only other removal is activity
 		activitytoremove = Activity.objects.get(id=activityid)
-		#print(activitytoremove.name,activitytoremove.id)
 		activitytoremove.delete()
+
+	#after category or activity is deleted, return to appropriate origin
 	if dateid and cat:
 		#dateid present indicates origin date page
 		# cat present indicates category was deleted 
@@ -217,7 +223,8 @@ def remove(request,activityid="",dateid="",cat=""):
 
 
 
-
+# read function
+# grabs all data for a specific date to display on DOM
 def date(request,id,toggle=0):
 	
 	date = Date.objects.get(id=id)
@@ -240,9 +247,6 @@ def date(request,id,toggle=0):
 			activity.save()
 		#if query and activity.agenda is None:
 		#	activity.agenda = query[0]
-
-	#activities = activities.filter(start_date__date__lte=date.date, end_date__date__gte=date.date)
-	#activities = activities.filter(activity_date__date=date.date).order_by("start_time")
 	
 	#check each activity for an agenda and gather into a list to show on front-end
 	for activity in activities:
@@ -259,7 +263,7 @@ def date(request,id,toggle=0):
 			
 			allagendas.append((agendaname,pairedlist))
 
-	#print("allgendas",allagendas)
+	# object used to format data
 	day = {
 		'mon':'Monday',
 		'tue':'Tuesday',
@@ -269,7 +273,8 @@ def date(request,id,toggle=0):
 		'sat':'Saturday',
 		'sun':'Sunday',
 		}
-
+	
+	# context object is used to display data on DOM
 	context = {
 		"activities":activities,
 		"date": date,
@@ -279,6 +284,7 @@ def date(request,id,toggle=0):
 		"agendas":Agenda.objects.all(),
 		"day":day[date.weekday]
 	}
+	
 	#for date in context["dates"]:
 	#	print(date.date,date.start_count,date.end_count)
 	#for act in context["activities"]:
@@ -286,6 +292,10 @@ def date(request,id,toggle=0):
 	return render(request, "planner/date.html",context)
 
 # sideeffect = maybe add daysoftheweek to caculate the amount of total dates being created for each function call.
+
+
+#creates date objects which are able to contain and display activity objects
+# date objects must be instantiated before activities are able to be added
 def createDateRange(start_date,end_date,dotw):
 	print("creating date range")
 	year = [0,31,28,31,30,31,30,31,31,30,31,30,31]#zero to take up zeroth spot; starting at index >=1
@@ -373,7 +383,7 @@ def createDateRange(start_date,end_date,dotw):
 	return activitydays
 
 
-
+# creates activities over the span of dates specified during the create function all
 def createActivities(start_date,end_date,name,storestart,storeend,duration,daysoftheweek,color,category,finish=0):
 	year = [0,31,28,31,30,31,30,31,31,30,31,30,31]#zero to take up zeroth spot; starting at index >=1
 	startdateinfo = findWeekday(start_date)
@@ -387,8 +397,6 @@ def createActivities(start_date,end_date,name,storestart,storeend,duration,dayso
 	endmonth = int(end_date.split("-")[1])
 	endyear = int(end_date.split("-")[0])
 	alldates = Date.objects.all()
-	#print(alldates)
-	#print("creating activity with cat =",category)
 	foundstart=0
 	foundend=0
 	foundname=0
@@ -581,42 +589,7 @@ def createActivities(start_date,end_date,name,storestart,storeend,duration,dayso
 							newactivity = Activity.objects.create(finish=finish,name=name,start_date=Date.objects.get(date=start_date),end_date=Date.objects.get(date=end_date),activity_date=Date.objects.get(date=date),start_time=storestart,end_time=storeend,duration=duration,current_time="00:00:00",days=daysoftheweek,active=0,color=color,category=Category.objects.get(category=category))
 							print(type(newactivity.name))
 
-# start and end is string, selecteddays is list of abbreviated days of the week selected during activity creation		
-#def createActivityRange(start_date,end_date,selecteddays):
-
-
-	#for date in alldates:
-	#	print(date.id)
-	#	print(date)
-	#	startcount=date.start_count
-	#	endcount=date.end_count
-	#	print("before =",date.date)
-	#	if date.date == start_date:
-	#		startcount+=1
-	#		foundstart=1
-	##	if date.date == end_date:
-	#		endcount+=1
-	#		foundend=1
-	#		print("end =",date.date)
-	#	if foundstart or foundend:
-	#		updated = Date.objects.get(id=date.id)
-	#		updated.start_count = startcount
-	#		updated.end_count = endcount
-	#		#activity = Activity
-	#		updated.save()
-	#first occurance, create new date boject
-	#
-	#day of the week implementation#
-	#if start_date in end_date:
-	#	if not foundstart:#activity starts and ends on same day and date wasnt found
-	#		s = Date.objects.create(date=start_date,start_count=1,end_count=1,month=startdateinfo["month"],day=startdateinfo["day"], year=startdateinfo["year"], weekday=startdateinfo["weekday"])
-	#		
-	#else:# different start and end dates
-	#	if not foundstart: # start date was not found create date object with start date as its date
-	#		s = Date.objects.create(date=start_date,start_count=1,end_count=0,month=startdateinfo["month"],day=startdateinfo["day"], year=startdateinfo["year"], weekday=startdateinfo["weekday"])
-	#	
-	#	if not foundend: # end date was not found create date object with end date as its date	
-	#		e = Date.objects.create(date=end_date,start_count=0,end_count=1,month=enddateinfo["month"],day=enddateinfo["day"], year=enddateinfo["year"], weekday=enddateinfo["weekday"])
+#reads activity name from query parameter in function call
 def findActivityName(name,query):
 	
 	found=0
@@ -626,30 +599,23 @@ def findActivityName(name,query):
 				found = 1
 	return found
 
+#deletes agenda list for a specified activity
 def clearagenda(request,dateid,activityid):
 	
 	activityobj = Activity.objects.get(id=activityid)
-	#activityobj.agenda.delete()
-	
 	agendaobject = Agenda.objects.get(name=activityobj.name)
-	#agendaobj = Agenda.objects.get(name=activityobj.name)
-	#print(agendatoclear)
 	agendaobject.list=""
 	agendaobject.active=""
 	agendaobject.save()
 	return redirect("/date/{}".format(dateid))
 
 
-
+# agenda adds/removes a checklist element to a specified activity
 def agenda(request,dateid,activityid,clicked):
 	
 	if request.POST:
 		
-		
 		incomingdata = processPOST(request.POST)
-		
-		
-		
 		agendaentry=incomingdata["agendaentry"]
 		activity = Activity.objects.get(id=activityid)
 		#agenda = Agenda.objects.get(name=activity.name)
@@ -665,14 +631,14 @@ def agenda(request,dateid,activityid,clicked):
 					temp = tasks
 					tasks=[]
 					tasks.append(temp)
-		#for each task do vvvvvvvvvv
 			finishAgendaTask(activity.name,tasks,clicked)
+		#deletes agenda entry for an activity
 		elif str(incomingdata["remove"])=="1":
-			removeFromAgenda(activity.name,agendaentry)#WHY is activity name  unicode
-
+			removeFromAgenda(activity.name,agendaentry)
+		# adds agenda entry for an activity
 		elif str(incomingdata["add"])=="1":
 			addToAgenda(activity.name,agendaentry)
-			
+		# moves agenda entry within an activity's agenda list
 		elif str(incomingdata["alter"])=="up" or str(incomingdata["alter"])=="down" :
 			alterAgenda(activity.name,agendaentry,incomingdata["alter"])
 			
@@ -713,25 +679,18 @@ def finishAgendaTask(name,entries,clicked):
 					#where is task position to relate to active list
 			else:
 				activelist[agendalist.index(task)]="0"
-	
-	#	for idx in range(len(activelist)):
-	#		activelist[idx]="1"
 		
-		
-				
-					
 		commaseperatedactive = ",".join(activelist)
 		agendaobject.active = commaseperatedactive
 	
 	agendaobject.save()
 
-
+# update function
+# programatically moves an agenda element up or down the list
 def alterAgenda(agendaname,entry,direction):
 	agendaobject = Agenda.objects.get(name=agendaname)
 	
 	print("altering")
-
-
 	
 	if agendaobject:
 		print("going ",direction)
@@ -771,11 +730,6 @@ def alterAgenda(agendaname,entry,direction):
 	
 	print("pau altering")
 
-def toggleAgenda(agendaname,entry,toggle):
-	agendaobject = Agenda.objects.get(name=agendaname)
-	
-
-
 
 # agendaname is unique name of activity connecting to a single agenda shared between all activites
 # entry is the new entry to the agenda
@@ -804,7 +758,9 @@ def addToAgenda(agendaname,entry):
 		agendaobjectlist[0].list = commaseperatedlist
 		agendaobjectlist[0].active = commaseperatedactive
 		agendaobjectlist[0].save()
-		
+
+# deletes function
+# removes task from agenda
 def removeFromAgenda(agendaname,entry):
 	agendaobject = Agenda.objects.get(name=agendaname)
 	#for agenda in Agenda.objects.all():
@@ -832,7 +788,7 @@ def removeFromAgenda(agendaname,entry):
 		
 
 
-#UNDER CONSTRUCTION#
+# allows updates to all properties of all specified activities
 def modifyAllActivities(start_date,end_date,name,start,end,duration,daysoftheweek,color,category):
 	startday = int(start_date.split("-")[2])
 	endday = int(end_date.split("-")[2])
@@ -843,8 +799,8 @@ def modifyAllActivities(start_date,end_date,name,start,end,duration,daysofthewee
 	activitygroup = Activity.objects.filter(name=name).order_by("activity_date__date")
 	activitylist=[]
 	week = daysoftheweek.split(",")
+
 	#necessary date objects have been created
-	#print(start_date,end_date,name,daysoftheweek)
 	datescreated = createDateRange(start_date, end_date, daysoftheweek)
 
 	#create activities which dont exist within the new date range. !!!!! modify function to not create duplicates
@@ -880,6 +836,7 @@ def modifyAllActivities(start_date,end_date,name,start,end,duration,daysofthewee
 			else:
 				activity.delete()
 
+# updates are applied to all instances of a future activity
 def modifyFutureActivities(start_date,end_date,name,start,end,duration,daysoftheweek,color,category):
 	#start date is the current date of acitivity which was selected to be modified
 	startday = int(start_date.split("-")[2])
@@ -928,6 +885,8 @@ def modifyFutureActivities(start_date,end_date,name,start,end,duration,daysofthe
 			else:
 				activity.delete()
 
+# NOT YET IMPLEMENTED!
+# deletes an activity in the specified date range
 def deletePastActivities(start_date,end_date,name,start,end,duration,daysoftheweek,color,category):
 	#start date is the current date of acitivity which was selected to be modified
 	startday = int(start_date.split("-")[2])
@@ -976,11 +935,10 @@ def deletePastActivities(start_date,end_date,name,start,end,duration,daysofthewe
 			else:
 				activity.delete()
 
-
+# create function used by form element in the DOM
 def create(request,date=""):
 	if request.method=="POST":
-		#print(request.POST["categoryselection"])
-		#print(request.POST)
+		
 		days=[]
 		date=str(date)
 		## CREATE RANGE DATE DATA
@@ -988,7 +946,7 @@ def create(request,date=""):
 		print(request.POST)
 		incomingdata = processPOST(request.POST)
 		print("PROCESSED===",incomingdata)
-		#print(postkeys)
+		
 		for key,value in request.POST.items():
 			if key in week and value=="1":
 				# key = "sun","mon","tue"...will return true from a dictionary containing those words
@@ -1070,6 +1028,7 @@ def create(request,date=""):
 		#	each.delete()
 		return render(request, "planner/create.html",context)
 
+# update function used by form element within DOM
 def edit(request,activityid=-1,dateid=-1):
 	if request.method=="POST":
 		#print(request.POST)
@@ -1155,64 +1114,18 @@ def edit(request,activityid=-1,dateid=-1):
 			activitytoupdate.color=color
 			activitytoupdate.category=Category.objects.get(category=category)
 			activitytoupdate.save()
-			#set filter on dates greater than or equal to current date to apply changes only to future activities.
-			#previous days will not have changes made
-			
-			#change each activity to reflect changes
-			
-				###activity.delete()
-			#print(lengthofactivity)
-			
-				#create the start date
-				#if not Date.objects.filter(date=start_date):
 
-				#if not Date.objects.filter(date=end_date):
-				#activity.start_date=Date.objects.get(date=start_date)
-				#activity.end_date=Date.objects.get(date=end_date)
-				#activity.name=request.POST["name"]
-				#activity.start_time=request.POST["start_time"]
-				#activity.end_time=request.POST["end_time"]
-				#activity.duration=duration
-				#activity.days=daysoftheweek
-				#activity.activity_date=???????
-				#activity.color=color
-				#activity.category=Category.objects.get(category=category)
-				#activity.save()
-
-			## CREATE RANGE DATE DATA
-
-			# no days are selected and the activity takes place on a single day
-			# automatically find teh appropriate weekday and assign it
-			###if not days and start_date == end_date:
-			###	day = findWeekday(start_date)
-			###	singleday = day["weekday"]+","
-			###	createActivities(start_date,end_date,request.POST["name"],start,end,duration,singleday,color,category)
-			# no days are selected and a range of days exist for the activity
-			# assume all days are desired and assign all days to the activity over the particular range
-			###elif not days:
-			###	daysoftheweek="sun,mon,tue,wed,thu,fri,sat"
-			###	createActivities(start_date,end_date,request.POST["name"],start,end,duration,daysoftheweek,color,category)
-			# at least a single day was selected, carry on as normal
-			###else:
-			###	for each in days:
-			###		daysoftheweek+=each+","
-			
-			###	createActivities(start_date,end_date,request.POST["name"],start,end,duration,daysoftheweek,color,category)
-			#for activity in activitygroup:
-				#sdate = Date.objects.get(date=activitystart_date)
-				#activity.name=activityname
-				#activity.start_date
-			# needs to be updated; duration,current_time,days?,active=0,	
-			#redirect back to calendar once changes are made
-		###print(dateid)
+		# create function call was made from top level of application
 		if dateid == "-1":
 			return redirect("/")
+		# create function call was made from within a specific date
 		else:
 			return redirect("/date/{}".format(dateid))
 			
 	# the same activity shares the activity"s name,start date,end date,start_time,end_time,color,category,days
+	# some activity is referenced
 	elif not activityid == -1:
-		#print(dateid)
+		#lookup specified activity
 		activity = Activity.objects.get(id=activityid)
 		dotw = {
 			"mon":0,
@@ -1231,6 +1144,7 @@ def edit(request,activityid=-1,dateid=-1):
 		sat=0
 		sun=0
 
+		# tracks on what days activity is enabled
 		for eachday in activity.days.split(","):
 			if eachday=="mon":
 				mon=1
@@ -1269,10 +1183,6 @@ def edit(request,activityid=-1,dateid=-1):
 		}	
 		return render(request,"planner/edit.html", context)
 	return redirect("/")
-
-#def processFinish(){
-#	
-#	}
 
 #controls pause and clear options for activity times
 def control(request,dateid,activityid=0):
@@ -1346,9 +1256,10 @@ def control(request,dateid,activityid=0):
 		
 		activity.save()
 		gobacktodate = "/date/{}".format(dateid)
-		#print(gobacktodate)
+		
 		return redirect(gobacktodate)
-
+	
+# updates specified activity's currently elapsed duration
 def updateTime(request, dateid):
 	if request.method=="POST":
 		start={}
@@ -1359,7 +1270,7 @@ def updateTime(request, dateid):
 		print("PROCESSED===",incomingdata)
 		print(incomingdata)
 		for key in incomingdata.keys():
-			#print(key,incomingdata[key])
+			# csrfmiddlewaretoken is not something we require, ignore it
 			if (not key=="csrfmiddlewaretoken") and (key.find("_") >=0):
 				activityid = key.split("_")[1]
 				
@@ -1372,8 +1283,8 @@ def updateTime(request, dateid):
 
 		startsplit = start[activityid].split(":")
 		endsplit = end[activityid].split(":")
-#		if int(endsplit[0])>int(startsplit[0]):
-#			hr = abs(int(startsplit[0])-int(endsplit[0]))
+		
+		#calculating duration
 		hr = abs(int(endsplit[0]) - int(startsplit[0]))
 		min = int(endsplit[1])-int(startsplit[1])
 		#const of 60 to represent 60 miutes in an hour
@@ -1393,18 +1304,17 @@ def updateTime(request, dateid):
 		activity.save()
 		return redirect("/date/{}".format(dateid))
 
-
+#start time elapse on specified activity
 def activate(request,id):
 	activate = Activity.objects.get(id=id)
 	
-	
+	#set an activity to active
 	if int(activate.active)==0:
 		activate.active = 1
-		#print("im active")
-		#print(activate.id,activate.name, activate.active)
 		activate.save()
 	return redirect("/date")
 
+# displays a pie chart and bar graph visualization of all activities and their total work time elapsed
 def dashboard(request):
 	today = datetime.date.today()
 	timestring = today.strftime("%d/%m/%Y")
@@ -1535,7 +1445,7 @@ def dashboard(request):
 	
 	return render(request,"planner/dashboard.html",context)
 	
-
+# used for dashboard visualizations
 def activitiesGroupedByCategory(month,year,length):
 	#grab all activities during a month
 	activitybymonth = Activity.objects.filter(activity_date__month=month,activity_date__year=year).order_by("activity_date__day")
@@ -1565,6 +1475,7 @@ def activitiesGroupedByCategory(month,year,length):
 # completed activities
 # incomplete activities
 # }
+# used for dashboard visualizations
 def minutesCompleteActivities(month,year,length):
 	focus=None
 	
@@ -1574,7 +1485,7 @@ def minutesCompleteActivities(month,year,length):
 	
 	for i in length:
 		
-		#orderby is just alphabetical order for names. no real purpose i guess
+		#orderby is just alphabetical order for names
 		dailyacts = Activity.objects.filter(activity_date__month=month,activity_date__day=i,activity_date__year=year).order_by("name")
 		#turn daily activity list and determine complete and incomplete activites
 		#month[activityname]={
@@ -1610,6 +1521,8 @@ def minutesCompleteActivities(month,year,length):
 		
 
 	#
+# outputs an object detailing several properties for a specific date
+# used internally for multiple function calls within this application
 def findWeekday(date):
 	#day of the week implementation#
 	
@@ -1655,13 +1568,14 @@ def findWeekday(date):
 		"date":date
 	}
 
-
+# retrieves all activities within a specific month
 def getMonthlyActivities(month,year):
 	monthact = Date.objects.filter(month=month,year=year).order_by("day")
 	#for each in monthact:
 	#	print(each.day)
 	return monthact
 
+# used for visual formatting of calandar
 def numberOfWeeks(numberofdays,startday):#startday is day of the week in a number form 0-6 = monday-sunday
 	if numberofdays==30:
 		if startday==5:
@@ -1682,6 +1596,7 @@ def numberOfWeeks(numberofdays,startday):#startday is day of the week in a numbe
 	if numberofdays==29:#leap year
 		return 5
 	return 0
+
 #firstdotm = day that the month starts on in number form 0-6
 #dates all dates in a given month
 def whereTheDatesGo(dates,totalweeks,firstdotm,monthlength): #which date objects go into which weeks. starting day of week is needed to determine where dates go
@@ -1716,7 +1631,7 @@ def whereTheDatesGo(dates,totalweeks,firstdotm,monthlength): #which date objects
 		"week5": week5,
 		"week6": week6
 	}
-
+# outputs a valid string representation of any date specified
 def formatDateToString(currentmonth,currentday,currentyear):
 	if currentmonth<10:
 		monthstring = "0{}".format(currentmonth)
@@ -1729,6 +1644,11 @@ def formatDateToString(currentmonth,currentday,currentyear):
 	date= "{}-{}-{}".format(currentyear,monthstring,daystring)
 	dateinfo = findWeekday(date)
 	return dateinfo
+
+# ===================== #
+### CALENDAR CONTROLS ###
+# ===================== #
+# vvvvvvvvvvvvvvvvvvvvv #
 
 def changeDays(request,dateid="",choice=""):
 	current = Date.objects.get(id=dateid)
@@ -1752,7 +1672,7 @@ def changeDays(request,dateid="",choice=""):
 	return redirect(redirectpath)
 
 	
-
+# determines where last day of month is on calendar
 def isLastDayOfMonth(yearobj,months,month,day):
 	
 	monthnumber = months[month]
@@ -1779,13 +1699,8 @@ def processPOST(post):
 		incomingdata={}
 		print('inside func',post)
 		incomingdata = querydict_to_dict(post)
-		#print(incomingdata.keys())
-		#for key,value in post.items():
-			#print('=========================================                             ',type(value),value)
-		#	thekey = str(key)
-		#	thevalue = value
-		#	incomingdata[thekey]=thevalue
 		return incomingdata
+	#post parameter is empty, will return None type result
 	return None
 
 def querydict_to_dict(query_dict):

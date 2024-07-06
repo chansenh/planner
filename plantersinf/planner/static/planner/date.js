@@ -21,19 +21,16 @@ class Stopwatch{
         
     }
 
+
     increment(hours,minutes,seconds){
         let secout="";
         let minout="";
         let hrout="";
-        //update
+
         this.second=seconds;
         this.minute=minutes;
         this.hour = hours;
-        //determine seconds, update minutes if necessary
-        //if(this.second==60){
-        //    this.second=0;
-         //   this.minute++;
-        //}
+        
 
         //format seconds
         if(this.second<10){
@@ -43,12 +40,6 @@ class Stopwatch{
             secout=`${this.second}`;
         }
 
-        //determine minutes, update hours if necessary
-        //if(this.minute==60){
-        //    this.minute=0;
-        //    this.hour++;
-        //}
-
         //format minutes
         if(this.minute<10){
             minout=`0${this.minute}`;
@@ -56,96 +47,105 @@ class Stopwatch{
         if(this.minute>=10){
             minout=`${this.minute}`;
         }
+
+        //format hour
 		if(this.hour<10){
             hrout=`0${this.hour}`;
         }
 		if(this.hour>=10){
             hrout=`${this.hr}`;
         }
+
+        //combine hours, minutes, seconds
         const out = `${hrout}:${minout}:${secout}`;
         
+        //split activity duration into hours and minutes
         let targethr = Number(this.duration.split(':')[0]);
         let targetmin = Number(this.duration.split(':')[1]);
         let snoozehr = Number(this.snoozetime.split(':')[0]);
         let snoozemin = Number(this.snoozetime.split(':')[1]);
-       
-        //console.log(this.duration,this.snoozetime)
-        //console.log('this.hr and this.min',this.hour,this.minute,'VS',snoozehr,snoozemin)
         
-        //check and update snooze time if different
-        //if snoozehr+snoozemin is not equal to snoozemultiplier, the snooze interval has changed
-        //update the snooze interval
-        //if(!(snoozehr*60+snoozemin==snoozemultiplier)){
-
-            //feeding time will alter original interval
-            //feeding duration wont work more than 1 snooze
-        //    let delta = Math.abs(snoozehr*60+snoozemin-snoozemultiplier)
-            //determine time needed to add to snooze
-            //this.duration-this.time=overtime
-            //this.duration//5min
-            //this.snoozetime//6min
-            //snoozemultiplier//was 1, now is 2
-            //this.time//7min
-            
-            //this.addsnoozetotime(snoozemultiplier,this.)
-            //targethr=snoozehr
-            //targetmin=snoozemin
-            //this.played=false;
-        //}
-        //console.log(`duration: ${targethr}:${targetmin}, snooze: ${snoozehr}:${snoozemin}`)
-        let totalElapsedMinutesToTriggerAlert = targethr*60+targetmin-15
+        //ALERT TIME SETTINGS
+        // 90% elasped time takes place before alert triggers
+        // DEAL WITH DECIMALS. ADD SECONDS
+        let totalElapsedMinutesToTriggerAlert = (targethr*60+targetmin)*.9
         let alerthour = Math.floor(totalElapsedMinutesToTriggerAlert/60)
-        let alertminute = totalElapsedMinutesToTriggerAlert%60
-        //console.log('totalmin',totalElapsedMinutesToTriggerAlert)
-        //console.log('alerthr: ',alerthour,' | alretmin: ',alertminute)
-        if (totalElapsedMinutesToTriggerAlert>0 && this.hour==alerthour && this.minute==alertminute && this.second>=0 && !(this.alert)){
+        let decimal = totalElapsedMinutesToTriggerAlert%1
+        let alertminute = (totalElapsedMinutesToTriggerAlert%60)-decimal
+        let alertsecond = Math.floor(decimal*60)
+        
+        
+        //ALERT CONTROL
+        if (totalElapsedMinutesToTriggerAlert>0 && this.hour==alerthour && this.minute==alertminute && this.second>=alertsecond && !(this.alert)){
+            //plays alert audio
             document.getElementById('alert').play();
+            
+            //sets bool value to reflect active audio
             this.alert=true;
         }
+
+        //activity is complete
         if (this.hour>=targethr && this.minute>=targetmin && this.second>=0 && !(this.target)){
             //console.log(`Activity ${this.id}, Times up!`);
             let activityname = findActivity(this.id)
+            
             //displays notification to user
             alertMessage(`Activty ${activityname} is complete!`)
+            
             //changes activity row color to mark completion
-            document.getElementById(`${this.id}`).classList.add('table-primary')
+            document.getElementById(this.id).classList.add('table-primary')
+            
+            
+            
             //plays sound to user informing of activity completion
             document.getElementById('sound').play();
             this.target=true;
+            
             //show snooze button to silence music
             document.getElementById(`snooze_${this.id}`).style.display = "inline"
             
             //marks activity as finished to reflect changes in database
             document.getElementById(`finish_${this.id}`).value='1'
+            
             //turns 'on' finish button to reflect finish status to user
             document.getElementById(`finishbutton_${this.id}`).classList.add('active');
+            
             //current time column will turn red to signal time is over target time
             document.getElementById(`time_${this.id}`).classList.remove('text-success');
             document.getElementById(`time_${this.id}`).classList.add('text-danger');
             
         }
         if(this.hour>=snoozehr && this.minute>=snoozemin && !(this.snoozed)){
-            //console.log(`Activity ${this.id}, SNOOZED!`);
             let activityname = findActivity(this.id)
+            
             //displays notification to user
             alertMessage(`Activty ${activityname} is SNOOZED!`)
+            
             //changes activity row color to mark completion
             document.getElementById(`${this.id}`).classList.add('table-primary')
+            
             //plays sound to user informing of activity completion
             document.getElementById('sound').play();
             this.snoozed=true;
+            
             //show snooze button to silence music
             document.getElementById(`snooze_${this.id}`).style.display = "inline"
             
             //marks activity as finished to reflect changes in database
             document.getElementById(`finish_${this.id}`).value='1'
+            
             //turns 'on' finish button to reflect finish status to user
             document.getElementById(`finishbutton_${this.id}`).classList.add('active');
+            
             //current time column will turn red to signal time is over target time
             document.getElementById(`time_${this.id}`).classList.remove('text-success');
             document.getElementById(`time_${this.id}`).classList.add('text-danger');
         }
-        //document.getElementById('sound').play();
+
+        if(this.target){
+            this.alternateActivityRow()
+        }
+        
         return out;
         
         
@@ -236,10 +236,13 @@ class Stopwatch{
         this.interval=null;
         this.played=false;
         this.alert=false;
+        this.target=false;
+        this.resetActivityRow()
     }
     
     snooze(){
         //adds snooze timer amount to current time when clicked on snooze button
+        this.resetActivityRow()
         this.addsnoozetotime(snoozemultiplier,this.time);
         this.timesnoozed=this.time;
         //silences song and resets it to beginning
@@ -249,13 +252,8 @@ class Stopwatch{
         //hide the btn when its clicked on
         document.getElementById(`snooze_${this.id}`).style.display = 'none';
         this.snoozeamount++;
+        console.log(this.snoozeamount)
 
-
-        //console.log(`snooze() ${this.snoozetime}`)
-        //calculate new finish time in targethr and targetmin variables
-        
-    
-    
     }
     //snoozeamount: time of each snooze
     addsnoozetotime(snoozeamount,time){
@@ -278,6 +276,37 @@ class Stopwatch{
 
         }
         this.snoozetime=`${snoozehr}:${snoozemin}:00`
+    }
+    
+    alternateActivityRow(){
+        let stopwatchnode = document.getElementById(this.id)
+        let timevisualnode = document.getElementById(`timevisual_${this.id}`).querySelector('.row')
+        let firstcycle = 'table-primary'
+        let secondcycle = 'table-success'
+        timevisualnode.classList.remove('bg-light')
+        if(stopwatchnode.classList.contains(firstcycle)){
+            stopwatchnode.classList.remove(firstcycle)
+            stopwatchnode.classList.add(secondcycle)
+            timevisualnode.classList.remove('bg-warning')
+            timevisualnode.classList.add('bg-danger')
+            //console.log(timevisualnode)
+        }
+        else if(stopwatchnode.classList.contains(secondcycle)){
+            stopwatchnode.classList.remove(secondcycle)
+            stopwatchnode.classList.add(firstcycle)
+            timevisualnode.classList.remove('bg-danger')
+            timevisualnode.classList.add('bg-warning')
+            //console.log(timevisualnode)
+        }
+    }
+    resetActivityRow(){
+        let stopwatchnode = document.getElementById(this.id)
+        let timevisualnode = document.getElementById(`timevisual_${this.id}`).querySelector('.row')
+        timevisualnode.classList.remove('bg-warning')
+        timevisualnode.classList.remove('bg-danger')
+        timevisualnode.classList.add('bg-light')
+        stopwatchnode.classList.remove('table-success')
+        stopwatchnode.classList.remove('table-primary')
     }
     
 }//class Stopwatch
@@ -372,20 +401,17 @@ function stopwatchControl(){
     //if snooze button is clicked on
     document.getElementById('stopwatchcontainer').addEventListener('click', event =>{
         if (event.target && event.target.classList){
+
             let classlist = event.target.classList
-            //console.log(classlist,event.target.id)
+
             if (event.target.classList.contains("snooze")){
                 let stopwatchid = event.target.id.split('_')[1];
                 stopwatches[`stopwatch_${stopwatchid}`].snooze()
                 document.getElementById(`snooze_${stopwatchid}`).style.display = "none";
-                //console.log(stopwatchid)
-            }
-            
-        }
-        
-    })
 
-    
+            }   
+        } 
+    })
 
 }
 
@@ -823,11 +849,13 @@ function markFinishedActivities(){
         if(currenthr >= targethr && currentmin >= targetmin){
             row.querySelector('.stopwatch').classList.remove('text-success')
             row.querySelector('.stopwatch').classList.add('text-danger')
-        //    row.classList.add('table-primary')
+            row.classList.add('table-primary')
         }
         if(row.querySelector('.finish').value=='1'){
             row.querySelector('.finishbutton').classList.add('active');
             row.classList.add('table-primary');
+            console.log('finshed clicked')
+            
         }
         if(row.querySelector('.finish').value=='0'){
             row.querySelector('.finishbutton').classList.remove('active')
@@ -1018,6 +1046,9 @@ function activateFinishButton(){
                 finishnode.value='0';
                 targetnode.classList.remove('active');
                 document.getElementById(id).classList.remove('table-primary')
+                document.getElementById(id).classList.remove('table-success')
+                document.getElementById(`timevisual_${id}`).querySelector(`.row`).classList.remove('bg-warning')
+                document.getElementById(`timevisual_${id}`).querySelector(`.row`).classList.remove('bg-danger')
                 finishAJAX(datid);
             }
             
