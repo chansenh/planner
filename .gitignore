@@ -1,4 +1,0 @@
-.gitignore
-node_modules/
-*.bak
-plantersinf/db.sqlite3
