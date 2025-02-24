@@ -245,8 +245,9 @@ function enableFiltering(){
 
 function checkActive(){
     let active = document.getElementById('years').querySelector('.active')
-    console.log(active)
+    
     if (active){
+        console.log(active)
         return true
     }
     return false
@@ -343,7 +344,7 @@ function dayListener(){
         //clicked object is the link itself. display card associated with that day
         if(validateNodeWithID(node.id,'linkbtn')){
             console.log('linkbutton was lcicked')
-            m  = {'january':01,'february':02,'march':03,'april':04,'may':05,'june':06,'july':07,'august':08,'september':09,'october':10,'november':11,'december':12,}
+            m  = {'january':1,'february':2,'march':3,'april':4,'may':5,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12,}
             let month=m[node.dataset.month];
             let day = node.dataset.day;
             let year = node.dataset.year;//all strings
@@ -512,6 +513,7 @@ let month = calendarList[0]['id'].split('-')[0];
 let year = calendarList[0]['id'].split('-')[1];
 if (!checkActive()){//if there is no active month then server did not render active
     const today = getCurrentDateObject();
+    console.log('currentday: ',today)
     makeMonthActive(today.month,today.year); //makes first month active
 }
 else{

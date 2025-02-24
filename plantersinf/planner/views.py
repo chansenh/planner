@@ -161,7 +161,6 @@ def index(request):
 				weeklyinfo = sorted(monthcontent['eachweek'].items())
 				monthcontent['eachweek'] = weeklyinfo
 				print(monthcontent['eachweek'])
-	#print(context)
 			
 		
 
@@ -1617,7 +1616,7 @@ def whereTheDatesGo(dates,totalweeks,firstdotm,monthlength): #which date objects
 	week4= dates.filter(day__gte=offset+15).filter(day__lte=offset+21)
 	week5=None
 	week6=None
-	if monthlength>28:
+	if monthlength>=28:
 		week5= dates.filter(day__gte=offset+22).filter(day__lte=offset+28)
 		week6= dates.filter(day__gte=offset+29)
 	if week1 or week2 or week3 or week4 or week5 or week6:
